@@ -1,0 +1,9 @@
+# Ignore production builds in React
+client/dist/
+client/coverage/
+client/public/static/
+client/public/*.map
+client/node_modules/
+
+# Ignore backend dependencies (server)
+server/node_modules/
