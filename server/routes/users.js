@@ -1,31 +1,35 @@
 const express = require('express');
 const router = express.Router();
 const userController =  require('../controllers/userController');
-const authMiddleware = require('../middleware/auth/authenticateJWT')
-  
+const authMiddleware = require('../middleware/auth/authenticateJWT');
+const {authorizeRole} = require('../middleware/auth/authorizeRole');
+const {rateLimiterMiddleware} = require('../middleware/rateLimit/rateLimiter')
 
-router.get('/', authMiddleware , (req, res) => {
-    res.send('User List');
+// router.get('/', authMiddleware , (req, res) => {
+//     res.send('User List');
+// });
+
+router.get('/', rateLimiterMiddleware, (req,res) => {
+    res.send('User Home');
 });
-
-router.get('/',);
 router.get('/home',);
 router.get('/finddoctor',);
-router.get('/finddoctor/:category',);
-router.get('/finddoctor/:category/reservation',);
-router.get('/finddoctor/:category/:doctor',);
+router.get('/finddoctor/:specialization',);
+router.get('/finddoctor/:specialization/reservation',[authMiddleware , authorizeRole('user')]);
+router.get('/finddoctor/:specialization/:doctor',);
 router.get('/package',);
-router.get('/pharamacy',);
-router.get('/labratory',);
+router.get('/pharamacy',[authMiddleware , authorizeRole('user')]);
+router.get('/labratory',[authMiddleware , authorizeRole('user')]);
 router.get('/aboutus',);
 router.get('/404_error',);
 router.get('/403_error',);
-router.get('/userprofile',);
-router.get('/user_prescription',);
-router.get('/user_payments',);
-router.get('/checkout',);
-router.get('/refund',);
-router.get('/refund/request',);
+router.get('/userprofile',[authMiddleware , authorizeRole('user')]);
+router.get('/user_prescription',[authMiddleware , authorizeRole('user')]);
+router.get('/user_payments',[authMiddleware , authorizeRole('user')]);
+router.get('/cart',[authMiddleware , authorizeRole('user')]);
+router.get('/checkout',[authMiddleware , authorizeRole('user')]);
+router.get('/refund',[authMiddleware , authorizeRole('user')]);
+router.get('/refund/request',[authMiddleware , authorizeRole('user')]);
 router.post('/verifyuser', userController.verifyUser );
 router.post('/register',userController.register);
 router.post('/login',userController.login);

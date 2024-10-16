@@ -1,6 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/db');
 const {User} = require('../auth/User');
+const {UserGroup} = require('../auth/UserGroup');
 
 const RateLimiting = sequelize.define('RateLimiting', {
     id: {
@@ -8,10 +9,10 @@ const RateLimiting = sequelize.define('RateLimiting', {
         autoIncrement: true,
         primaryKey: true,
     },
-    user_id: {
+    user_group_id: {
         type: DataTypes.INTEGER,
         references: {
-            model: User,
+            model: UserGroup,
             key: 'id',
         },
         allowNull: false,
@@ -20,8 +21,8 @@ const RateLimiting = sequelize.define('RateLimiting', {
         type: DataTypes.INTEGER,
         allowNull: false,
     },
-    last_request_at: {
-        type: DataTypes.DATE,
+    duration: {
+        type: DataTypes.INTEGER,
         allowNull: false,
     },
     created_at: {

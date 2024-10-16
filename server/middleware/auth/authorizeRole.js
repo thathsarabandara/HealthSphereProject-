@@ -1,5 +1,5 @@
 const { findUserID } = require('../../models/auth/Token');
-const { validateUserGroups } = require('../../models/userGroups');
+const { validateUserGroups } = require('../../models/auth/UserGroup');
 
 const authorizeRole = (role) => {
   return async (req, res, next) => {

@@ -25,6 +25,7 @@ const { PasswordResetRequest } = require('./security/PasswordResetRequest');
 const { TwoFactorAuth } = require('./security/TwoFactorAuth');
 const { Session } = require('./security/Session');
 const { SecurityQuestion } = require('./security/SecurityQuestion');
+const { RateLimiting } = require('./security/RateLimiting');
 
 // Define auth relationships
 User.belongsToMany(Group, { through: UserGroup, foreignKey: 'user_id' });
@@ -57,6 +58,7 @@ Notification.belongsTo(User, { foreignKey: 'user_id' });
 // Define security relationships 
 AuditLog.belongsTo(User, { foreignKey: 'user_id' });
 FailedLoginAttempt.belongsTo(User, { foreignKey: 'user_id' });
+RateLimiting.belongsTo(UserGroup, {foreignKey: 'user_group_id'});
 PasswordResetRequest.belongsTo(User, { foreignKey: 'user_id' });
 TwoFactorAuth.belongsTo(User, { foreignKey: 'user_id' });
 Session.belongsTo(User, { foreignKey: 'user_id' });
