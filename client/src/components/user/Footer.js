@@ -1,11 +1,11 @@
 import React from 'react'
-import footer1 from '../assets/images/Rectangle 33.svg'
-import '../styles/Footer.css'
-import Image47 from '../assets/images/Rectangle 47.svg'
-import Image46 from '../assets/images/Rectangle 46.svg'
-import Image45 from '../assets/images/Rectangle 45.svg'
-import Image44 from '../assets/images/Rectangle 44.svg'
-import Image34 from '../assets/images/Rectangle 34.svg'
+import footer1 from '../../assets/images/Rectangle 33.svg'
+import '../../styles/Footer.css'
+import Image47 from '../../assets/images/Rectangle 47.svg'
+import Image46 from '../../assets/images/Rectangle 46.svg'
+import Image45 from '../../assets/images/Rectangle 45.svg'
+import Image44 from '../../assets/images/Rectangle 44.svg'
+import Image34 from '../../assets/images/Rectangle 34.svg'
 
 function Footer() {
   return (

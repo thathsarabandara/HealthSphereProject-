@@ -9,12 +9,10 @@ const {rateLimiterMiddleware} = require('../middleware/rateLimit/rateLimiter')
 //     res.send('User List');
 // });
 
-router.get('/', rateLimiterMiddleware, (req,res) => {
-    res.send('User Home');
-});
-router.get('/home',);
-router.get('/finddoctor',);
-router.get('/finddoctor/:specialization',);
+router.get('/', rateLimiterMiddleware,);
+router.get('/home', rateLimiterMiddleware );
+router.get('/finddoctor', rateLimiterMiddleware);
+router.get('/finddoctor/:specialization', rateLimiterMiddleware);
 router.get('/finddoctor/:specialization/reservation',[authMiddleware , authorizeRole('user')]);
 router.get('/finddoctor/:specialization/:doctor',);
 router.get('/package',);
@@ -23,6 +21,9 @@ router.get('/labratory',[authMiddleware , authorizeRole('user')]);
 router.get('/aboutus',);
 router.get('/404_error',);
 router.get('/403_error',);
+router.get('/429_error',(req,res) => {
+    res.send('Too Much request!');
+});
 router.get('/userprofile',[authMiddleware , authorizeRole('user')]);
 router.get('/user_prescription',[authMiddleware , authorizeRole('user')]);
 router.get('/user_payments',[authMiddleware , authorizeRole('user')]);
@@ -33,5 +34,6 @@ router.get('/refund/request',[authMiddleware , authorizeRole('user')]);
 router.post('/verifyuser', userController.verifyUser );
 router.post('/register',userController.register);
 router.post('/login',userController.login);
+
 
 module.exports = router;

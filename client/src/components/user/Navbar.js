@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import '../styles/Navbar.css'
-import banner from '../assets/images/banner-img.png'
+import '../../styles/Navbar.css'
+import banner from '../../assets/images/banner-img.png'
 import { MdAccountCircle } from "react-icons/md";
 
 function Navbar() {
@@ -39,8 +39,12 @@ function Navbar() {
         
         </ul>
         <div className='btn'>
-            <button className="btn1 btn-outline" >Sign In</button>
-            <button className="btn2 btn-outline">Log in</button>
+            <button className="btn1 btn-outline">
+                <Link to="/register" style={{ textDecoration: 'none', color: 'inherit' }}>Register</Link>
+            </button>
+            <button className="btn2 btn-outline">
+                <Link to="/login" style={{ textDecoration: 'none', color: 'inherit' }}>Log in</Link>
+            </button>
         </div>
         <div className='icon'><MdAccountCircle className='account-icon'/></div>
       

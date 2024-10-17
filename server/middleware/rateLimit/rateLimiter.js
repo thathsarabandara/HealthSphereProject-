@@ -19,45 +19,47 @@ const rateLimiters = {
 
 // Middleware function to apply rate limiting
 const rateLimiterMiddleware = async (req, res, next) => {
-    try {
-      console.log('Rate Limiting Middleware: Starting');
-      const token = req.headers['authorization'];
-  
-      let rateLimiter;
-  
-      if (token) {
-        const userId = await findUserID(token);
-        console.log('User ID:', userId);
-  
-        if (userId) {
-          rateLimiter = rateLimiters.validUser;
-          console.log('Using validUser rate limiter');
-        } else {
-          rateLimiter = rateLimiters.anonUser;
-          console.log('Using anonUser rate limiter');
-        }
+  try {
+    const token = req.headers['authorization'];
+    let rateLimiter;
+
+    // Check if the token is valid
+    if (token) {
+      const userId = await findUserID(token);
+
+      if (userId) {
+        // Valid user, apply the validUser rate limiter
+        rateLimiter = rateLimiters.validUser;
       } else {
+        // Invalid token, treat as anonymous
         rateLimiter = rateLimiters.anonUser;
-        console.log('No token provided, using anonUser rate limiter');
       }
-  
-      await rateLimiter.consume(req.ip);
-      console.log('Rate limit check passed for IP:', req.ip);
-      next();
-    } catch (err) {
-      if (err instanceof RateLimiterRedis.RateLimiterRes) {
-        console.error('Rate limit exceeded:', err);
-        return res.status(429).json({
-          message: 'Too many requests',
-          retryAfter: Math.ceil(err.msBeforeNext / 1000),
-        });
-      }
-      console.error('Error in rate limiter middleware:', err);
-      res.status(500).json({ message: 'Internal server error' });
+    } else {
+      // No token, treat as anonymous user
+      rateLimiter = rateLimiters.anonUser;
     }
-  };
-  
+
+    // Apply the appropriate rate limiter
+    await rateLimiter.consume(req.ip);
+    next(); // Proceed to the next middleware or route handler
+
+  } catch (err) {
+    // Instead of `instanceof RateLimiterRes`, check for `msBeforeNext`
+    if (err && err.msBeforeNext) {
+      
+      // return res.status(429).json({
+      //   message: 'Too many requests',
+      //   retryAfter: Math.ceil(err.msBeforeNext / 1000), // Retry time in seconds
+      // });
+      return res.status(429).redirect('/429_error')
+    }
+    // Handle other errors
+    console.error('Error in rate limiter middleware:', err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
 
 module.exports = {
   rateLimiterMiddleware,
 };
+

@@ -4,9 +4,9 @@ const { validateUserGroups } = require('../../models/auth/UserGroup');
 const authorizeRole = (role) => {
   return async (req, res, next) => {
     try {
-      const token = req.headers['token']; // Correct way to access the token from headers
+      const token = req.headers['usertoken']; // Correct way to access the token from headers
       if (!token) {
-        return res.status(401).json({ message: 'No token provided' });
+        return res.status(401).json({ message: 'Anonymous User' });
       }
 
       const userId = await findUserID(token);

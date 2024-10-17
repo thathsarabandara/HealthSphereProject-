@@ -5,10 +5,18 @@ const doctorRutes = require('./routes/doctors');
 const adminRoutes = require('./routes/admins');
 const bodyParser = require('body-parser');
 const sequelize = require('./config/db');
-const sync = require('./config/sync')
+const sync = require('./config/sync');
+const helmet = require('helmet');
+const cors = require('cors');
+const corsOptions = require('./middleware/cors/corsMiddleware')
 
-// port for the server
-const PORT = process.env.PORT || 3000;
+// portNumber for the server
+const PORT = process.env.PORT || 5000;
+
+// Used Helmet for secure our app
+app.use(helmet());
+// used Cors options for 
+app.use(cors(corsOptions));
 
 //  bodyparser use
 app.use(bodyParser.json());

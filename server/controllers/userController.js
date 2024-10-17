@@ -29,10 +29,10 @@ exports.register = async (req, res) => {
         userStorage.set(userdata.email, userdata);
 
         // Redirect to the OTP verification page
-        return res.redirect('/verifyuser');
+        return res.json({ message: 'Registration successful!' });
     } catch (error) {
         console.error('Error during registration process:', error);
-        return res.status(500).json({ error: 'Registration failed', details: error.message });
+        res.status(500).json({ error: 'Registration failed' });
     }
 };
 
@@ -54,14 +54,14 @@ exports.verifyUser = async (req, res) => {
             const newUser = await createUser(user); // Ensure createUser is awaited
             const newPatient = await createPatient(newUser.id); // Ensure createPatient is awaited
             await sendWelcomeMessage(newUser.username, newPatient.id, newUser.email); // Ensure this is awaited
-
-            return res.status(200).send('OTP verified successfully');
+            console.log('yes')
+            return res.status(200).json({message :'OTP verified successfully'});
         } else {
-            return res.status(400).send('Invalid or expired OTP');
+            return res.status(400).json({message :'Invalid or expired OTP'});
         }
     } catch (err) {
         console.error('Error during OTP verification:', err);
-        return res.status(500).json({ message: 'Verify process failed', error: err.message });
+        return res.status(500).json({ message: 'Verify process failed'});
     }
 };
 

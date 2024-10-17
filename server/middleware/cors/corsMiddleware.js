@@ -1,6 +1,7 @@
-const cors = require('cors')
+const corsOptions = {
+    origin: ['https://api.zoom.us','https://meet.google.com','http://localhost:3000'],
+    methods: ['GET', 'POST'],
+    credentials: true,
+}; 
 
-const corsWebOption = {
-    origin: 'https://healthsphere.com',
-    optionsSuccessStatus: 200
-}
+module.exports = corsOptions;
