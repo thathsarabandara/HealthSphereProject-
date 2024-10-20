@@ -21,6 +21,11 @@ const User = sequelize.define('User', {
         type: DataTypes.STRING(255),
         allowNull: false,
         unique: true,
+    },
+    isVerified:{
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
     }
 }, {
     tableName: 'users',
@@ -58,6 +63,27 @@ const deleteUser = async (email) => {
     }
 };
 
+const updateVerify = async (userId) => {
+    try {
+      const query = "UPDATE users SET verified = true WHERE id = ?"; // SQL query to update 'verified' field
+      const [results] = await sequelize.query(query, {
+        replacements: [userId],
+        type: sequelize.QueryTypes.UPDATE, // Use UPDATE type
+      });
+  
+      // Check if the user was updated
+      if (results === 0) {
+        console.log('User not found or already verified.');
+        return null;
+      }
+  
+      console.log('User verification updated successfully.');
+      return results; // Return the number of rows affected
+    } catch (err) {
+      console.error('Database error:', err);
+      throw err;
+    }
+  };
 
 async function findByEmail(email){
   try {
@@ -86,5 +112,6 @@ module.exports = {
     User,
     createUser,
     findByEmail,
-    deleteUser
+    deleteUser,
+    updateVerify
 };

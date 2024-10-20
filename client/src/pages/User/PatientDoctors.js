@@ -3,7 +3,7 @@ import Rectangle56 from '../../assets/images/Rectangle 56.svg'
 import Ellipse1 from '../../assets/images/Ellipse 1.svg'
 import '../../styles/Doctors.css'
 
-function Doctors() {
+function PatientDoctors() {
   return (
     <div>
       <section className='section '>
@@ -568,4 +568,4 @@ function Doctors() {
   )
 }
 
-export default Doctors
+export default PatientDoctors

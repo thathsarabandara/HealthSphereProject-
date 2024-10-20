@@ -7,7 +7,7 @@ import Image45 from '../../assets/images/Rectangle 45.svg'
 import Image44 from '../../assets/images/Rectangle 44.svg'
 import Image34 from '../../assets/images/Rectangle 34.svg'
 
-function Footer() {
+function PatientFooter() {
   return (
     <section className='section footer text-white'>
         <div className='container'>
@@ -69,4 +69,4 @@ function Footer() {
     </section>
   )
 }
-export default Footer
+export default PatientFooter

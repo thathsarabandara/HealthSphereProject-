@@ -4,6 +4,7 @@ require('../models/auth/Group');
 require('../models/auth/GroupPermission');
 require('../models/auth/Permission');
 require('../models/auth/Token');
+require('../models/auth/TempToken');
 require('../models/auth/User');
 require('../models/auth/UserGroup');
 

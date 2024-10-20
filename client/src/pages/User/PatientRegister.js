@@ -3,7 +3,7 @@ import '../../styles/temp.css';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-function Register() {
+function PatientRegister() {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -132,4 +132,4 @@ function Register() {
     );
 }
 
-export default Register;
+export default PatientRegister;

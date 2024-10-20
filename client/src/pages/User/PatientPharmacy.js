@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Rectangle60 from '../../assets/images/Rectangle 60.svg';
 import Rectangle81 from '../../assets/images/Rectangle 81.svg';
 
-function Pharmacy() {
+function PatientPharmacy() {
   const [selectedFile, setSelectedFile] = useState(null);
 
   const handleFileChange = (event) => {
@@ -147,5 +147,5 @@ function Pharmacy() {
   );
 }
 
-export default Pharmacy;
+export default PatientPharmacy;
 

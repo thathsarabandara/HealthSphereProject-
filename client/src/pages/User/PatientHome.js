@@ -20,7 +20,7 @@ import Img9 from '../../assets/images/img-1 (9).svg'
 
 
 
-function Home() {
+function PatientHome() {
   return (
     <div className="container-fluid p-0 position-relative">
       {/* Background Image */}
@@ -199,4 +199,4 @@ function Home() {
   )
 }
 
-export default Home;
+export default PatientHome;

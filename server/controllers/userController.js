@@ -6,6 +6,7 @@ const tokenutils = require('../utils/tokenUtils');
 const { sendOTP, verify } = require('../services/otpService');
 const { createPatient } = require('../models/healthcare/Patient');
 const { sendWelcomeMessage, sendUnusualLogin } = require('../services/emailServices');
+const { createTempToken, findTempToken } = require('../models/auth/TempToken');
 const userStorage = new Map();
 
 exports.register = async (req, res) => {
@@ -15,89 +16,126 @@ exports.register = async (req, res) => {
         password: req.body.password,
     };
 
-    // Ensure all required fields are provided
     if (!userdata.username || !userdata.email || !userdata.password) {
         return res.status(400).json({ error: 'Username, email, and password are required' });
     }
 
     try {
-        // Send OTP to the user's email
+        // 1. Check if the email already exists
+        const existingUser = await findByEmail(userdata.email);
+        if (existingUser) {
+            return res.status(400).json({ error: 'Email already exists' });
+        }
+
+        // 2. Send OTP to the user's email
         await sendOTP(userdata.email);
         console.log(`Sending OTP to ${userdata.email}`);
 
-        // Store user data in memory temporarily
-        userStorage.set(userdata.email, userdata);
+        // 3. Hash the user's password and create a new user temporarily
+        userdata.password = await hashPassword(userdata.password);
+        const newUser = await createUser(userdata); // createUser saves the user with verified=false
 
-        // Redirect to the OTP verification page
-        return res.json({ message: 'Registration successful!' });
+        // 4. Generate a temporary token for OTP verification
+        const tempToken = await tokenutils.generateToken({ id: newUser.id, email: userdata.email });
+
+        // 5. Save tempToken in TempToken table for the user
+        await createTempToken(newUser.id, tempToken);
+
+        // 6. Set cookie for token
+        res.cookie('verifytoken', tempToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            maxAge: 1000 * 600, // 10 minutes
+        });
+
+        return res.json({ message: 'Credentials saved successfully, please verify OTP!' });
     } catch (error) {
-        console.error('Error during registration process:', error);
+        console.error('Error during registration:', error);
         res.status(500).json({ error: 'Registration failed' });
     }
 };
 
 exports.verifyUser = async (req, res) => {
-    const otp = req.body.otp; // Ensure you're accessing the correct property for OTP
-    const email = req.body.email
-    if (!otp) {
-        return res.status(400).json({ error: 'OTP section must not be empty!' });
+    const otp = req.body.otp;
+    const token = req.cookies.verifytoken; // Get token from cookies
+
+    if (!otp || !token) {
+        return res.status(400).json({ error: 'OTP and token are required!' });
     }
 
     try {
-        const user = userStorage.get(email); // Retrieve the temporary user data
-        if (!user) {
-            return res.status(404).json({ error: 'User data not found' });
-        }
-        const isValid = await verify(user.email, otp);
-        if (isValid) {
+        // 1. Check if the tempToken is valid
+        const tempTokenData = await findTempToken(token);
 
-            const newUser = await createUser(user); // Ensure createUser is awaited
-            const newPatient = await createPatient(newUser.id); // Ensure createPatient is awaited
-            await sendWelcomeMessage(newUser.username, newPatient.id, newUser.email); // Ensure this is awaited
-            console.log('yes')
-            return res.status(200).json({message :'OTP verified successfully'});
-        } else {
-            return res.status(400).json({message :'Invalid or expired OTP'});
+        if (!tempTokenData) {
+            return res.status(400).json({ error: 'Invalid or expired token. Please register again.' });
         }
+
+        // 2. Verify the OTP using otpService
+        const isValidOTP = await verify(tempTokenData.email, otp);
+
+        if (!isValidOTP) {
+            return res.status(400).json({ message: 'Invalid or expired OTP' });
+        }
+
+        // 3. Mark the user as verified
+        const user = await User.findByPk(tempTokenData.user_id);
+        user.verified = true;
+        await user.save();
+
+        // 4. Create a patient record for the user
+        const newPatient = await createPatient(user.id);
+
+        // 5. Send a welcome email
+        await sendWelcomeMessage(user.username, newPatient.id, user.email);
+
+        return res.status(200).json({ message: 'OTP verified successfully, registration complete!' });
     } catch (err) {
         console.error('Error during OTP verification:', err);
-        return res.status(500).json({ message: 'Verify process failed'});
+        return res.status(500).json({ error: 'OTP verification failed' });
     }
 };
 
 exports.login = async (req, res) => {
-    const credentials = req.body;
+    const credentials = {
+        email: req.body.email,
+        password: req.body.password
+    };
 
     try {
-        // Step 1: Find user by email
+        // 1. Find user by email
         const user = await findByEmail(credentials.email);
-        if (!user) {
-            return res.status(404).json({ error: 'User not found' });
+
+        if (!user || !user.verified) {
+            return res.status(404).json({ error: 'User not found or not verified' });
         }
 
-        // Step 2: Verify password
+        // 2. Verify password
         const isValidPassword = await comparePassword(credentials.password, user.password_hash);
         if (!isValidPassword) {
-            return res.status(401).json({ error: 'Invalid Credentials' });
+            return res.status(401).json({ error: 'Invalid credentials' });
         }
 
-        // Step 3: Generate token
+        // 3. Generate JWT or token
         const token = await tokenutils.generateToken({ id: user.id, email: user.email });
 
-        // Step 4: Create token in the database
+        // 4. Save the token in the database (optional, can also be used with Redis)
         await createToken(user.id, token);
 
-        // Step 5: Set token in cookie
+        // 5. Set token in the cookie
         res.cookie('token', token, {
-            httpOnly: true, // Prevent access from client-side scripts
-            secure: process.env.NODE_ENV === 'production', // Secure true only in production (HTTPS)
-            maxAge: 1000 * 3600 * 2, // 2 hours
+            httpOnly: true, // Secure against XSS
+            secure: process.env.NODE_ENV === 'production', // Only set for HTTPS in production
+            maxAge: 1000 * 3600 * 2, // 2 hours expiration
         });
+
+        // 6. Send unusual login alert if needed
         await sendUnusualLogin(user.username, user.email);
-        // Step 6: Respond to client with success message
-        return res.status(200).json({ message: 'Login Successful', token });
+
+        return res.status(200).json({ message: 'Login successful', token });
     } catch (err) {
         console.error('Error during login:', err);
         return res.status(500).json({ error: 'Login failed', details: err.message });
     }
 };
+

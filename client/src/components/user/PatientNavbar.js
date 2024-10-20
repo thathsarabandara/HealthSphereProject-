@@ -4,7 +4,7 @@ import '../../styles/Navbar.css'
 import banner from '../../assets/images/banner-img.png'
 import { MdAccountCircle } from "react-icons/md";
 
-function Navbar() {
+function PatientNavbar() {
   return (
     <nav className="navbar navbar-expand-lg ">
     <div className="container">
@@ -54,4 +54,4 @@ function Navbar() {
   )
 }
 
-export default Navbar
+export default PatientNavbar
