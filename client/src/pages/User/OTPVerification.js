@@ -11,9 +11,8 @@ function OTPVerification() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try{
-            const response = await axios.post('http://localhost:5000/verifyuser', {
-                otp,
-            });
+            const response = await axios.post('http://localhost:5000/verifyuser', { otp }, { withCredentials: true }); // This is important for sending cookies
+
             setSuccess(response.data.message);
             setError('');
             setOtp('');

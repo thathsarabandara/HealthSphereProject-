@@ -1,11 +1,39 @@
-import React from 'react';
+import React, { useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import '../../styles/temp.css';
 
 function Login() {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
+    const navigate = useNavigate();
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await axios.post('http://localhost:5000/login', { email, password }, { withCredentials: true });
+
+            setSuccess(response.data.message);
+            setError('');
+            setEmail('');
+            setPassword('');
+
+            // Navigate to the desired route after successful login
+            navigate('/'); // Change this to your desired route
+        } catch (err) {
+            setError(err.response?.data?.error || 'Login failed. Please try again.');
+            setSuccess('');
+        }
+    };
+
     return (
         <div className="login-container">
             <h2 className="text-center">Login</h2>
-            <form>
+            {error && <p style={{ color: 'red' }}>{error}</p>}
+            {success && <p style={{ color: 'green' }}>{success}</p>}
+            <form onSubmit={handleSubmit}>
                 {/* Email Input Field */}
                 <div className="form-group">
                     <label htmlFor="email">Email address</label>
@@ -14,6 +42,8 @@ function Login() {
                         className="form-control"
                         id="email"
                         placeholder="Enter email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                         required
                     />
                 </div>
@@ -26,6 +56,8 @@ function Login() {
                         className="form-control"
                         id="password"
                         placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                         required
                     />
                 </div>

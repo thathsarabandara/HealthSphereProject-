@@ -63,9 +63,32 @@ const deleteUser = async (email) => {
     }
 };
 
+const findByUserId = async (userId) => {
+  try {
+    const query = "SELECT * FROM users WHERE id = ? LIMIT 1"; // SQL query to find a user by ID
+    const [results] = await sequelize.query(query, {
+      replacements: [userId],
+      type: sequelize.QueryTypes.SELECT, // Use SELECT type
+    });
+    console.log(results)
+    // Check if a user was found
+    if (!results || results.length === 0) {
+      console.log('User not found.');
+      return null; // No user found
+    }
+
+    console.log('User found successfully.');
+    return results; // Return the first user found (as an object)
+  } catch (err) {
+    console.error('Database error:', err);
+    throw err; // Rethrow the error for handling upstream
+  }
+};
+
+
 const updateVerify = async (userId) => {
     try {
-      const query = "UPDATE users SET verified = true WHERE id = ?"; // SQL query to update 'verified' field
+      const query = "UPDATE users SET isVerified = true WHERE id = ?"; // SQL query to update 'verified' field
       const [results] = await sequelize.query(query, {
         replacements: [userId],
         type: sequelize.QueryTypes.UPDATE, // Use UPDATE type
@@ -113,5 +136,6 @@ module.exports = {
     createUser,
     findByEmail,
     deleteUser,
-    updateVerify
+    updateVerify,
+    findByUserId
 };

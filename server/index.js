@@ -1,34 +1,38 @@
 const express = require('express');
 const app = express();
 const userRoutes = require('./routes/users');
-const doctorRutes = require('./routes/doctors');
+const doctorRoutes = require('./routes/doctors');
 const adminRoutes = require('./routes/admins');
 const bodyParser = require('body-parser');
-const sequelize = require('./config/db');
-const sync = require('./config/sync');
 const helmet = require('helmet');
 const cors = require('cors');
-const corsOptions = require('./middleware/cors/corsMiddleware')
+const cookieParser = require('cookie-parser');
 
 // portNumber for the server
 const PORT = process.env.PORT || 5000;
 
-// Used Helmet for secure our app
-app.use(helmet());
-// used Cors options for 
-app.use(cors(corsOptions));
+// Middleware Setup
+app.use(helmet()); // Security middleware
+app.use(cookieParser()); // Cookie parser middleware
 
-//  bodyparser use
+// CORS Configuration
+const corsOptions = {
+    origin: 'http://localhost:3000', // Your React frontend URL
+    credentials: true,                // Allow cookies in cross-origin requests
+};
+
+app.use(cors(corsOptions)); // Use CORS middleware
+
+// Body Parser Middleware
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 
-// routes for users
+// Routes
 app.use('/', userRoutes);
-app.use('/doctor', doctorRutes);
+app.use('/doctor', doctorRoutes);
 app.use('/admin', adminRoutes);
 
-// app.use(cors(corsOptions));
-// start server
-app.listen(PORT, ()=>{
-    console.log(`Server is running on port ${PORT}`)
-})
+// Start server
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});

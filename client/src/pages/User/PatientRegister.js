@@ -25,7 +25,8 @@ function PatientRegister() {
                 username,
                 email,
                 password,
-            });
+            },{ withCredentials : true});
+            
             setSuccess(response.data.message);
             setError('');
             setUsername('');

@@ -46,30 +46,26 @@ const createTempToken = async (user_id, token) =>{
     }
   }; 
 
-const findTempToken = async (token) => {
+  const findTempToken = async (token) => {
     try {
-      const query = "SELECT * FROM temp_tokens WHERE token = ?";
-      const [results] = await sequelize.query(query, {
-        replacements: [token],
-        type: sequelize.QueryTypes.SELECT,
-      });
-      
-      // Check if results is undefined or has no entries
-      if (!results || results.length === 0) {
-        return null; // No token found
-      }
-      
-      // Assuming results[0] exists, check the expiration
-      if (new Date(results.expires_at) < new Date(Date.now())) {
-        return null; // Token has expired
-      }
-  
-      return results[0]; // Return the valid token
+        const query = "SELECT user_id FROM temp_tokens WHERE token = ? LIMIT 1";
+        const [results] = await sequelize.query(query, {
+            replacements: [token],
+            type: sequelize.QueryTypes.SELECT,
+        });
+
+        // Check if results is undefined or null
+        if (!results) {
+            console.log('No token found for the provided token:', token);
+            return null; // No token found
+        }
+        return results.user_id; // Return the user_id directly
     } catch (err) {
-      console.error("Error finding token:", err);
-      return null; // Return null in case of error
+        console.error("Error finding token:", err);
+        return null; // Return null in case of error
     }
-  };
+};
+
 
 module.exports = {
     TempToken,

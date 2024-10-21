@@ -1,7 +1,7 @@
 const { findToken } = require('../../models/auth/Token');
 
 const authMiddleware = async (req, res, next) => {
-  const token = req.headers['token'];
+  const token = req.cookies['token'];
 
 
   // Check if token exists in the request
