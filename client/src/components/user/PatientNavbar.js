@@ -1,57 +1,122 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
-import '../../styles/Navbar.css'
-import banner from '../../assets/images/banner-img.png'
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import '../../styles/Navbar.css';
+import banner from '../../assets/images/banner-img.png';
 import { MdAccountCircle } from "react-icons/md";
+import emptyImage from '../../assets/images/emptyProfile.png';
+import axios from 'axios';
 
 function PatientNavbar() {
-  return (
-    <nav className="navbar navbar-expand-lg ">
-    <div className="container">
-    
-    
-    <img src={banner} className='logo'/>
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState(null);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-    <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span className="navbar-toggler-icon"></span>
-    </button>
+  // Fetch user authentication status and profile data from the backend
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/' , { withCredentials: true }); // Replace with your backend endpoint
+        if (response.status === 200) {
+          setIsAuthenticated(true);
+          setUser(response.data.data); 
+        } else {
+          setIsAuthenticated(false);
+          setUser(null);
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+        setIsAuthenticated(false);
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  const toggleDropdown = () => {
+    setShowDropdown(!showDropdown);
+  };
+
+  if (loading) {
+    return <div>Loading...</div>; // Loading state while data is being fetched
+  }
+
+  return (
+    <nav className="navbar navbar-expand-lg">
+      <div className="container">
+        <img src={banner} className='logo' alt="Logo" />
+
+        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span className="navbar-toggler-icon"></span>
+        </button>
 
         <div className="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
+          <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
             <li className="nav-item">
-                <Link to="/" className='nav-link active'>Home</Link>
-            </li>
-            <li className="nav-item">
-                <Link to="/doctors" className='nav-link active'>Doctors</Link>
+              <Link to="/" className='nav-link active'>Home</Link>
             </li>
             <li className="nav-item">
-                <Link to="/packages" className='nav-link active'>Packages</Link>
+              <Link to="/doctors" className='nav-link active'>Doctors</Link>
+            </li>
+            <li className="nav-item">
+              <Link to="/packages" className='nav-link active'>Packages</Link>
             </li>
             <li className='nav-item'>
-                <Link to="/pharmacy" className='nav-link active'>Pharmacy</Link>
+              <Link to="/pharmacy" className='nav-link active'>Pharmacy</Link>
             </li>
             <li className='nav-item'>
-                <Link to="/laboratory" className='nav-link active'>Laboratory</Link>
+              <Link to="/laboratory" className='nav-link active'>Laboratory</Link>
             </li>
             <li className='nav-item'>
-                <Link to="/about" className='nav-link active'>About Us</Link>
+              <Link to="/about" className='nav-link active'>About Us</Link>
             </li>
-        
-        </ul>
-        <div className='btn'>
-            <button className="btn1 btn-outline">
-                <Link to="/register" style={{ textDecoration: 'none', color: 'inherit' }}>Register</Link>
-            </button>
-            <button className="btn2 btn-outline">
-                <Link to="/login" style={{ textDecoration: 'none', color: 'inherit' }}>Log in</Link>
-            </button>
+          </ul>
+
+          <div className='header'>
+            {isAuthenticated ? (
+                <div className='user-section'>
+                  <div className='profile-name d-flex flex-column'>
+                    <h4 className='hello'>Welcome,</h4>
+                    <h5 className='name'>{user.name}</h5>
+                  </div>
+                  <div className='profile-container'>
+                      <img
+                        src={user.profilePicture || emptyImage}
+                        alt='Profile'
+                        className='profile-photo'
+                        onClick={toggleDropdown}
+                      />
+                      {showDropdown && (
+                        <div className='profile-dropdown'>
+                          <Link to='/userprofile' className='dropdown-item'>Profile</Link>
+                          <Link to='/user_prescription' className='dropdown-item'>User Prescriptions</Link>
+                          <Link to='/user_payments' className='dropdown-item'>User Payments</Link>
+                          <Link to='/logout' className='dropdown-item'>Logout</Link>
+                        </div>
+                      )}
+                  </div>
+                </div>
+            ) : (
+                <div className='btn-container'>
+                  <button className='btn1 btn-outline'>
+                    <Link to='/register' style={{ textDecoration: 'none', color: 'inherit' }}>Register</Link>
+                  </button>
+                  <button className='btn2 btn-outline'>
+                    <Link to='/login' style={{ textDecoration: 'none', color: 'inherit' }}>Log in</Link>
+                  </button>
+                  <div className='icon'>
+                    <MdAccountCircle className='account-icon' />
+                  </div>
+                </div>
+            )}
+          </div>
         </div>
-        <div className='icon'><MdAccountCircle className='account-icon'/></div>
-      
-        </div>
-    </div>
+      </div>
     </nav>
-  )
+  );
 }
 
-export default PatientNavbar
+export default PatientNavbar;

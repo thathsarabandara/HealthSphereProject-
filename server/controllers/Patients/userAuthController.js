@@ -1,12 +1,12 @@
-const User = require('../models/auth/User');
-const { createUser, findByEmail , findByUserId } = require('../models/auth/User'); // Import the createUser function
-const { comparePassword } = require('../utils/hashpassword');
-const { createToken } = require('../models/auth/Token');
-const tokenutils = require('../utils/tokenUtils');
-const { sendOTP, verify } = require('../services/otpService');
-const { createPatient } = require('../models/healthcare/Patient');
-const { sendWelcomeMessage, sendUnusualLogin } = require('../services/emailServices');
-const { createTempToken, findTempToken } = require('../models/auth/TempToken');
+const User = require('../../models/auth/User');
+const { createUser, findByEmail , findByUserId } = require('../../models/auth/User'); // Import the createUser function
+const { comparePassword } = require('../../utils/hashpassword');
+const { createToken } = require('../../models/auth/Token');
+const tokenutils = require('../../utils/tokenUtils');
+const { sendOTP, verify } = require('../../services/otpService');
+const { createPatient } = require('../../models/healthcare/Patient');
+const { sendWelcomeMessage, sendUnusualLogin } = require('../../services/emailServices');
+const { createTempToken, findTempToken } = require('../../models/auth/TempToken');
 
 exports.register = async (req, res) => {
     const userdata = {

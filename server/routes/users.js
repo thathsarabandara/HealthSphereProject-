@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const userController =  require('../controllers/userController');
+const userAuthController =  require('../controllers/Patients/userAuthController');
+const userController =  require('../controllers/Patients/userController');
 const authMiddleware = require('../middleware/auth/authenticateJWT');
 const {authorizeRole} = require('../middleware/auth/authorizeRole');
 const {rateLimiterMiddleware} = require('../middleware/rateLimit/rateLimiter')
@@ -9,8 +10,8 @@ const {rateLimiterMiddleware} = require('../middleware/rateLimit/rateLimiter')
 //     res.send('User List');
 // });
 
-router.get('/', rateLimiterMiddleware,);
-router.get('/home', rateLimiterMiddleware );
+router.get('/', rateLimiterMiddleware, userController.authHome);
+router.get('/home', rateLimiterMiddleware ,userController.authHome );
 router.get('/finddoctor', rateLimiterMiddleware);
 router.get('/finddoctor/:specialization', rateLimiterMiddleware);
 router.get('/finddoctor/:specialization/reservation',[authMiddleware , authorizeRole('user')]);
@@ -31,9 +32,9 @@ router.get('/cart',[authMiddleware , authorizeRole('user')]);
 router.get('/checkout',[authMiddleware , authorizeRole('user')]);
 router.get('/refund',[authMiddleware , authorizeRole('user')]);
 router.get('/refund/request',[authMiddleware , authorizeRole('user')]);
-router.post('/verifyuser', userController.verifyUser );
-router.post('/register',userController.register);
-router.post('/login',userController.login);
+router.post('/verifyuser', userAuthController.verifyUser );
+router.post('/register',userAuthController.register);
+router.post('/login',userAuthController.login);
 
 
 module.exports = router;

@@ -14,6 +14,7 @@ import PatientLogin from './pages/User/PatientLogin';
 import PatientRegister from './pages/User/PatientRegister';
 import OTPVerification from './pages/User/OTPVerification';
 import DoctorLogin from './pages/doctor/DoctorLogin';
+import PatientProfile from './pages/User/PatientProfile';
 
 
 const getNavbarAndFooter = (path) => {
@@ -48,6 +49,7 @@ function App() {
         <Route path="/login" element={<PatientLogin />} />
         <Route path="/register" element={<PatientRegister />} />
         <Route path="/verifyuser" element={<OTPVerification />} />
+        <Route path="/userprofile" element={<PatientProfile />} />
         <Route path="/doctor/login" element={<DoctorLogin />} />
         {/* Add more routes as necessary */}
       </Routes>

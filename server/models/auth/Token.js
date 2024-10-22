@@ -52,28 +52,24 @@ const createToken = async (user_id, token) =>{
 
 const findToken = async (token) => {
   try {
-    const query = "SELECT * FROM tokens WHERE token = ?";
-    const [results] = await sequelize.query(query, {
-      replacements: [token],
-      type: sequelize.QueryTypes.SELECT,
-    });
-    
-    // Check if results is undefined or has no entries
-    if (!results || results.length === 0) {
+    const tokenData = await Token.findOne({ where: { token } });
+
+    if (!tokenData) {
       return null; // No token found
     }
-    
-    // Assuming results[0] exists, check the expiration
-    if (new Date(results.expires_at) < new Date(Date.now())) {
+
+    // Check token expiration
+    if (new Date(tokenData.expires_at) < new Date()) {
       return null; // Token has expired
     }
 
-    return results[0]; // Return the valid token
+    return tokenData; // Return the valid token object
   } catch (err) {
     console.error("Error finding token:", err);
     return null; // Return null in case of error
   }
 };
+
 
 const findUserID = async (token) => {
   try {
@@ -94,6 +90,7 @@ const findUserID = async (token) => {
     return null; // Return null in case of error
   }
 };
+
 
 
 
