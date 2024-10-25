@@ -6,7 +6,7 @@ const tokenutils = require('../../utils/tokenUtils');
 const { sendOTP, verify } = require('../../services/otpService');
 const { createPatient } = require('../../models/healthcare/Patient');
 const { sendWelcomeMessage, sendUnusualLogin } = require('../../services/emailServices');
-const { createTempToken, findTempToken } = require('../../models/auth/TempToken');
+const { createTempToken, findTempToken ,updateExpiredat} = require('../../models/auth/Token');
 
 exports.register = async (req, res) => {
     const userdata = {
@@ -135,12 +135,30 @@ exports.login = async (req, res) => {
         // 6. Send unusual login alert if needed
         await sendUnusualLogin(user.username, user.email);
 
-        return res.status(200).json({ message: 'Login successful', token });
+        return res.status(200).json({ message: 'Login successful' });
     } catch (err) {
         console.error('Error during login:', err);
         return res.status(500).json({ error: 'Login failed', details: err.message });
     }
 };
-exports.home = async (req,res) =>{
 
-}
+exports.logout = async (req, res) => {
+    const token = req.cookies['token'];
+
+    if (!token) {
+        return res.status(400).json({ message: 'No token found.' });
+    }
+
+    try {
+        // Optional: Update the token's status in the database if applicable
+        await updateExpiredat(new Date(), token); // Set expiration date to now or mark it as invalid
+        
+        // Clear the token cookie from the response
+        res.clearCookie('token'); // Ensure this matches your cookie settings
+
+        return res.status(200).json({ message: 'Logged out successfully.' });
+    } catch (err) {
+        console.error('Error during logout:', err);
+        return res.status(500).json({ message: 'Internal server error.' });
+    }
+};

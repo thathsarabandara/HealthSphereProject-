@@ -26,7 +26,6 @@ const { TwoFactorAuth } = require('./security/TwoFactorAuth');
 const { Session } = require('./security/Session');
 const { SecurityQuestion } = require('./security/SecurityQuestion');
 const { RateLimiting } = require('./security/RateLimiting');
-const { TempToken } = require('./auth/TempToken');
 
 // Define auth relationships
 User.belongsToMany(Group, { through: UserGroup, foreignKey: 'user_id' });
@@ -36,7 +35,6 @@ Group.belongsToMany(Permission, { through: GroupPermission, foreignKey: 'group_i
 Permission.belongsToMany(Group, { through: GroupPermission, foreignKey: 'permission_id' });
 
 User.hasMany(Token, { foreignKey: 'user_id' });
-User.hasMany(TempToken, { foreignKey: 'user_id' });
 
 // Define healthcare relationships
 Patient.belongsTo(User, { foreignKey: 'User_id' });

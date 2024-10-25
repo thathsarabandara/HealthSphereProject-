@@ -1,37 +1,39 @@
-const { findToken } = require("../../models/auth/Token");
-const { findByUserId } = require("../../models/auth/User");
+const { findUserID } = require("../../models/auth/Token");
+const { findUserById } = require("../../models/auth/User");
 
 exports.authHome = async (req, res) => {
-    const token = req.cookies['token'];
+    try {
+        const token = req.cookies['token'];
 
-    console.log(token);
-
-    if (!token) {
-        return res.status(400).json({ message: 'User token not found' });
-    }
-
-    const isValidToken = await findToken(token);
-
-    if (!isValidToken) {
-        return res.status(400).json({ message: 'Token expired or not a valid token' });
-    }
-
-    const user = await findByUserId(isValidToken.user_id);
-
-    if (!user) {
-        return res.status(400).json({ message: 'User not found' });
-    } else if (!user.isVerified) {
-        return res.status(400).json({ message: 'User is not verified!' });
-    }
-
-    // Assuming you want to return user info if token and user are valid
-    return res.status(200).json({
-        message: 'User authenticated successfully',
-        data: {
-            id: user.id,
-            name: user.username,
-            email: user.email,
-            profilePicture: user.profilePicture, // If you store this
+        if (!token) {
+            return res.status(400).json({ message: 'User token not found' });
         }
-    });
+
+        const isValidToken = await findUserID(token);
+
+        if (!isValidToken) {
+            return res.status(400).json({ message: 'Token expired or not a valid token' });
+        }
+
+        const user = await findUserById(isValidToken.user_id);
+
+        if (!user) {
+            return res.status(400).json({ message: 'User not found' });
+        }
+
+        if (!user.isVerified) {
+            return res.status(400).json({ message: 'User is not verified!' });
+        }
+
+        // Return user information if authentication and verification are successful
+        return res.status(200).json({
+            message: 'User authenticated successfully',
+            data: {
+                name: user.username,
+            }
+        });
+    } catch (error) {
+        return res.status(500).json({ message: 'An internal error occurred' });
+    }
 };
+

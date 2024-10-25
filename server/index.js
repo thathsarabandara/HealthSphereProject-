@@ -7,6 +7,7 @@ const bodyParser = require('body-parser');
 const helmet = require('helmet');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
+const sync = require('./config/sync');
 
 // portNumber for the server
 const PORT = process.env.PORT || 5000;

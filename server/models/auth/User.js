@@ -2,6 +2,7 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/db');
 const { hashPassword } = require('../../utils/hashpassword');
 
+// Define the User model
 const User = sequelize.define('User', {
     id: {
         type: DataTypes.INTEGER,
@@ -22,7 +23,7 @@ const User = sequelize.define('User', {
         allowNull: false,
         unique: true,
     },
-    isVerified:{
+    isVerified: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false,
@@ -32,24 +33,27 @@ const User = sequelize.define('User', {
     timestamps: true,
 });
 
-// Create the user function
+// Create user function
 const createUser = async (userData) => {
     try {
         const hashedPassword = await hashPassword(userData.password);
         const newUser = await User.create({
             username: userData.username,
             email: userData.email,
-            password_hash: hashedPassword, // Ensure this matches your model
+            password_hash: hashedPassword,
         });
-        return newUser; // Return the created user
+        return newUser;
     } catch (err) {
-        throw err; // Rethrow the error for handling in the register function
+        console.error('Error creating user:', err);
+        throw err;
     }
 };
+
+// Delete user function
 const deleteUser = async (email) => {
     try {
         const deletedUser = await User.destroy({
-            where: { email: email }  // Delete where the email matches
+            where: { email },
         });
 
         if (deletedUser) {
@@ -59,76 +63,64 @@ const deleteUser = async (email) => {
         }
     } catch (err) {
         console.error('Error deleting user:', err);
-        throw err;  // Re-throw the error to handle it upstream if needed
+        throw err;
     }
 };
 
-const findByUserId = async (userId) => {
+// Find user by ID function
+const findUserById = async (userId) => {
   try {
-    const query = "SELECT * FROM users WHERE id = ? LIMIT 1"; // SQL query to find a user by ID
-    const [results] = await sequelize.query(query, {
-      replacements: [userId],
-      type: sequelize.QueryTypes.SELECT, // Use SELECT type
-    });
-    console.log(results)
-    // Check if a user was found
-    if (!results || results.length === 0) {
+    const user = await User.findOne({ where: { id: userId } });
+    if (!user) {
       console.log('User not found.');
-      return null; // No user found
+      return null;
     }
-
-    console.log('User found successfully.');
-    return results; // Return the first user found (as an object)
-  } catch (err) {
-    console.error('Database error:', err);
-    throw err; // Rethrow the error for handling upstream
+    return user;
+  } catch (error) {
+    console.error('Error finding user:', error);
+    throw error;
   }
 };
 
-
+// Update user verification status function
 const updateVerify = async (userId) => {
     try {
-      const query = "UPDATE users SET isVerified = true WHERE id = ?"; // SQL query to update 'verified' field
-      const [results] = await sequelize.query(query, {
-        replacements: [userId],
-        type: sequelize.QueryTypes.UPDATE, // Use UPDATE type
-      });
-  
-      // Check if the user was updated
-      if (results === 0) {
-        console.log('User not found or already verified.');
-        return null;
-      }
-  
-      console.log('User verification updated successfully.');
-      return results; // Return the number of rows affected
+        const [rowsUpdated] = await User.update(
+            { isVerified: true },
+            { where: { id: userId } }
+        );
+
+        if (rowsUpdated === 0) {
+            console.log('User not found or already verified.');
+            return null;
+        }
+
+        console.log('User verification updated successfully.');
+        return rowsUpdated;
     } catch (err) {
-      console.error('Database error:', err);
-      throw err;
+        console.error('Error updating user verification:', err);
+        throw err;
     }
-  };
+};
 
-async function findByEmail(email){
-  try {
-    const query = "SELECT * FROM users WHERE email = ?";
-    const [results] = await sequelize.query(query, {
-      replacements: [email], 
-      type: sequelize.QueryTypes.SELECT, 
-    });
+// Find user by email function
+const findByEmail = async (email) => {
+    try {
+        const user = await User.findOne({
+            where: { email },
+        });
 
-    console.log('Results:', results.id); 
+        if (!user) {
+            console.log('User not found with email');
+            return null;
+        }
 
-    // Check if user is found
-    if (results.length === 0) {
-      return null; 
+        console.log('User found');
+        return user;
+    } catch (err) {
+        console.error('Error finding user by email:', err);
+        throw err;
     }
-
-   // Get the first result (user object)
-    return results; 
-  } catch (err) {
-    console.error('Database error:', err); 
-    throw err; 
-  }
 };
 
 module.exports = {
@@ -137,5 +129,5 @@ module.exports = {
     findByEmail,
     deleteUser,
     updateVerify,
-    findByUserId
+    findUserById,
 };

@@ -13,33 +13,57 @@ function PatientNavbar() {
   const [loading, setLoading] = useState(true);
 
   // Fetch user authentication status and profile data from the backend
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const response = await axios.get('http://localhost:5000/' , { withCredentials: true }); // Replace with your backend endpoint
-        if (response.status === 200) {
-          setIsAuthenticated(true);
-          setUser(response.data.data); 
-        } else {
-          setIsAuthenticated(false);
-          setUser(null);
-        }
-      } catch (error) {
-        console.error('Error fetching user data:', error);
+  const fetchUserData = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/', { withCredentials: true });
+      if (response.status === 200) {
+        setIsAuthenticated(true);
+        setUser(response.data.data);
+      } else {
         setIsAuthenticated(false);
         setUser(null);
-      } finally {
-        setLoading(false);
       }
-    };
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      setIsAuthenticated(false);
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchUserData();
+  useEffect(() => {
+    fetchUserData(); // Fetch user data on mount
   }, []);
+
+  // Add a useEffect to watch for isAuthenticated changes
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchUserData(); // Refetch user data if authenticated
+    }
+  }, [isAuthenticated]);
 
   const toggleDropdown = () => {
     setShowDropdown(!showDropdown);
   };
 
+  const handleLogout = async () => {
+      try {
+          const response = await axios.post('http://localhost:5000/logout', null, { withCredentials: true });
+          
+          if (response.status === 200) {
+              console.log('Logout successful:', response.data.message);
+              setIsAuthenticated(false);
+              setUser(null);
+              // Redirect to the homepage or login page
+              window.location.href = '/login'; // Adjust as necessary
+          }
+      } catch (error) {
+          console.error('Logout error:', error.response ? error.response.data : error.message);
+          // Handle error (e.g., show a notification)
+      }
+  };
+  
   if (loading) {
     return <div>Loading...</div>; // Loading state while data is being fetched
   }
@@ -59,7 +83,7 @@ function PatientNavbar() {
               <Link to="/" className='nav-link active'>Home</Link>
             </li>
             <li className="nav-item">
-              <Link to="/doctors" className='nav-link active'>Doctors</Link>
+              <Link to="/fdoctors" className='nav-link active'>Doctors</Link>
             </li>
             <li className="nav-item">
               <Link to="/packages" className='nav-link active'>Packages</Link>
@@ -79,8 +103,8 @@ function PatientNavbar() {
             {isAuthenticated ? (
                 <div className='user-section'>
                   <div className='profile-name d-flex flex-column'>
-                    <h4 className='hello'>Welcome,</h4>
-                    <h5 className='name'>{user.name}</h5>
+                    <h4 className='hello'>Welcome to the Healthsphere,</h4>
+                    <h5 className='name'>Dear, {user.name}</h5>
                   </div>
                   <div className='profile-container'>
                       <img
@@ -94,7 +118,7 @@ function PatientNavbar() {
                           <Link to='/userprofile' className='dropdown-item'>Profile</Link>
                           <Link to='/user_prescription' className='dropdown-item'>User Prescriptions</Link>
                           <Link to='/user_payments' className='dropdown-item'>User Payments</Link>
-                          <Link to='/logout' className='dropdown-item'>Logout</Link>
+                          <Link to="#" className='dropdown-item' onClick={handleLogout}>Logout</Link>
                         </div>
                       )}
                   </div>

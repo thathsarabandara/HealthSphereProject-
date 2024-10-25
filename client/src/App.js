@@ -42,7 +42,7 @@ function App() {
       <NavbarComponent />
       <Routes>
         <Route path="/" element={<PatientHome />} />
-        <Route path="/doctors" element={<PatientDoctors />} />
+        <Route path="/fdoctors" element={<PatientDoctors />} />
         <Route path="/packages" element={<PatientPackages />} />
         <Route path="/laboratory" element={<PatientLaboratory />} />
         <Route path="/pharmacy" element={<PatientPharmacy />} />
