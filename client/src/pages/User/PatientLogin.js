@@ -82,7 +82,7 @@ function Login() {
             {/* Footer Links */}
             <div className="footer-link">
                 <p>
-                    <a href="/resetpassword">Forgot password?</a>
+                    <a href="/resetpasswordRequest">Forgot password?</a>
                 </p>
                 <p>
                     <a href="/register">Don't have an account? Register here</a>

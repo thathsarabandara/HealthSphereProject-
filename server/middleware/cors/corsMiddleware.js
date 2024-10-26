@@ -3,5 +3,12 @@ const corsOptions = {
     methods: ['GET', 'POST'],
     credentials: true,
 }; 
-
-module.exports = corsOptions;
+const ipapiCorsOptions = {
+    origin: ['https://ipapi.co'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    methods: ['GET'],
+}
+module.exports = {
+    corsOptions,
+    ipapiCorsOptions
+};

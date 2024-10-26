@@ -5,9 +5,11 @@ const { createToken } = require('../../models/auth/Token');
 const tokenutils = require('../../utils/tokenUtils');
 const { sendOTP, verify } = require('../../services/otpService');
 const { createPatient } = require('../../models/healthcare/Patient');
-const { sendWelcomeMessage, sendUnusualLogin, sendPasswordChange } = require('../../services/emailServices');
+const { sendWelcomeMessage, sendUnusualLogin, sendPasswordResetEmails } = require('../../services/emailServices');
 const { createTempToken, findTempToken ,updateExpiredat} = require('../../models/auth/Token');
-const { createUserPassword, findPassword } = require('../../models/auth/UserPassword');
+const { createUserPassword, findPassword, passwordDeactivate } = require('../../models/auth/UserPassword');
+const {createPasswordResetRequest} = require('../../models/security/PasswordResetRequest');
+const { getLocationFromIP } = require('../../services/locationHelper');
 
 exports.register = async (req, res) => {
     const {username, email, password} = req.body;
@@ -185,41 +187,144 @@ exports.logout = async (req, res) => {
         return res.status(500).json({ message: 'Internal server error.' });
     }
 };
-const getLocationFromIp = async (ip) => {
-    try{
-        const response = await axios.get('https://ipapi.co/{ip}/json/');
-        return response.data;
-    }catch(error){
-        console.error('Error fetching location:', error);
-        return null;
+
+exports.resetPasswordRequest = async (req, res) => {
+    const email = req.body.email;
+
+    // Check if email is provided
+    if (!email) {
+        return res.status(400).json({ message: 'No email provided.' });
     }
-}
 
-exports.resetPassword = async (req,res) =>{
-    const email =  req.body.email;
-    if(!email){
-        return res.status(400).json({ message: 'No email found.' });
+    try {
+        // Find user by email
+        const user = await findByEmail(email);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+
+        // Check if user is verified
+        if (!user.isVerified) {
+            return res.status(400).json({ message: 'User is not verified.' });
+        }
+
+        // Generate a token for password reset
+        const token = await tokenutils.generateToken();
+        const ipAddress = req.ip;
+        const userAgent = req.headers['user-agent'];
+        
+        // Initialize location as 'Unknown location' by default
+        let location = 'Unknown location';
+
+        // Attempt to get location if IP is not localhost
+        if (ipAddress !== '::1' && ipAddress !== '127.0.0.1') {
+            try {
+                // Uncomment below line when getLocationFromIP is defined
+                // const locationData = await getLocationFromIP(ipAddress);
+                if (locationData) {
+                    location = `${locationData.city}, ${locationData.region}, ${locationData.country}`;
+                }
+            } catch (locationError) {
+                console.error('Error retrieving location data:', locationError);
+            }
+        }
+
+        // Create password reset request
+        await createPasswordResetRequest(user.id, token, ipAddress, userAgent, location);
+
+        // Send password reset email
+        await sendPasswordResetEmails(user.id, email, token);
+
+        // Set cookie with token for reset confirmation
+        res.cookie('resettoken', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production', // Use secure only in production
+            maxAge: 1000 * 60 * 10,  // Expiration: 10 minutes
+            sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+        });
+
+        // Respond with success message
+        res.status(200).json({ message: 'Password reset link has been sent to your email.' });
+
+    } catch (error) {
+        // Handle any unexpected errors
+        console.error('Error during password reset:', error);
+        res.status(500).json({ message: 'Internal server error.' });
     }
-    const user = await findByEmail(email);
+};
 
-    if(user.isVerified === true){
-        return res.status(400).json({ message: 'you are not a valid user.' });
+exports.validateToken = async (req,res) =>{
+    const { token } = req.query;
+
+    if (!token) {
+        return res.status(400).json({ message: 'Token not provided.' });
     }
-    const token = await generateToken();
-    const ipAddress = req.ip;
-    const userAgent = req.headers['user-agent'];
+    try {
+        // Verify the token signature and expiration
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        
+        // Find the token in the database (based on token value or user ID)
+        const resetRequest = await findPasswordResetRequestByToken(token);
 
-    const locationData = await getLocationFromIP(ipAddress);
-    const location = locationData ? `${locationData.city}, ${locationData.region}, ${locationData.country}` : 'Unknown location';
+        if (!resetRequest) {
+            return res.status(404).json({ message: 'Invalid or expired token.' });
+        }
 
-    await createPasswordResetRequest(user.id, token, ipAddress, userAgent, location);
+        // Optional: Check expiration date (if stored in the reset request)
+        const isExpired = new Date() > new Date(resetRequest.expiresAt);
+        if (isExpired) {
+            return res.status(400).json({ message: 'Token has expired.' });
+        }
 
-    res.cookie('token', token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', // Only use secure in production
-        maxAge: 1000 * 3600,  // Token expiration: 10 minutes
-        sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax', // Set to 'Lax' for development
-    });
+        // Return a success message if the token is valid
+        res.status(200).json({ message: 'Token is valid.', userId: resetRequest.userId });
+    } catch (error) {
+        console.error('Token validation error:', error);
+        res.status(400).json({ message: 'Invalid or expired token.' });
+    }
+};
 
-    await sendPasswordResetEmails(user.id, email, token);
-}
+exports.resetPassword = async (req, res) => {
+    try {
+        // Extract password and reset token from request
+        const { password } = req.body;
+        const resettoken = req.cookies['resettoken'];
+
+        // Check if reset token exists
+        if (!resettoken) {
+            return res.status(400).json({ message: 'No reset token provided.' });
+        }
+
+        // Find the reset request by token
+        const resetRequest = await findPasswordResetRequestByToken(resettoken);
+        if (!resetRequest) {
+            return res.status(400).json({ message: 'Invalid or expired token.' });
+        }
+
+        // Deactivate the old password for the user
+        const rowAffected = await passwordDeactivate(resetRequest.user_id);
+        if (rowAffected === 0) {
+            return res.status(500).json({ message: 'Failed to deactivate the old password.' });
+        }
+
+        // Create and hash the new password
+        const newPassword = await createUserPassword(resetRequest.user_id, password);
+        if (!newPassword) {
+            return res.status(500).json({ message: 'Failed to create new password.' });
+        }
+
+        // Clean up: delete the reset request after successful reset
+        await deletePasswordResetRequest(resettoken);
+
+        // Clear the reset token cookie
+        res.clearCookie('resettoken');
+
+        // Send success response
+        res.status(200).json({ message: 'Password reset successfully.' });
+    } catch (error) {
+        console.error('Error resetting password:', error);
+        res.status(500).json({ message: 'Internal server error.' });
+    }
+};
+
+

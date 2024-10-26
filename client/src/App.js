@@ -16,6 +16,7 @@ import OTPVerification from './pages/User/OTPVerification';
 import DoctorLogin from './pages/doctor/DoctorLogin';
 import PatientProfile from './pages/User/PatientProfile';
 import ResetPassword from './pages/User/ResetPassword';
+import PatientPasswordReset from './pages/User/PatientPasswordReset';
 
 
 const getNavbarAndFooter = (path) => {
@@ -49,8 +50,9 @@ function App() {
         <Route path="/pharmacy" element={<PatientPharmacy />} />
         <Route path="/login" element={<PatientLogin />} />
         <Route path="/register" element={<PatientRegister />} />
+        <Route path="/resetpassword" element={<PatientPasswordReset />} />
         <Route path="/verifyuser" element={<OTPVerification />} />
-        <Route path="/resetpassword" element={<ResetPassword />} />
+        <Route path="/resetpasswordRequest" element={<ResetPassword />} />
         <Route path="/userprofile" element={<PatientProfile />} />
         <Route path="/doctor/login" element={<DoctorLogin />} />
         {/* Add more routes as necessary */}

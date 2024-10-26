@@ -640,7 +640,7 @@ exports.sendPasswordResetEmails = async (username, email, token) => {
         <div style="padding: 20px; text-align: center;">
             <p style="font-size: 16px; color: #333;">Hello ${username},</p>
             <p style="font-size: 16px; color: #333;">We received a request to reset your password. Please click the button below to reset your password:</p>
-            <a href="https://yourwebsite.com/reset-password?token=${token}" style="display: inline-block; padding: 10px 20px; font-size: 16px; font-weight: bold; color: white; background-color: #FF9800; border-radius: 5px; text-decoration: none; margin-top: 10px;">Reset Password</a>
+            <a href="http://localhost:3000/resetpassword?token=${token}" style="display: inline-block; padding: 10px 20px; font-size: 16px; font-weight: bold; color: white; background-color: #FF9800; border-radius: 5px; text-decoration: none; margin-top: 10px;">Reset Password</a>
             <p style="font-size: 16px; color: #333;">This link will expire in 1 hour.</p>
             <p style="font-size: 16px; color: #333;">If you did not request a password reset, please ignore this email.</p>
         </div>
