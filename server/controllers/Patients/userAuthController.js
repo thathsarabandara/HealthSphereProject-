@@ -5,7 +5,7 @@ const { createToken } = require('../../models/auth/Token');
 const tokenutils = require('../../utils/tokenUtils');
 const { sendOTP, verify } = require('../../services/otpService');
 const { createPatient } = require('../../models/healthcare/Patient');
-const { sendWelcomeMessage, sendUnusualLogin } = require('../../services/emailServices');
+const { sendWelcomeMessage, sendUnusualLogin, sendPasswordChange } = require('../../services/emailServices');
 const { createTempToken, findTempToken ,updateExpiredat} = require('../../models/auth/Token');
 const { createUserPassword, findPassword } = require('../../models/auth/UserPassword');
 
@@ -185,3 +185,41 @@ exports.logout = async (req, res) => {
         return res.status(500).json({ message: 'Internal server error.' });
     }
 };
+const getLocationFromIp = async (ip) => {
+    try{
+        const response = await axios.get('https://ipapi.co/{ip}/json/');
+        return response.data;
+    }catch(error){
+        console.error('Error fetching location:', error);
+        return null;
+    }
+}
+
+exports.resetPassword = async (req,res) =>{
+    const email =  req.body.email;
+    if(!email){
+        return res.status(400).json({ message: 'No email found.' });
+    }
+    const user = await findByEmail(email);
+
+    if(user.isVerified === true){
+        return res.status(400).json({ message: 'you are not a valid user.' });
+    }
+    const token = await generateToken();
+    const ipAddress = req.ip;
+    const userAgent = req.headers['user-agent'];
+
+    const locationData = await getLocationFromIP(ipAddress);
+    const location = locationData ? `${locationData.city}, ${locationData.region}, ${locationData.country}` : 'Unknown location';
+
+    await createPasswordResetRequest(user.id, token, ipAddress, userAgent, location);
+
+    res.cookie('token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production', // Only use secure in production
+        maxAge: 1000 * 3600,  // Token expiration: 10 minutes
+        sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax', // Set to 'Lax' for development
+    });
+
+    await sendPasswordResetEmails(user.id, email, token);
+}

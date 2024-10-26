@@ -1,29 +1,30 @@
 import React, { useState } from 'react';
-import ReCAPTCHA from 'react-google-recaptcha';
+import axios from 'axios';
 
 function ResetPassword() {
     const [email, setEmail] = useState('');
-    const [captcha, setCaptcha] = useState('');
-    const [recaptchaValue, setRecaptchaValue] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [message, setMessage] = useState('');
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
+        setLoading(true);
+        setMessage('');
 
-        // Check if reCAPTCHA is verified
-        if (!recaptchaValue) {
-            alert('Please complete the CAPTCHA.');
-            return;
+        try {
+            // Send email to the server
+            const response = await axios.post('http://localhost:5000/resetpassword', {
+                email,
+            });
+
+            setMessage(response.data.message);
+        } catch (error) {
+            setMessage(error.response?.data?.message || 'Something went wrong. Please try again.');
+        } finally {
+            setLoading(false);
+            // Reset the form
+            setEmail('');
         }
-
-        // Here, you would typically send the email and recaptchaValue to your server
-        console.log(`Reset link sent to: ${email}`);
-        console.log(`reCAPTCHA Value: ${recaptchaValue}`);
-
-        alert('A reset link has been sent to your email address.');
-        // Reset the form
-        setEmail('');
-        setCaptcha('');
-        setRecaptchaValue(null);
     };
 
     return (
@@ -36,6 +37,7 @@ function ResetPassword() {
                         </div>
                         <div className="card-body">
                             <p className="text-muted">Enter your email address to receive a password reset link.</p>
+                            {message && <div className="alert alert-info">{message}</div>}
                             <form id="resetPasswordForm" onSubmit={handleSubmit}>
                                 <div className="form-group">
                                     <label htmlFor="email">Email Address</label>
@@ -50,11 +52,9 @@ function ResetPassword() {
                                     />
                                     <small className="form-text text-muted">We'll send you an email to reset your password.</small>
                                 </div>
-                                <ReCAPTCHA
-                                    sitekey="6LfqpWwqAAAAAIZ_g-Wv85lVrgMAC5kwRm4PRhDY"  // Replace with your actual Site Key
-                                    onChange={(value) => setRecaptchaValue(value)}
-                                />
-                                <button type="submit" className="btn btn-primary btn-block">Send Reset Link</button>
+                                <button type="submit" className="btn btn-primary btn-block" disabled={loading}>
+                                    {loading ? 'Sending...' : 'Send Reset Link'}
+                                </button>
                             </form>
                             <div className="text-center mt-3">
                                 <a href="#" id="backToLogin">Back to Login</a>

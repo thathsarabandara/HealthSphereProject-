@@ -32,6 +32,7 @@ router.get('/cart',[authMiddleware , authorizeRole('user')]);
 router.get('/checkout',[authMiddleware , authorizeRole('user')]);
 router.get('/refund',[authMiddleware , authorizeRole('user')]);
 router.get('/refund/request',[authMiddleware , authorizeRole('user')]);
+router.post('/resetpassword', userAuthController.resetPassword);
 router.post('/logout', userAuthController.logout);
 router.post('/verifyuser', userAuthController.verifyUser );
 router.get('/resendotp', userAuthController.resendOTP);

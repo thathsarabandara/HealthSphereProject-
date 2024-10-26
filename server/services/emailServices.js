@@ -621,58 +621,60 @@ exports.sendPaymentReciptEmails = async (username, email , amount, paymentDate, 
 
  
 // Function to send notifications for approved password reset requests
-exports.sendPasswordResetEmails = async (username, email, otp) => {
+exports.sendPasswordResetEmails = async (username, email, token) => {
   const mailOptions = {
     from: emailConfig.auth.user,
     to: email,
     subject: '🔐 Password Reset Approved! – HealthSphere Hospitals 🏥 | @2024 – DEV Squad ⚡️ [Do Not Reply]',
     html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #fff;">
-      <div style="background-color: #fff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-          <!-- Header Section with Logo -->
-          <div style="text-align: center; padding: 20px; background-color: #FF9800; color: white; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-              <img src="https://drive.google.com/uc?export=view&id=1n-3QGEs8Vvgcln1Oo_dDPOhylkSx2v5B" alt="HealthSphere Logo" style="width: 150px; margin-bottom: 20px;">
-              <h1>Password Reset OTP</h1>
-          </div>
-          <img src="https://drive.google.com/uc?export=view&id=1ZS1YujolPYd1qC369VT29Xbbm8J_bNgN" alt="HealthSphere Logo" style="margin: 10px; height: 300px; width: 580px;"/>
-          <!-- OTP Section -->
-          <div style="padding: 20px; text-align: center;">
-              <p style="font-size: 16px; color: #333;">Hello ${username},</p>
-              <p style="font-size: 16px; color: #333;">We received a request to reset your password. Please use the following one-time password (OTP) to reset your password:</p>
-              <p style="font-size: 24px; font-weight: bold; color: #FF4500;">${otp}</p>
-              <p style="font-size: 16px; color: #333;">This OTP will expire in 10 minutes.</p>
-              <p style="font-size: 16px; color: #333;">If you did not request a password reset, please ignore this email.</p>
-          </div>
+     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #fff;">
+    <div style="background-color: #fff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+        <!-- Header Section with Logo -->
+        <div style="text-align: center; padding: 20px; background-color: #FF9800; color: white; border-top-left-radius: 10px; border-top-right-radius: 10px;">
+            <img src="https://drive.google.com/uc?export=view&id=1n-3QGEs8Vvgcln1Oo_dDPOhylkSx2v5B" alt="HealthSphere Logo" style="width: 150px; margin-bottom: 20px;">
+            <h1>Password Reset Request</h1>
+        </div>
+        <img src="https://drive.google.com/uc?export=view&id=1ZS1YujolPYd1qC369VT29Xbbm8J_bNgN" alt="HealthSphere Logo" style="margin: 10px; height: 300px; width: 580px;"/>
+        
+        <!-- Reset Link Section -->
+        <div style="padding: 20px; text-align: center;">
+            <p style="font-size: 16px; color: #333;">Hello ${username},</p>
+            <p style="font-size: 16px; color: #333;">We received a request to reset your password. Please click the button below to reset your password:</p>
+            <a href="https://yourwebsite.com/reset-password?token=${token}" style="display: inline-block; padding: 10px 20px; font-size: 16px; font-weight: bold; color: white; background-color: #FF9800; border-radius: 5px; text-decoration: none; margin-top: 10px;">Reset Password</a>
+            <p style="font-size: 16px; color: #333;">This link will expire in 1 hour.</p>
+            <p style="font-size: 16px; color: #333;">If you did not request a password reset, please ignore this email.</p>
+        </div>
 
-          <!-- Health Tips Section -->
-          <div style="background-color: #ffe0b2; padding: 15px; border-radius: 5px; margin: 20px 10px; text-align: left;">
-              <h3 style="color: #FF9800;">Health Tips for You</h3>
-              <ul style="font-size: 16px; color: #333; list-style-type: disc; padding: 5px;">
-                  <li><strong>Stay Hydrated:</strong> Drink plenty of water throughout the day to stay hydrated.</li>
-                  <li><strong>Regular Exercise:</strong> Aim for at least 30 minutes of physical activity most days of the week.</li>
-                  <li><strong>Balanced Diet:</strong> Incorporate a variety of foods in your diet to ensure proper nutrition.</li>
-                  <li><strong>Prioritize Sleep:</strong> Aim for 7-9 hours of quality sleep each night for better health.</li>
-              </ul>
-          </div>
+        <!-- Health Tips Section -->
+        <div style="background-color: #ffe0b2; padding: 15px; border-radius: 5px; margin: 20px 10px; text-align: left;">
+            <h3 style="color: #FF9800;">Health Tips for You</h3>
+            <ul style="font-size: 16px; color: #333; list-style-type: disc; padding: 5px;">
+                <li><strong>Stay Hydrated:</strong> Drink plenty of water throughout the day to stay hydrated.</li>
+                <li><strong>Regular Exercise:</strong> Aim for at least 30 minutes of physical activity most days of the week.</li>
+                <li><strong>Balanced Diet:</strong> Incorporate a variety of foods in your diet to ensure proper nutrition.</li>
+                <li><strong>Prioritize Sleep:</strong> Aim for 7-9 hours of quality sleep each night for better health.</li>
+            </ul>
+        </div>
 
-          <!-- Footer Section -->
-          <div style="background-color: #f1f1f1; padding: 15px; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
-              <p style="font-size: 12px; text-align: center; color: #888;">If you have any questions regarding this request, please contact our support team.</p>
-              <p style="font-size: 14px; text-align: center; color: #777;">Need help or have questions? <a href="mailto:support@yourwebsite.com" style="color: #FF9800; text-decoration: none;">Contact our support team</a>.</p>
-              <p style="font-size: 12px; text-align: center; color: #aaa;">You received this email because you requested a password reset for your HealthSphere account. If you didn't make this request, please contact us immediately.</p>
-              <p style="font-size: 12px; text-align: center; color: #aaa;">All Rights Reserved @2024 - Dev Squad <sup>TM</sup></p>
+        <!-- Footer Section -->
+        <div style="background-color: #f1f1f1; padding: 15px; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
+            <p style="font-size: 12px; text-align: center; color: #888;">If you have any questions regarding this request, please contact our support team.</p>
+            <p style="font-size: 14px; text-align: center; color: #777;">Need help or have questions? <a href="mailto:support@yourwebsite.com" style="color: #FF9800; text-decoration: none;">Contact our support team</a>.</p>
+            <p style="font-size: 12px; text-align: center; color: #aaa;">You received this email because you requested a password reset for your HealthSphere account. If you didn't make this request, please contact us immediately.</p>
+            <p style="font-size: 12px; text-align: center; color: #aaa;">All Rights Reserved @2024 - Dev Squad <sup>TM</sup></p>
 
-              <!-- Social Media Links -->
-              <div style="text-align: center; padding: 20px; background-color: #FF9800; color: white; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; margin-top: 20px;">
-                  <p style="margin: 0;">&copy; 2024 HealthSphere. All rights reserved.</p>
-                  <p style="margin: 5px 0;">Follow us on:</p>
-                  <a href="https://facebook.com" style="color: white; text-decoration: none; margin: 0 10px;">Facebook</a> |
-                  <a href="https://twitter.com" style="color: white; text-decoration: none; margin: 0 10px;">Twitter</a> |
-                  <a href="https://instagram.com" style="color: white; text-decoration: none; margin: 0 10px;">Instagram</a>
-              </div>
-          </div>
-      </div>
+            <!-- Social Media Links -->
+            <div style="text-align: center; padding: 20px; background-color: #FF9800; color: white; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; margin-top: 20px;">
+                <p style="margin: 0;">&copy; 2024 HealthSphere. All rights reserved.</p>
+                <p style="margin: 5px 0;">Follow us on:</p>
+                <a href="https://facebook.com" style="color: white; text-decoration: none; margin: 0 10px;">Facebook</a> |
+                <a href="https://twitter.com" style="color: white; text-decoration: none; margin: 0 10px;">Twitter</a> |
+                <a href="https://instagram.com" style="color: white; text-decoration: none; margin: 0 10px;">Instagram</a>
+            </div>
+        </div>
     </div>
+</div>
+
     `
   };
 
