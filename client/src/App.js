@@ -15,6 +15,7 @@ import PatientRegister from './pages/User/PatientRegister';
 import OTPVerification from './pages/User/OTPVerification';
 import DoctorLogin from './pages/doctor/DoctorLogin';
 import PatientProfile from './pages/User/PatientProfile';
+import ResetPassword from './pages/User/ResetPassword';
 
 
 const getNavbarAndFooter = (path) => {
@@ -42,13 +43,14 @@ function App() {
       <NavbarComponent />
       <Routes>
         <Route path="/" element={<PatientHome />} />
-        <Route path="/fdoctors" element={<PatientDoctors />} />
+        <Route path="/finddoctors" element={<PatientDoctors />} />
         <Route path="/packages" element={<PatientPackages />} />
         <Route path="/laboratory" element={<PatientLaboratory />} />
         <Route path="/pharmacy" element={<PatientPharmacy />} />
         <Route path="/login" element={<PatientLogin />} />
         <Route path="/register" element={<PatientRegister />} />
         <Route path="/verifyuser" element={<OTPVerification />} />
+        <Route path="/resetpassword" element={<ResetPassword />} />
         <Route path="/userprofile" element={<PatientProfile />} />
         <Route path="/doctor/login" element={<DoctorLogin />} />
         {/* Add more routes as necessary */}

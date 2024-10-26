@@ -42,7 +42,7 @@ require('../models/transactions/Refund');
 
 const syncDatabase = async () => {
     try {
-      await sequelize.sync({ force: true }); // Set to true for development only to drop tables
+      await sequelize.sync({ force: false }); // Set to true for development only to drop tables
       console.log('Database synced successfully');
     } catch (error) {
       console.error('Error syncing database:', error);

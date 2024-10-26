@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
-exports.generateToken = (user) =>{
-    return jwt.sign({ email: user.email , password: user.password}, process.env.JWT_SECRET);
+exports.generateToken = (email, password) =>{
+    return jwt.sign({ email: email , password:password}, process.env.JWT_SECRET);
 }
 

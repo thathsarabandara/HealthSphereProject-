@@ -83,7 +83,7 @@ function PatientNavbar() {
               <Link to="/" className='nav-link active'>Home</Link>
             </li>
             <li className="nav-item">
-              <Link to="/fdoctors" className='nav-link active'>Doctors</Link>
+              <Link to="/finddoctors" className='nav-link active'>Doctors</Link>
             </li>
             <li className="nav-item">
               <Link to="/packages" className='nav-link active'>Packages</Link>

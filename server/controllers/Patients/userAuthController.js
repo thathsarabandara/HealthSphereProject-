@@ -1,5 +1,5 @@
 const User = require('../../models/auth/User');
-const { createUser, findByEmail , findByUserId } = require('../../models/auth/User'); // Import the createUser function
+const { createUser, findByEmail, findUserById, findbyUsername} = require('../../models/auth/User'); 
 const { comparePassword } = require('../../utils/hashpassword');
 const { createToken } = require('../../models/auth/Token');
 const tokenutils = require('../../utils/tokenUtils');
@@ -7,42 +7,24 @@ const { sendOTP, verify } = require('../../services/otpService');
 const { createPatient } = require('../../models/healthcare/Patient');
 const { sendWelcomeMessage, sendUnusualLogin } = require('../../services/emailServices');
 const { createTempToken, findTempToken ,updateExpiredat} = require('../../models/auth/Token');
-const { createUserPassword } = require('../../models/auth/UserPassword');
+const { createUserPassword, findPassword } = require('../../models/auth/UserPassword');
 
 exports.register = async (req, res) => {
-    const userdata = {
-        username: req.body.username,
-        email: req.body.email,
-        password: req.body.password,
-    };
+    const {username, email, password} = req.body;
 
     // Check if all fields are provided
-    if (!userdata.username || !userdata.email || !userdata.password) {
+    if (!username || !email || !password) {
         return res.status(400).json({ error: 'Username, email, and password are required' });
     }
 
     try {
-        // 1. Check if the username already exists
-        const existingUser = await User.findbyUsername(userdata.username);
-        if (existingUser !== null) {
-            return res.status(400).json({ message: 'Username already exists' });
-        }
-        // 1. Check if the email already exists
-        const existingUsername = await findByEmail(userdata.email);
-        if (existingUsername !== null) {
-            return res.status(400).json({ message: 'Email already exists' });
-        }
-        console.log(userdata.username);
-        console.log(userdata.email);
-        // 2. Send OTP to the user's email
-        await sendOTP(userdata.email);
-
         // 3. Create a new user (unverified)
-        const newUser = await createUser(userdata.username, userdata.email);
-        const password = await createUserPassword(newUser.id, userdata.password);
-
+        const newUser = await createUser(username, email);
+        console.log('2')
+        const newpassword = await createUserPassword(newUser.id, password);
+        await sendOTP(email);
         // 4. Generate a temporary token for OTP verification
-        const tempToken = await tokenutils.generateToken(userdata);
+        const tempToken = await tokenutils.generateToken(email,newpassword.passwordHash);
 
         // 5. Save tempToken in TempToken table for the user
         await createTempToken(newUser.id, tempToken);
@@ -82,7 +64,7 @@ exports.verifyUser = async (req, res) => {
         if (userid === null) {
             return res.status(400).json({ error: 'Invalid or expired token. Please register again.' });
         }
-        const UnverifiedUser = await findByUserId(userid);
+        const UnverifiedUser = await findUserById(userid);
 
         if(UnverifiedUser.isVerified === true ){
             return res.status(400).json({message : 'user is already verified'})
@@ -117,17 +99,22 @@ exports.resendOTP = async (req,res) => {
     if (!token) {
         return res.status(400).json({ error: 'user verification problem' });
     }
+    const userid = await findTempToken(token);
+    console.log(userid);
+    if (userid === null) {
+        return res.status(400).json({ error: 'Invalid or expired token. Please register again.' });
+    }
 
-    const UnverifiedUser = await findByUserId(userid);
+    const UnverifiedUser = await findUserById(userid);
 
     if(UnverifiedUser.isVerified === true ){
         return res.status(400).json({message : 'user is already verified'})
     }
     try{
-        await sendOTP(userdata.email);
+        await sendOTP(UnverifiedUser.email);
         return res.status(200).json({message: 'Otp Send Successfully!'})
     }catch (err) {
-        console.error('Error during login:', err);
+        console.error('rror during otp resending:', err);
         return res.status(500).json({ message: 'otp resend failed', details: err.message });
     }
     
@@ -142,13 +129,14 @@ exports.login = async (req, res) => {
     try {
         // 1. Find user by email
         const user = await findByEmail(credentials.email);
+        const hashedPassword = await findPassword(user.id);
 
         if (!user || !user.isVerified) {
             return res.status(404).json({ error: 'User not found or not verified' });
         }
 
         // 2. Verify password
-        const isValidPassword = await comparePassword(credentials.password, user.password_hash);
+        const isValidPassword = await comparePassword(credentials.password, hashedPassword.password_hash);
         if (!isValidPassword) {
             return res.status(401).json({ error: 'Invalid credentials' });
         }

@@ -125,4 +125,16 @@
   .profile-dropdown .dropdown-item:hover {
     background-color: #f1f1f1;
   }
-  
+  .resend-otp-button {
+    background: none;
+    border: none;
+    color: #007bff; /* Link color */
+    text-decoration: underline; /* Underline text */
+    cursor: pointer;
+    font-size: 16px; /* Font size */
+    padding: 0; /* Remove padding */
+}
+
+.resend-otp-button:hover {
+    color: #0056b3; /* Darker color on hover */
+}

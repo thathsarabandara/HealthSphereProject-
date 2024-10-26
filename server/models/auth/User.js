@@ -1,6 +1,5 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/db');
-const { hashPassword } = require('../../utils/hashpassword');
 
 // Define the User model
 const User = sequelize.define('User', {
@@ -10,19 +9,21 @@ const User = sequelize.define('User', {
         primaryKey: true,
     },
     username: {
-        type: DataTypes.STRING(255),
+        type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
     },
     email: {
-        type: DataTypes.STRING(255),
+        type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
+        unique: true, // Enforce unique constraint
+        validate: {
+            isEmail: true,
+        },
     },
     isVerified: {
         type: DataTypes.BOOLEAN,
-        allowNull: false,
         defaultValue: false,
+        allowNull: false,
     }
 }, {
     tableName: 'users',
@@ -30,20 +31,35 @@ const User = sequelize.define('User', {
 });
 
 // Create user function
-const createUser = async (username,email) => {
-    console.log(username, email);
+const createUser = async (username, email) => {
+
     try {
-        const newUser = await User.create({
+        // Check if the username already exists
+        const existingUser = await User.findOne({ where: { username } });
+        if (existingUser) {
+            return { error: 'Username already exists' };
+        }
+
+        // Check if the email already exists
+        const existingEmail = await User.findOne({ where: { email } });
+        if (existingEmail) {
+            return { error: 'Email already exists' };
+        }
+
+        // Build and save the new user
+        const newUser = User.create({
             username,
             email,
-            isVerified: false, // Setting default isVerified to false
+            isVerified: false, // Default to false
         });
+        
         return newUser;
     } catch (err) {
         console.error('Error creating user:', err);
         throw err;
     }
 };
+
 
 // Delete user function
 const deleteUser = async (email) => {
@@ -151,5 +167,5 @@ module.exports = {
     deleteUser,
     updateVerify,
     findUserById,
-    findbyUsername
+    findbyUsername,
 };

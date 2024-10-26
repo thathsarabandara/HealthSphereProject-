@@ -16,9 +16,8 @@ const UserPassword = sequelize.define('UserPassword', {
         model: User,
         key: 'id',
       },
-      onDelete: 'CASCADE',
     },
-    passwordHash: {
+    password_hash: {
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -38,20 +37,43 @@ const UserPassword = sequelize.define('UserPassword', {
   const createUserPassword = async (userid, password,) => {
     try {
         const hashedPassword = await hashPassword(password);
-        const newUser = await User.create({
+        const Password = await UserPassword.create({
             user_id: userid,
             password_hash: hashedPassword,
             isActive: true,
         });
-        return newUser;
+        return Password;
     } catch (err) {
         console.error('Error creating user:', err);
         throw err;
     }
   };
+  const findPassword = async (userId) => {
+    try {
+        // Look up the user's password by userId and check if isActive is true
+        const userPassword = await UserPassword.findOne({
+            where: {
+                user_id: userId,
+                isActive: true // Ensure the user's password record is active
+            }
+        });
+
+        // Check if a result is found
+        if (!userPassword) {
+            console.error('Password not found or user is not active');
+            return { error: 'Password not found or user is not active' };
+        }
+
+        return userPassword; // Return the hashed password or whatever you need
+    } catch (err) {
+        console.error('Error finding password:', err);
+        throw err;
+    }
+};
+
     const passwordDeactivate = async (userId) => {
       try {
-          const [rowsUpdated] = await User.update(
+          const [rowsUpdated] = await UserPassword.update(
               { isActive: false },
               { where: { id: userId } }
           );
@@ -72,4 +94,5 @@ const UserPassword = sequelize.define('UserPassword', {
     UserPassword,
     createUserPassword,
     passwordDeactivate,
+    findPassword
   };

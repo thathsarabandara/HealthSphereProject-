@@ -23,21 +23,23 @@ function OTPVerification() {
             setSuccess('');
         }
     };
-const handleResendOTP = async () => {
-    try{
-        const response = await axios.get('http://localhost:5000/resendotp', null, { withCredentials: true });
+    const handleResendOTP = async (e) => {
+        e.preventDefault(); // Prevent default anchor click behavior
+        try {
+            const response = await axios.get('http://localhost:5000/resendotp', { withCredentials: true });
 
-        if (response.status === 200) {
-            setSuccess(response.data.message);
-            setError('');
-            setOtp('');
+            if (response.status === 200) {
+                setSuccess(response.data.message);
+                setError('');
+                setOtp(''); // Clear the OTP input field if necessary
+            }
+        } catch (err) {
+            setError(err.response?.data?.error || 'OTP resend failed');
+            setSuccess('');
+            console.error('OTP resend error:', err.response ? err.response.data : err.message);
         }
-    }catch(err){
-        setError(error.response?.data?.error || 'OTP Resend failed');
-        setSuccess('');
-        console.error('OTP resend error:', error.response ? error.response.data : error.message);
-    }
-};
+    };
+    
     return (
         <div className="login-container">
             <h2 className="text-center">Verify OTP</h2>
@@ -65,7 +67,9 @@ const handleResendOTP = async () => {
             <div className="text-center mt-3">
                 <small>
                     Didn’t receive the OTP? 
-                    <a href={handleResendOTP}> Resend OTP</a>
+                    <button class="resend-otp-button" onClick={handleResendOTP}>
+                        Resend OTP
+                    </button>
                 </small>
             </div>
 
