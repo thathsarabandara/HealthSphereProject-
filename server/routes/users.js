@@ -34,6 +34,7 @@ router.get('/refund',[authMiddleware , authorizeRole('user')]);
 router.get('/refund/request',[authMiddleware , authorizeRole('user')]);
 router.post('/logout', userAuthController.logout);
 router.post('/verifyuser', userAuthController.verifyUser );
+router.get('/resendotp', userAuthController.resendOTP);
 router.post('/register',userAuthController.register);
 router.post('/login',userAuthController.login);
 

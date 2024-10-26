@@ -7,6 +7,7 @@ const { sendOTP, verify } = require('../../services/otpService');
 const { createPatient } = require('../../models/healthcare/Patient');
 const { sendWelcomeMessage, sendUnusualLogin } = require('../../services/emailServices');
 const { createTempToken, findTempToken ,updateExpiredat} = require('../../models/auth/Token');
+const { createUserPassword } = require('../../models/auth/UserPassword');
 
 exports.register = async (req, res) => {
     const userdata = {
@@ -21,19 +22,24 @@ exports.register = async (req, res) => {
     }
 
     try {
+        // 1. Check if the username already exists
+        const existingUser = await User.findbyUsername(userdata.username);
+        if (existingUser !== null) {
+            return res.status(400).json({ message: 'Username already exists' });
+        }
         // 1. Check if the email already exists
-        // const existingUser = await findByEmail(userdata.email);
-        // if (existingUser !== null) {
-        //     console.log('User is already defined');
-        //     return res.status(400).json({ error: 'Email already exists' });
-        // }
-
+        const existingUsername = await findByEmail(userdata.email);
+        if (existingUsername !== null) {
+            return res.status(400).json({ message: 'Email already exists' });
+        }
+        console.log(userdata.username);
+        console.log(userdata.email);
         // 2. Send OTP to the user's email
         await sendOTP(userdata.email);
-        console.log(`Sending OTP to ${userdata.email}`);
 
         // 3. Create a new user (unverified)
-        const newUser = await createUser(userdata); // createUser saves the user with verified=false
+        const newUser = await createUser(userdata.username, userdata.email);
+        const password = await createUserPassword(newUser.id, userdata.password);
 
         // 4. Generate a temporary token for OTP verification
         const tempToken = await tokenutils.generateToken(userdata);
@@ -46,7 +52,7 @@ exports.register = async (req, res) => {
             .cookie('verifytoken', tempToken, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production', // Only use secure in production
-                maxAge: 1000 * 600,  // Token expiration: 10 minutes
+                maxAge: 1000 * 600 * 2,  // Token expiration: 10 minutes
                 sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax', // Set to 'Lax' for development
             })
             .json({ message: 'User registered successfully. Please verify OTP.' });
@@ -61,8 +67,12 @@ exports.verifyUser = async (req, res) => {
     const otp = req.body.otp;
     const token = req.cookies['verifytoken']; // Get token from cookies
 
-    if (!otp || !token) {
-        return res.status(400).json({ error: 'OTP and token are required!' });
+    if (!otp) {
+        return res.status(400).json({ message: 'OTP is required!' });
+    }
+
+    if (!token) {
+        return res.status(400).json({ error: 'user verification problem' });
     }
         
     try {
@@ -73,18 +83,21 @@ exports.verifyUser = async (req, res) => {
             return res.status(400).json({ error: 'Invalid or expired token. Please register again.' });
         }
         const UnverifiedUser = await findByUserId(userid);
-        console.log(UnverifiedUser.email)
+
+        if(UnverifiedUser.isVerified === true ){
+            return res.status(400).json({message : 'user is already verified'})
+        }
+
         // 2. Verify the OTP using otpService
         const isValidOTP = await verify(UnverifiedUser.email, otp);
-        console.log(isValidOTP)
 
         if (!isValidOTP) {
             return res.status(400).json({ message: 'Invalid or expired OTP' });
         }
-        console.log(UnverifiedUser.id)
+        
         // 3. Mark the user as verified
         const user = await User.updateVerify(UnverifiedUser.id)
-        console.log(user)
+        
         // 4. Create a patient record for the user
         const newPatient = await createPatient(UnverifiedUser.id);
 
@@ -97,6 +110,28 @@ exports.verifyUser = async (req, res) => {
         return res.status(500).json({ error: 'OTP verification failed' });
     }
 };
+
+exports.resendOTP = async (req,res) => {
+    const token = req.cookies['verifytoken'];
+
+    if (!token) {
+        return res.status(400).json({ error: 'user verification problem' });
+    }
+
+    const UnverifiedUser = await findByUserId(userid);
+
+    if(UnverifiedUser.isVerified === true ){
+        return res.status(400).json({message : 'user is already verified'})
+    }
+    try{
+        await sendOTP(userdata.email);
+        return res.status(200).json({message: 'Otp Send Successfully!'})
+    }catch (err) {
+        console.error('Error during login:', err);
+        return res.status(500).json({ message: 'otp resend failed', details: err.message });
+    }
+    
+}
 
 exports.login = async (req, res) => {
     const credentials = {

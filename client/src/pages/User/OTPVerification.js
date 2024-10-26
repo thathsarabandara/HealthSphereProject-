@@ -23,7 +23,21 @@ function OTPVerification() {
             setSuccess('');
         }
     };
+const handleResendOTP = async () => {
+    try{
+        const response = await axios.get('http://localhost:5000/resendotp', null, { withCredentials: true });
 
+        if (response.status === 200) {
+            setSuccess(response.data.message);
+            setError('');
+            setOtp('');
+        }
+    }catch(err){
+        setError(error.response?.data?.error || 'OTP Resend failed');
+        setSuccess('');
+        console.error('OTP resend error:', error.response ? error.response.data : error.message);
+    }
+};
     return (
         <div className="login-container">
             <h2 className="text-center">Verify OTP</h2>
@@ -51,7 +65,7 @@ function OTPVerification() {
             <div className="text-center mt-3">
                 <small>
                     Didn’t receive the OTP? 
-                    <a href="/resend-otp"> Resend OTP</a>
+                    <a href={handleResendOTP}> Resend OTP</a>
                 </small>
             </div>
 

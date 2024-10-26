@@ -14,10 +14,6 @@ const User = sequelize.define('User', {
         allowNull: false,
         unique: true,
     },
-    password_hash: {
-        type: DataTypes.STRING(255),
-        allowNull: false,
-    },
     email: {
         type: DataTypes.STRING(255),
         allowNull: false,
@@ -34,13 +30,13 @@ const User = sequelize.define('User', {
 });
 
 // Create user function
-const createUser = async (userData) => {
+const createUser = async (username,email) => {
+    console.log(username, email);
     try {
-        const hashedPassword = await hashPassword(userData.password);
         const newUser = await User.create({
-            username: userData.username,
-            email: userData.email,
-            password_hash: hashedPassword,
+            username,
+            email,
+            isVerified: false, // Setting default isVerified to false
         });
         return newUser;
     } catch (err) {
@@ -107,11 +103,36 @@ const updateVerify = async (userId) => {
 const findByEmail = async (email) => {
     try {
         const user = await User.findOne({
-            where: { email },
-        });
+            where: {
+                email,
+                isVerified: true
+            },
+        });        
 
         if (!user) {
             console.log('User not found with email');
+            return null;
+        }
+
+        console.log('User found');
+        return user;
+    } catch (err) {
+        console.error('Error finding user by email:', err);
+        throw err;
+    }
+};
+
+const findbyUsername = async (username) => {
+    try {
+        const user = await User.findOne({
+            where: {
+                username,
+                isVerified: true
+            },
+        });        
+
+        if (!user) {
+            console.log('User not found with username');
             return null;
         }
 
@@ -130,4 +151,5 @@ module.exports = {
     deleteUser,
     updateVerify,
     findUserById,
+    findbyUsername
 };
