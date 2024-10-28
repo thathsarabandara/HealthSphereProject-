@@ -5,10 +5,10 @@ const { createToken } = require('../../models/auth/Token');
 const tokenutils = require('../../utils/tokenUtils');
 const { sendOTP, verify } = require('../../services/otpService');
 const { createPatient } = require('../../models/healthcare/Patient');
-const { sendWelcomeMessage, sendUnusualLogin, sendPasswordResetEmails } = require('../../services/emailServices');
+const { sendWelcomeMessage, sendUnusualLogin, sendPasswordResetEmails, sendPasswordChange } = require('../../services/emailServices');
 const { createTempToken, findTempToken ,updateExpiredat} = require('../../models/auth/Token');
 const { createUserPassword, findPassword, passwordDeactivate } = require('../../models/auth/UserPassword');
-const {createPasswordResetRequest} = require('../../models/security/PasswordResetRequest');
+const {createPasswordResetRequest, findPasswordResetToken} = require('../../models/security/PasswordResetRequest');
 const { getLocationFromIP } = require('../../services/locationHelper');
 
 exports.register = async (req, res) => {
@@ -260,11 +260,8 @@ exports.validateToken = async (req,res) =>{
         return res.status(400).json({ message: 'Token not provided.' });
     }
     try {
-        // Verify the token signature and expiration
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        
         // Find the token in the database (based on token value or user ID)
-        const resetRequest = await findPasswordResetRequestByToken(token);
+        const resetRequest = await findPasswordResetToken(token);
 
         if (!resetRequest) {
             return res.status(404).json({ message: 'Invalid or expired token.' });
@@ -296,7 +293,7 @@ exports.resetPassword = async (req, res) => {
         }
 
         // Find the reset request by token
-        const resetRequest = await findPasswordResetRequestByToken(resettoken);
+        const resetRequest = await findPasswordResetToken(resettoken);
         if (!resetRequest) {
             return res.status(400).json({ message: 'Invalid or expired token.' });
         }
@@ -312,10 +309,11 @@ exports.resetPassword = async (req, res) => {
         if (!newPassword) {
             return res.status(500).json({ message: 'Failed to create new password.' });
         }
-
-        // Clean up: delete the reset request after successful reset
-        await deletePasswordResetRequest(resettoken);
-
+        const user = await findUserById(resetRequest.user_id);
+        if (!user) {
+            return res.status(500).json({ message: 'User no found' });
+        }
+        await sendPasswordChange(user.username, user.email);
         // Clear the reset token cookie
         res.clearCookie('resettoken');
 

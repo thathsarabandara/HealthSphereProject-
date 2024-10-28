@@ -5,3 +5,4 @@ exports.generateToken = (email, password) =>{
     return jwt.sign({ email: email , password:password}, process.env.JWT_SECRET);
 }
 
+

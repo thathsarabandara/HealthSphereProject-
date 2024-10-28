@@ -14,23 +14,30 @@ const PatientPasswordReset = () => {
     // Extract token from query parameters
     const query = new URLSearchParams(location.search);
     const token = query.get('token');
-    console.log(token)
 
     useEffect(() => {
-        // Validate the token with the backend
+        console.log(token);
+        if (!token) {
+            setError('Token is missing from the URL. Please request a new password reset.');
+            return;
+        }
+    
         const validateToken = async () => {
             try {
                 const response = await axios.get(`http://localhost:5000/resetpassword/validate?token=${token}`);
                 if (response.status === 200) {
                     setIsValidToken(true);
+                } else {
+                    setError('Invalid or expired token. Please request a new password reset.');
                 }
             } catch (err) {
                 setError('Invalid or expired token. Please request a new password reset.');
             }
         };
-
+    
         validateToken();
     }, [token]);
+    
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -43,7 +50,7 @@ const PatientPasswordReset = () => {
 
         try {
             // Send new password to backend
-            const response = await axios.post('http://localhost:5000/resetpassword', { password });
+            const response = await axios.post('http://localhost:5000/resetpassword', { password } , { withCredentials: true});
             if (response.status === 200) {
                 setSuccessMessage('Password reset successfully! Redirecting to login...');
                 setTimeout(() => navigate('/login'), 3000); // Redirect after 3 seconds

@@ -75,7 +75,7 @@ const UserPassword = sequelize.define('UserPassword', {
       try {
           const [rowsUpdated] = await UserPassword.update(
               { isActive: false },
-              { where: { id: userId } }
+              { where: { user_id: userId , isActive: true} }
           );
   
           if (rowsUpdated === 0) {

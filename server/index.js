@@ -8,7 +8,7 @@ const helmet = require('helmet');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const sync = require('./config/sync');
-const ipapiCorsOptions = require('./middleware/cors/corsMiddleware');
+const {ipapiCorsOptions ,corsOptions} = require('./middleware/cors/corsMiddleware');
 
 // portNumber for the server
 const PORT = process.env.PORT || 5000;
@@ -17,13 +17,7 @@ const PORT = process.env.PORT || 5000;
 app.use(helmet()); // Security middleware
 app.use(cookieParser()); // Cookie parser middleware
 
-// CORS Configuration
-const corsOptions = {
-    origin: 'http://localhost:3000', // Your React frontend URL
-    credentials: true,                // Allow cookies in cross-origin requests
-};
-app.use(cors(ipapiCorsOptions));
-app.use(cors(corsOptions)); // Use CORS middleware
+app.use(cors(corsOptions,ipapiCorsOptions)); // Use CORS middleware
 
 // Body Parser Middleware
 app.use(bodyParser.json());
