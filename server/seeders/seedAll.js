@@ -1,30 +1,20 @@
-const { seedGroups }  = require('./groupsSeeder');
-const { seedPermissions } =  require('./permissionSeeder');
-const { seedGroupPermissions } =  require('./groupPermissionSeeder');
-const { seedSpecilization } = require('./specializationSeeder');
+const sequelize = require('./config/db'); // Adjust the path according to your structure
+const seedUsers = require('./seeders/userSeeder'); // Adjust the path according to your structure
 
-async function seedAll() {
+const seedDatabase = async () => {
     try {
-        console.log('Starting group seeding...');
-        await seedGroups();
-        console.log('Group seeding completed.');
-        
-        console.log('Starting permission seeding...');
-        await seedPermissions();
-        console.log('Permission seeding completed.');
+        // Sync the database (this will drop existing tables and recreate them)
+        await sequelize.sync({ force: true });
 
-        console.log('Starting Group permission seeding...');
-        await seedGroupPermissions();
-        console.log('Group Permission seeding completed.');
-        
-        console.log('Starting Specialization seeding...');
-        await seedSpecilization();
-        console.log('Specialization seeding completed.');
+        // Call the user seeder
+        await seedUsers();
 
-        console.log('All seeds executed successfully.');
-    } catch (err) {
-        console.error('Error Occurred in Seeds:', err.stack || err);
+        console.log('Database seeded successfully!');
+        process.exit();
+    } catch (error) {
+        console.error('Error seeding database:', error);
+        process.exit(1);
     }
-}
+};
 
-seedAll();
+seedDatabase();

@@ -123,10 +123,6 @@ function PatientDoctors() {
         </div>
       </div>
 
-
-    
-
-
       <section className='section1 py-5' style={{ background: '#C8D8F6' }}>
         <div className='container'>
           <div className='row text-center  justify-content-center' style={{marginTop: 120}}>
@@ -148,9 +144,11 @@ function PatientDoctors() {
                     Provides comprehensive healthcare, including routine check-ups, preventive care, and treatment for a variety of illnesses and injuries across all ages.
                   </div>
                   <button className="btn mt-1 w-100" style={{ background: '#112D4E', borderRadius: 10 }}>
-                    <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
-                      Book
-                    </span>
+                    <a href="/finddoctors/generalpractitioner" style={{ textDecoration: 'none', color: 'white', width: '100%', display: 'block', height: '100%' }}>
+                      <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
+                        Book
+                      </span>
+                    </a>
                   </button>
                 </div>
               </div>
@@ -173,9 +171,11 @@ function PatientDoctors() {
                     Focuses on the health of children from birth to adolescence, including preventive healthcare and chronic disease management.
                   </div>
                   <button className="btn mt-1 w-100" style={{ background: '#112D4E', borderRadius: 10 }}>
-                    <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
-                      Book
-                    </span>
+                    <a href="/finddoctors/pediatrician" style={{ textDecoration: 'none', color: 'white', width: '100%', display: 'block', height: '100%' }}>
+                      <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
+                        Book
+                      </span>
+                    </a>
                   </button>
                 </div>
               </div>
@@ -198,9 +198,11 @@ function PatientDoctors() {
                     Diagnoses and treats heart conditions such as heart attacks, hypertension, and arrhythmias, and provides preventive care.
                   </div>
                   <button className="btn mt-1 w-100" style={{ background: '#112D4E', borderRadius: 10 }}>
-                    <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
-                      Book
-                    </span>
+                    <a href="/finddoctors/cardiologist" style={{ textDecoration: 'none', color: 'white', width: '100%', display: 'block', height: '100%' }}>
+                      <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
+                        Book
+                      </span>
+                    </a>
                   </button>
                 </div>
               </div>
@@ -223,23 +225,23 @@ function PatientDoctors() {
                     Specializes in the treatment of skin, hair, and nail conditions like acne, eczema, and psoriasis.
                   </div>
                   <button className="btn mt-1 w-100" style={{ background: '#112D4E', borderRadius: 10 }}>
-                    <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
-                      Book
-                    </span>
+                    <a href="/finddoctors/dermatologist" style={{ textDecoration: 'none', color: 'white', width: '100%', display: 'block', height: '100%' }}>
+                      <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
+                        Book
+                      </span>
+                    </a>
                   </button>
                 </div>
               </div>
             </div>
-            
           </div>
         </div>
       </section>
 
-
-
       <section className='section2 py-5 bg-white'>
         <div className='container'>
           <div className='row text-center mt-3 justify-content-center'>
+
 
             {/* General Practitioner Card */}
             <div className="col-12 col-md-12 col-lg-6 mb-5" style={{width: 197, height: 273,  borderRadius: 8}}>
@@ -258,9 +260,11 @@ function PatientDoctors() {
                     Provides comprehensive healthcare, including routine check-ups, preventive care, and treatment for a variety of illnesses and injuries across all ages.
                   </div>
                   <button className="btn mt-1 w-100" style={{ background: '#112D4E', borderRadius: 10 }}>
-                    <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
-                      Book
-                    </span>
+                    <a href="/finddoctors/dermatologist" style={{ textDecoration: 'none', color: 'white', width: '100%', display: 'block', height: '100%' }}>
+                      <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
+                        Book
+                      </span>
+                    </a>
                   </button>
                 </div>
               </div>
@@ -283,9 +287,11 @@ function PatientDoctors() {
                     Focuses on the health of children from birth to adolescence, including preventive healthcare and chronic disease management.
                   </div>
                   <button className="btn mt-1 w-100" style={{ background: '#112D4E', borderRadius: 10 }}>
-                    <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
-                      Book
-                    </span>
+                    <a href="/finddoctors/dermatologist" style={{ textDecoration: 'none', color: 'white', width: '100%', display: 'block', height: '100%' }}>
+                      <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
+                        Book
+                      </span>
+                    </a>
                   </button>
                 </div>
               </div>
@@ -308,9 +314,11 @@ function PatientDoctors() {
                     Diagnoses and treats heart conditions such as heart attacks, hypertension, and arrhythmias, and provides preventive care.
                   </div>
                   <button className="btn mt-1 w-100" style={{ background: '#112D4E', borderRadius: 10 }}>
-                    <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
-                      Book
-                    </span>
+                    <a href="/finddoctors/dermatologist" style={{ textDecoration: 'none', color: 'white', width: '100%', display: 'block', height: '100%' }}>
+                      <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
+                        Book
+                      </span>
+                    </a>
                   </button>
                 </div>
               </div>
@@ -333,14 +341,15 @@ function PatientDoctors() {
                     Specializes in the treatment of skin, hair, and nail conditions like acne, eczema, and psoriasis.
                   </div>
                   <button className="btn mt-1 w-100" style={{ background: '#112D4E', borderRadius: 10 }}>
-                    <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
-                      Book
-                    </span>
+                    <a href="/finddoctors/dermatologist" style={{ textDecoration: 'none', color: 'white', width: '100%', display: 'block', height: '100%' }}>
+                      <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
+                        Book
+                      </span>
+                    </a>
                   </button>
                 </div>
               </div>
             </div>
-            
           </div>
 
           <div className='row text-center mt-3 justify-content-center'>
@@ -362,9 +371,11 @@ function PatientDoctors() {
                     Provides comprehensive healthcare, including routine check-ups, preventive care, and treatment for a variety of illnesses and injuries across all ages.
                   </div>
                   <button className="btn mt-1 w-100" style={{ background: '#112D4E', borderRadius: 10 }}>
-                    <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
-                      Book
-                    </span>
+                    <a href="/finddoctors/dermatologist" style={{ textDecoration: 'none', color: 'white', width: '100%', display: 'block', height: '100%' }}>
+                      <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
+                        Book
+                      </span>
+                    </a>
                   </button>
                 </div>
               </div>
@@ -387,9 +398,11 @@ function PatientDoctors() {
                     Focuses on the health of children from birth to adolescence, including preventive healthcare and chronic disease management.
                   </div>
                   <button className="btn mt-1 w-100" style={{ background: '#112D4E', borderRadius: 10 }}>
-                    <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
-                      Book
-                    </span>
+                    <a href="/finddoctors/dermatologist" style={{ textDecoration: 'none', color: 'white', width: '100%', display: 'block', height: '100%' }}>
+                      <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
+                        Book
+                      </span>
+                    </a>
                   </button>
                 </div>
               </div>
@@ -412,9 +425,11 @@ function PatientDoctors() {
                     Diagnoses and treats heart conditions such as heart attacks, hypertension, and arrhythmias, and provides preventive care.
                   </div>
                   <button className="btn mt-1 w-100" style={{ background: '#112D4E', borderRadius: 10 }}>
-                    <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
-                      Book
-                    </span>
+                    <a href="/finddoctors/dermatologist" style={{ textDecoration: 'none', color: 'white', width: '100%', display: 'block', height: '100%' }}>
+                      <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
+                        Book
+                      </span>
+                    </a>
                   </button>
                 </div>
               </div>
@@ -437,16 +452,16 @@ function PatientDoctors() {
                     Specializes in the treatment of skin, hair, and nail conditions like acne, eczema, and psoriasis.
                   </div>
                   <button className="btn mt-1 w-100" style={{ background: '#112D4E', borderRadius: 10 }}>
-                    <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
-                      Book
-                    </span>
+                    <a href="/finddoctors/dermatologist" style={{ textDecoration: 'none', color: 'white', width: '100%', display: 'block', height: '100%' }}>
+                      <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
+                        Book
+                      </span>
+                    </a>
                   </button>
                 </div>
               </div>
             </div>
-            
           </div>
-
         </div>
       </section>
 
@@ -472,9 +487,11 @@ function PatientDoctors() {
                     Provides comprehensive healthcare, including routine check-ups, preventive care, and treatment for a variety of illnesses and injuries across all ages.
                   </div>
                   <button className="btn mt-1 w-100" style={{ background: '#112D4E', borderRadius: 10 }}>
-                    <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
-                      Book
-                    </span>
+                    <a href="/finddoctors/dermatologist" style={{ textDecoration: 'none', color: 'white', width: '100%', display: 'block', height: '100%' }}>
+                      <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
+                        Book
+                      </span>
+                    </a>
                   </button>
                 </div>
               </div>
@@ -497,9 +514,11 @@ function PatientDoctors() {
                     Focuses on the health of children from birth to adolescence, including preventive healthcare and chronic disease management.
                   </div>
                   <button className="btn mt-1 w-100" style={{ background: '#112D4E', borderRadius: 10 }}>
-                    <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
-                      Book
-                    </span>
+                    <a href="/finddoctors/dermatologist" style={{ textDecoration: 'none', color: 'white', width: '100%', display: 'block', height: '100%' }}>
+                      <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
+                        Book
+                      </span>
+                    </a>
                   </button>
                 </div>
               </div>
@@ -522,9 +541,11 @@ function PatientDoctors() {
                     Diagnoses and treats heart conditions such as heart attacks, hypertension, and arrhythmias, and provides preventive care.
                   </div>
                   <button className="btn mt-1 w-100" style={{ background: '#112D4E', borderRadius: 10 }}>
-                    <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
-                      Book
-                    </span>
+                    <a href="/finddoctors/dermatologist" style={{ textDecoration: 'none', color: 'white', width: '100%', display: 'block', height: '100%' }}>
+                      <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
+                        Book
+                      </span>
+                    </a>
                   </button>
                 </div>
               </div>
@@ -547,9 +568,11 @@ function PatientDoctors() {
                     Specializes in the treatment of skin, hair, and nail conditions like acne, eczema, and psoriasis.
                   </div>
                   <button className="btn mt-1 w-100" style={{ background: '#112D4E', borderRadius: 10 }}>
-                    <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
-                      Book
-                    </span>
+                    <a href="/finddoctors/dermatologist" style={{ textDecoration: 'none', color: 'white', width: '100%', display: 'block', height: '100%' }}>
+                      <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
+                        Book
+                      </span>
+                    </a>
                   </button>
                 </div>
               </div>
