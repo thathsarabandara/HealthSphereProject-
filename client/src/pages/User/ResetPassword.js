@@ -5,7 +5,6 @@ function ResetPassword() {
     const [email, setEmail] = useState('');
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState('');
-    const [banner , setBanner] = useState('');
     
     const handleSubmit = async (event) => {
         event.preventDefault();

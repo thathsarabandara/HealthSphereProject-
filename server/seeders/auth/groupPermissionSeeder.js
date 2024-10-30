@@ -26,19 +26,7 @@ const seedGroupPermissions = async () => {
     await sequelize.sync({ force: false });
 
     // Seed data into the GroupPermissions table
-    for (const gp of groupPermissionsData) {
-        const [result, created] = await GroupPermission.findOrCreate({
-            where: { group_id: gp.group_id, permission_id: gp.permission_id },
-            defaults: gp
-        });
-
-        if (created) {
-            console.log(`GroupPermission added for Group ID: ${gp.group_id}, Permission ID: ${gp.permission_id}`);
-        } else {
-            console.log(`GroupPermission already exists for Group ID: ${gp.group_id}, Permission ID: ${gp.permission_id}`);
-        }
-    }
-
+    await GroupPermission.bulkCreate(groupPermissionsData, { returning: true });
     console.log('GroupPermission seeding complete!');
     process.exit(0); // Exit the process once seeding is done
   } catch (err) {
@@ -47,7 +35,6 @@ const seedGroupPermissions = async () => {
   }
 };
 
-seedGroupPermissions();
 
 module.exports = {
   seedGroupPermissions

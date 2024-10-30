@@ -6,9 +6,7 @@ const seedAdmins = async () => {
     await sequelize.sync({ force: false });
 
     await Admin.bulkCreate([
-      { user_id: 1, name: 'John Doe', description: 'Super Admin with full access' },
-      { user_id: 2, name: 'Jane Smith', description: 'Admin with limited permissions' },
-      { user_id: 3, name: 'Emma Johnson', description: 'Admin responsible for managing user accounts' },
+      { user_id: 3, description: 'super' },
     ]);
 
     console.log('Admin seeding complete!');
@@ -19,7 +17,6 @@ const seedAdmins = async () => {
   }
 };
 
-seedAdmins();
 
 module.exports = {
   seedAdmins

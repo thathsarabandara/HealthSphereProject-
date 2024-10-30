@@ -13,7 +13,7 @@ const {rateLimiterMiddleware} = require('../middleware/rateLimit/rateLimiter')
 router.get('/', rateLimiterMiddleware, userController.authHome);
 router.get('/home', rateLimiterMiddleware ,userController.authHome );
 router.get('/finddoctor', rateLimiterMiddleware);
-router.get('/finddoctor/:specialization', rateLimiterMiddleware);
+router.get('/finddoctor/:specialization', rateLimiterMiddleware, userController.loadDoctors);
 router.get('/finddoctor/:specialization/reservation',[authMiddleware , authorizeRole('user')]);
 router.get('/finddoctor/:specialization/:doctor',);
 router.get('/package',);

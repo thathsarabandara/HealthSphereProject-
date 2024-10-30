@@ -1,7 +1,7 @@
 const { Group } = require('../../models/auth/Group'); // Adjust the path according to your structure
 
 const groups = [
-    { name: 'user', description: 'Users Only' },
+    { name: 'patients', description: 'Patients Only' },
     { name: 'doctor', description: 'Doctors Only' },
     { name: 'admin', description: 'Admins Only' },
     { name: 'developer', description: 'Developers with access to development tools and resources' },
@@ -11,9 +11,6 @@ const groups = [
 
 const seedGroups = async () => {
     try {
-        // Clear existing groups (optional)
-        await Group.destroy({ where: {}, truncate: true });
-
         // Seed new groups
         await Group.bulkCreate(groups, { ignoreDuplicates: true });
         console.log('Groups seeded successfully!');
@@ -22,4 +19,6 @@ const seedGroups = async () => {
     }
 };
 
-module.exports = seedGroups;
+module.exports = {
+    seedGroups,
+};

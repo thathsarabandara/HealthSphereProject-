@@ -1,5 +1,5 @@
 const sequelize = require('../../config/db');
-const { Specialization } = require('../../models/auth/Specialization');
+const { Specialization } = require('../../models/healthcare/Specialization');
 
 const seedSpecializations = async () => {
   try {
@@ -29,9 +29,6 @@ const seedSpecializations = async () => {
     process.exit(1);
   }
 };
-
-// Execute the seeding function
-seedSpecializations();
 
 module.exports = {
   seedSpecializations

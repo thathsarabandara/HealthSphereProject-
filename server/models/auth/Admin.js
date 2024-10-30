@@ -16,10 +16,6 @@ const Admin = sequelize.define('Admin', {
             key: 'id',
         },
     },
-    name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
     description: {
         type: DataTypes.TEXT,
         allowNull: true,

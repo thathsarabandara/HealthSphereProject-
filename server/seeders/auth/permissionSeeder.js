@@ -24,21 +24,7 @@ const seedPermissions = async () => {
     try {
         // Sync database
         await sequelize.sync({ force: false });
-
-        // Check existing permissions and seed if not present
-        for (const permission of permissionsData) {
-            const [result, created] = await Permission.findOrCreate({
-                where: { name: permission.name },
-                defaults: permission
-            });
-
-            if (created) {
-                console.log(`Permission '${permission.name}' added.`);
-            } else {
-                console.log(`Permission '${permission.name}' already exists.`);
-            }
-        }
-
+        await Permission.bulkCreate(permissionsData, { returning: true });
         console.log('Permission seeding complete!');
         process.exit(0); // Exit the process once seeding is done
     } catch (err) {
@@ -46,8 +32,6 @@ const seedPermissions = async () => {
         process.exit(1); // Exit with failure code
     }
 };
-
-seedPermissions();
 
 module.exports = {
     seedPermissions

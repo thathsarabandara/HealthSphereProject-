@@ -23,6 +23,7 @@ import PatientPaymentHistory from './pages/User/PatientPaymentHistory';
 import PatientPrescriptionHistory from './pages/User/PatientPrescriptionHistory';
 import Error403 from './pages/ErrorPages/Error403';
 import Error404 from './pages/ErrorPages/Error404';
+import DoctorDetails from './pages/User/DoctorDetails';
 
 
 const getNavbarAndFooter = (path) => {
@@ -51,6 +52,7 @@ function App() {
       <Routes>
         <Route path="/" element={<PatientHome />} />
         <Route path="/finddoctors" element={<PatientDoctors />} />
+        <Route path="/finddoctors/:category" element={<DoctorDetails />} />
         <Route path="/packages" element={<PatientPackages />} />
         <Route path="/laboratory" element={<PatientLaboratory />} />
         <Route path="/pharmacy" element={<PatientPharmacy />} />

@@ -8,31 +8,31 @@ const seedUsers = async () => {
 
     // Define the users' data
     const users = [
-      // 1 to 24 Users for doctors
-      { username: 'john_doe', email: 'john@example.com', isVerified: true },
-      { username: 'jane_doe', email: 'jane@example.com', isVerified: true },
-      { username: 'alice_smith', email: 'alice@example.com', isVerified: true },
-      { username: 'bob_jones', email: 'bob@example.com', isVerified: true },
-      { username: 'charlie_brown', email: 'charlie@example.com', isVerified: true },
-      { username: 'diana_prince', email: 'diana@example.com', isVerified: true },
-      { username: 'edward_elric', email: 'edward@example.com', isVerified: true },
-      { username: 'fiona_glenanne', email: 'fiona@example.com', isVerified: true },
-      { username: 'george_clooney', email: 'george@example.com', isVerified: true },
-      { username: 'hannah_montana', email: 'hannah@example.com', isVerified: true },
-      { username: 'irene_adler', email: 'irene@example.com', isVerified: true },
-      { username: 'jack_ryan', email: 'jack@example.com', isVerified: true },
-      { username: 'karen_smith', email: 'karen@example.com', isVerified: true },
-      { username: 'liam_neeson', email: 'liam@example.com', isVerified: true },
-      { username: 'mia_thermopolis', email: 'mia@example.com', isVerified: true },
-      { username: 'nathan_drake', email: 'nathan@example.com', isVerified: true },
-      { username: 'olivia_pope', email: 'olivia@example.com', isVerified: true },
-      { username: 'paul_atreides', email: 'paul@example.com', isVerified: true },
-      { username: 'quinn_fabray', email: 'quinn@example.com', isVerified: true },
-      { username: 'ryan_gosling', email: 'ryan@example.com', isVerified: true },
-      { username: 'sophia_loren', email: 'sophia@example.com', isVerified: true },
-      { username: 'tom_hanks', email: 'tom@example.com', isVerified: true },
-      { username: 'uma_thurman', email: 'uma@example.com', isVerified: true },
-      { username: 'vin_diesel', email: 'vin@example.com', isVerified: true },
+      { id: 1, username: 'johnydoe', email: 'johnydoe@example.com', isVerified: true },
+      { id: 2, username: 'janedoe', email: 'janedoe@example.com', isVerified: true },
+      { id: 3, username: 'bobsmith', email: 'bobsmith@example.com', isVerified: true },
+      { id: 4, username: 'alicejohnson', email: 'alicej@example.com', isVerified: true },
+      { id: 5, username: 'michaelclark', email: 'mclark@example.com', isVerified: true },
+      { id: 6, username: 'JohnDoe', email: 'johndoe@example.com', isVerified: true },
+      { id: 7, username: 'JaneSmith', email: 'janesmith@example.com', isVerified: true },
+      { id: 8, username: 'EmilyJohnson', email: 'emilyjohnson@example.com', isVerified: true },
+      { id: 9, username: 'MichaelBrown', email: 'michaelbrown@example.com', isVerified: true },
+      { id: 10, username: 'SarahDavis', email: 'sarahdavis@example.com', isVerified: true },
+      { id: 11, username: 'DavidWilson', email: 'davidwilson@example.com', isVerified: true },
+      { id: 12, username: 'JessicaMartinez', email: 'jessicamartinez@example.com', isVerified: true },
+      { id: 13, username: 'DanielRodriguez', email: 'danielrodriguez@example.com', isVerified: true },
+      { id: 14, username: 'WilliamGarcia', email: 'williambarcia@example.com', isVerified: true },
+      { id: 15, username: 'OliviaLee', email: 'oliviale@example.com', isVerified: true },
+      { id: 16, username: 'JamesWhite', email: 'jameswhite@example.com', isVerified: true },
+      { id: 17, username: 'SophiaHarris', email: 'sophiaclaris@example.com', isVerified: true },
+      { id: 18, username: 'AlexanderClark', email: 'alexanderclark@example.com', isVerified: true },
+      { id: 19, username: 'MiaLewis', email: 'mialewis@example.com', isVerified: true },
+      { id: 20, username: 'BenjaminYoung', email: 'benjaminyoung@example.com', isVerified: true },
+      { id: 21, username: 'GraceHall', email: 'gracehall@example.com', isVerified: true },
+      { id: 22, username: 'NoahAllen', email: 'noahallen@example.com', isVerified: true },
+      { id: 23, username: 'EllaWright', email: 'ellawright@example.com', isVerified: true },
+      { id: 24, username: 'LoganKing', email: 'loganking@example.com', isVerified: true },
+      { id: 25, username: 'AvaScott', email: 'avascott@example.com', isVerified: true },
     ];
 
     // Insert the users into the database
@@ -43,9 +43,6 @@ const seedUsers = async () => {
     console.error('User seeding failed:', err);
   }
 };
-
-// Execute the seeding function
-seedUsers();
 
 module.exports = {
   seedUsers
