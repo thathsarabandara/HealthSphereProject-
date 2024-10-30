@@ -124,7 +124,7 @@ function PatientNavbar() {
                   </div>
                 </div>
             ) : (
-                <div className='btn-container'>
+                <div className='btn-container ms-5'>
                   <button className='btn1 btn-outline'>
                     <Link to='/register' style={{ textDecoration: 'none', color: 'inherit' }}>Register</Link>
                   </button>
@@ -135,6 +135,12 @@ function PatientNavbar() {
                     <MdAccountCircle className='account-icon' />
                   </div>
                 </div>
+
+
+
+
+                
+                 
             )}
           </div>
         </div>

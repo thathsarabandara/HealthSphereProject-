@@ -62,131 +62,175 @@ function PatientProfile() {
   }
 
   return (
-    <div className="container mt-5">
-      <div className="row">
+    <div className="container mt-5 mb-5">
+      <div className="row gutters">
         {/* Profile Picture Section */}
-        <div className="col-md-4 d-flex flex-column align-items-center">
-          <div className="profile-picture-wrapper mb-3">
-            <div className="profile-picture d-flex align-items-center justify-content-center">
-              <img 
-                src={profileData.profilePicture || '/path/to/default-image.png'} 
-                alt="Profile" 
-                className="profile-picture-img" 
-              />
+        <div className="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12" >
+          <div className="card h-100" style={{ background: '#ECE6E6'}}>
+            <div className="card-body">
+              <div className="account-settings">
+                <div className="user-avatar">
+                  <div style={{
+                    width: '100%',
+                    height: '250px',
+                    background: '#BEBEBE',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    fontSize: '1.2rem',
+                    color: '#fff'
+                  }}>
+                    Add a photo
+                  </div>
+                </div>
+                <div className="mt-3">
+                  <button className="btn w-100" style={{background: '#112D4E', color: 'white'}}>Edit Profile Picture</button>
+                </div>
+              </div>
             </div>
           </div>
-          <button className="btn btn-primary">Edit Profile Picture</button>
         </div>
 
         {/* Form Section */}
-        <div className="col-md-8">
-          <form onSubmit={handleSubmit}>
-            <div className="row mb-3">
-              <div className="col">
-                <label htmlFor="patientId" className="form-label">Patient ID</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  id="patientId"
-                  name="patientId"
-                  value={profileData.patientId}
-                  onChange={handleInputChange}
-                  disabled // Patient ID should not be editable
-                />
+        <div className="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-12">
+          <div className="card h-100" style={{ background: '#ECE6E6'}}>
+            <div className="card-body">
+              <div className="row gutters">
+                <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                  <div className="form-group mt-3" onSubmit={handleSubmit}>
+                    <label htmlFor="patientId"><b>Patient ID</b></label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="patientId"
+                      name="patientId"
+                      value={profileData.patientId}
+                      onChange={handleInputChange}
+                      placeholder="Enter Patient ID"
+                     
+                    />
+                  </div>
+                </div>
+
+                <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                  <div className="form-group mt-3">
+                    <label htmlFor="regDate"><b>Registration Date</b></label>
+                    <input
+                      type="date"
+                      className="form-control"
+                      id="regDate"
+                      name="registrationDate"
+                      value={profileData.registrationDate}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                </div>
+
+                <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                  <div className="form-group mt-3">
+                    <label htmlFor="firstName"><b>First Name</b></label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="firstName"
+                      name="firstName"
+                      value={profileData.firstName}
+                      onChange={handleInputChange}
+                      placeholder="Enter First Name"
+                    />
+                  </div>
+                </div>
+
+                <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                  <div className="form-group mt-3">
+                    <label htmlFor="lastName"><b>Last Name</b></label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="lastName"
+                      name="lastName"
+                      value={profileData.lastName}
+                      onChange={handleInputChange}
+                      placeholder="Enter Last Name"
+                    />
+                  </div>
+                </div>
+
+                <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                  <div className="form-group mt-3">
+                    <label htmlFor="phoneNumber"><b>Phone Number</b></label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="phoneNumber"
+                      name="phoneNumber"
+                      value={profileData.phoneNumber}
+                      onChange={handleInputChange}
+                      placeholder="Enter Phone Number"
+                    />
+                  </div>
+                </div>
+
+                <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                  <div className="form-group mt-3">
+                    <label htmlFor="gender"><b>Gender</b></label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="gender"
+                      name="gender"
+                      value={profileData.gender}
+                      onChange={handleInputChange}
+                      placeholder="Enter Gender"
+                    />
+                  </div>
+                </div>
+
+                <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                  <div className="form-group mt-3">
+                    <label htmlFor="email"><b>Email</b></label>
+                    <input
+                      type="email"
+                      className="form-control"
+                      id="email"
+                      name="email"
+                      value={profileData.email}
+                      onChange={handleInputChange}
+                      placeholder="Enter Email"
+                    />
+                  </div>
+                </div>
+
+                <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                  <div className="form-group mt-3">
+                    <label htmlFor="address"><b>Address</b></label>
+                    <textarea
+                      className="form-control"
+                      id="address"
+                      rows="3"
+                      value={profileData.address}
+                      onChange={handleInputChange}
+                      placeholder="Enter Address"
+                    ></textarea>
+                  </div>
+                </div>
               </div>
-              <div className="col">
-                <label htmlFor="registrationDate" className="form-label">Registration Date</label>
-                <input
-                  type="date"
-                  className="form-control"
-                  id="registrationDate"
-                  name="registrationDate"
-                  value={profileData.registrationDate}
-                  onChange={handleInputChange}
-                />
+
+              <div className="row gutters">
+                <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                  <div className="d-flex justify-content-end gap-2 mt-4">
+                    <button type="button" className="btn btn-secondary">
+                      Cancel
+                    </button>
+                    <button type="button" className="btn btn-primary">
+                      Save
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
-
-            <div className="row mb-3">
-              <div className="col">
-                <label htmlFor="firstName" className="form-label">First Name</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  id="firstName"
-                  name="firstName"
-                  value={profileData.firstName}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="col">
-                <label htmlFor="lastName" className="form-label">Last Name</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  id="lastName"
-                  name="lastName"
-                  value={profileData.lastName}
-                  onChange={handleInputChange}
-                />
-              </div>
-            </div>
-
-            <div className="row mb-3">
-              <div className="col">
-                <label htmlFor="phoneNumber" className="form-label">Phone Number</label>
-                <input
-                  type="tel"
-                  className="form-control"
-                  id="phoneNumber"
-                  name="phoneNumber"
-                  value={profileData.phoneNumber}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="col">
-                <label htmlFor="gender" className="form-label">Gender</label>
-                <select
-                  className="form-control"
-                  id="gender"
-                  name="gender"
-                  value={profileData.gender}
-                  onChange={handleInputChange}
-                >
-                  <option value="">Select Gender</option>
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                </select>
-              </div>
-            </div>
-
-            <div className="mb-3">
-              <label htmlFor="email" className="form-label">Email</label>
-              <input
-                type="email"
-                className="form-control"
-                id="email"
-                name="email"
-                value={profileData.email}
-                onChange={handleInputChange}
-              />
-            </div>
-
-            <div className="mb-3">
-              <label htmlFor="address" className="form-label">Address</label>
-              <textarea
-                className="form-control"
-                id="address"
-                name="address"
-                rows="3"
-                value={profileData.address}
-                onChange={handleInputChange}
-              ></textarea>
-            </div>
-
-            <button type="submit" className="btn btn-primary">Save</button>
-            <button type="button" className="btn btn-secondary">Cancel</button>
-          </form>
+          </div>
         </div>
       </div>
     </div>

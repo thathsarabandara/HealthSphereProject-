@@ -7,6 +7,7 @@ import PatientHome from './pages/User/PatientHome';
 import PatientDoctors from './pages/User/PatientDoctors';
 import PatientLaboratory from './pages/User/PatientLaboratory';
 import PatientPharmacy from './pages/User/PatientPharmacy';
+import PatientAbout from './pages/User/PatientAbout';
 import PatientFooter from './components/user/PatientFooter'; 
 import DoctorFooter from './components/doctor/DoctorFooter'; 
 import PatientPackages from './pages/User/PatientPackages';
@@ -17,6 +18,11 @@ import DoctorLogin from './pages/doctor/DoctorLogin';
 import PatientProfile from './pages/User/PatientProfile';
 import ResetPassword from './pages/User/ResetPassword';
 import PatientPasswordReset from './pages/User/PatientPasswordReset';
+import Cart from './pages/User/Cart';
+import PatientPaymentHistory from './pages/User/PatientPaymentHistory';
+import PatientPrescriptionHistory from './pages/User/PatientPrescriptionHistory';
+import Error403 from './pages/ErrorPages/Error403';
+import Error404 from './pages/ErrorPages/Error404';
 
 
 const getNavbarAndFooter = (path) => {
@@ -48,13 +54,19 @@ function App() {
         <Route path="/packages" element={<PatientPackages />} />
         <Route path="/laboratory" element={<PatientLaboratory />} />
         <Route path="/pharmacy" element={<PatientPharmacy />} />
+        <Route path="/about" element={<PatientAbout/>} />
         <Route path="/login" element={<PatientLogin />} />
         <Route path="/register" element={<PatientRegister />} />
         <Route path="/resetpassword" element={<PatientPasswordReset />} />
         <Route path="/verifyuser" element={<OTPVerification />} />
         <Route path="/resetpasswordRequest" element={<ResetPassword />} />
         <Route path="/userprofile" element={<PatientProfile />} />
+        <Route path="/paymenthistory" element={<PatientPaymentHistory/>} />
+        <Route path="/prescriptionhistory" element={<PatientPrescriptionHistory/>} />
+        <Route path="/cart" element={<Cart/>} />
         <Route path="/doctor/login" element={<DoctorLogin />} />
+        <Route path="/error403" element={<Error403/>} />
+        <Route path="/error404" element={<Error404/>} />
         {/* Add more routes as necessary */}
       </Routes>
       <FooterComponent />

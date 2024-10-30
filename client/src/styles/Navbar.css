@@ -3,7 +3,7 @@
 }
 .nav-link {
     margin-right: 20px;
-    font-size: 13px;
+    font-size: 14px;
     color: white !important;
     transition: color 0.3s ease;
   }
@@ -16,22 +16,46 @@
 }
 
 .btn1{
-    background-color: #fff;
-    border-radius: 5px;
-    width: 66px;
-    height: 39px;
+  
+    display: inline-block;
+    outline: none;
+    cursor: pointer;
+    font-weight: 500;
+    border: 1px solid transparent;
+    border-radius: 2px;
+    height: 36px;
+    line-height: 34px;
+    font-size: 14px;
+    color: #241c15;
+    background-color: #efeeea;
+    transition: background-color 0.2s ease-in-out 0s, opacity 0.2s ease-in-out 0s;
+    padding: 0 18px;
 }
 .btn1:hover{
-    background-color: #C8D8F6;
+  
+  color: #241c15;
+  background-color: #d9d7cd;
 }
 .btn2{
+   
+    display: inline-block;
+    outline: none;
+    cursor: pointer;
+    font-weight: 500;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    height: 36px;
+    line-height: 34px;
+    font-size: 14px;
+    color: #ffffff;
     background-color: #112D4E;
-    border-radius: 5px;
-    width: 66px;
-    height: 39px;
+    transition: background-color 0.2s ease-in-out 0s, opacity 0.2s ease-in-out 0s;
+    padding: 0 18px;
 }
 .btn2:hover{
-    background-color: #C8D8F6;
+    
+    color: #ffffff;
+    background-color: #0b213a;
 }
 .account-icon {
     width: 60px;

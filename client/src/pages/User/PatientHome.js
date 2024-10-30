@@ -1,5 +1,5 @@
 import React from 'react'
-import Home1 from "../../assets/images/Rectangle 9 (1).svg"
+import Home1 from "../../assets/images/Rectangle 9 (3).svg"
 import '../../styles/Home.css'
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import 'typeface-anton';
