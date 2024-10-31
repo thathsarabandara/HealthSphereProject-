@@ -14,16 +14,19 @@ import PatientPackages from './pages/User/PatientPackages';
 import PatientLogin from './pages/User/PatientLogin';
 import PatientRegister from './pages/User/PatientRegister';
 import OTPVerification from './pages/User/OTPVerification';
-import DoctorLogin from './pages/doctor/DoctorLogin';
+
 import PatientProfile from './pages/User/PatientProfile';
 import ResetPassword from './pages/User/ResetPassword';
 import PatientPasswordReset from './pages/User/PatientPasswordReset';
 import Cart from './pages/User/Cart';
+import Payment from './pages/User/Payment';
 import PatientPaymentHistory from './pages/User/PatientPaymentHistory';
 import PatientPrescriptionHistory from './pages/User/PatientPrescriptionHistory';
+import Refund from './pages/User/Refund';
 import Error403 from './pages/ErrorPages/Error403';
 import Error404 from './pages/ErrorPages/Error404';
-
+import DoctorRegister from './pages/doctor/DoctorRegister';
+import DoctorLogin from './pages/doctor/DoctorLogin';
 
 const getNavbarAndFooter = (path) => {
   let NavbarComponent, FooterComponent;
@@ -64,7 +67,10 @@ function App() {
         <Route path="/paymenthistory" element={<PatientPaymentHistory/>} />
         <Route path="/prescriptionhistory" element={<PatientPrescriptionHistory/>} />
         <Route path="/cart" element={<Cart/>} />
+        <Route path="/payment" element={<Payment/>} />
+        <Route path="/refund" element={<Refund/>} />
         <Route path="/doctor/login" element={<DoctorLogin />} />
+        <Route path="/doctor/register" element={<DoctorRegister/>} />
         <Route path="/error403" element={<Error403/>} />
         <Route path="/error404" element={<Error404/>} />
         {/* Add more routes as necessary */}

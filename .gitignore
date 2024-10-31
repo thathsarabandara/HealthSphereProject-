@@ -7,3 +7,4 @@ client/node_modules/
 
 # Ignore backend dependencies (server)
 server/node_modules/
+server/.env

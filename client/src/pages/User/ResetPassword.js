@@ -29,11 +29,12 @@ function ResetPassword() {
     };
 
     return (
-        <div className="container mt-5">
+        <div className="container mt-5 mb-5" >
             <div className="row justify-content-center">
                 <div className="col-md-6">
-                    <div className="card shadow">
-                        <div className="card-header text-center">
+                    <div className="card shadow" style={{background: '#C8D8F6'}}>
+                        <div className=" text-center mt-4">
+                        
                             <h4>Reset Your Password</h4>
                         </div>
                         <div className="card-body">
@@ -51,14 +52,17 @@ function ResetPassword() {
                                         onChange={(e) => setEmail(e.target.value)}
                                         required
                                     />
-                                    <small className="form-text text-muted">We'll send you an email to reset your password.</small>
+                                    <small className="form-text text-muted mt-4">We'll send you an email to reset your password.</small>
                                 </div>
-                                <button type="submit" className="btn btn-primary btn-block" disabled={loading}>
-                                    {loading ? 'Sending...' : 'Send Reset Link'}
-                                </button>
+                                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                    <button type="submit" className="btn btn-primary btn-block text-white mt-3" style={{ background: '#112D4E' }} disabled={loading}>
+                                        {loading ? 'Sending...' : 'Send Reset Link'}
+                                    </button>
+                                </div>
+                                
                             </form>
                             <div className="text-center mt-3">
-                                <a href="#" id="backToLogin">Back to Login</a>
+                                <a href="/login" id="backToLogin">Back to Login</a>
                             </div>
                         </div>
                     </div>

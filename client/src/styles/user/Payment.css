@@ -1,0 +1,82 @@
+.billing-container {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    background-color: #C8D8F6;
+}
+
+.billing-details, .payment-details {
+    background-color: white;
+    padding: 20px;
+    border-radius: 12px;
+    margin: 10px;
+    width: 45%;
+}
+
+.billing-details h3 {
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+}
+
+.billing-details h3 .icon {
+    background-color: gray;
+    border-radius: 50%;
+    display: inline-block;
+    height: 15px;
+    width: 15px;
+    margin-right: 10px;
+}
+
+.billing-details label, .payment-details label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.billing-details input, .billing-details textarea, .payment-details input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background-color: #F5F5F5;
+}
+
+.billing-details textarea {
+    height: 60px;
+}
+
+.subtotal {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.payment-methods {
+    margin-bottom: 15px;
+}
+
+.payment-methods div {
+    display: flex;
+    gap: 10px;
+}
+
+.card-details form {
+    background-color: #F5F5F5;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+.pay-btn {
+    width: 100%;
+    background-color: #112D4E;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    margin-top: 15px;
+    font-weight: bold;
+    cursor: pointer;
+}

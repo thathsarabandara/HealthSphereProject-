@@ -41,7 +41,7 @@ function OTPVerification() {
     };
     
     return (
-        <div className="login-container">
+        <div className="login-container mb-5" style={{background: '#C8D8F6'}}>
             <h2 className="text-center">Verify OTP</h2>
                 {error && <p style={{ color: 'red' }}>{error}</p>}
                 {success && <p style={{ color: 'green' }}>{success}</p>}
@@ -50,7 +50,7 @@ function OTPVerification() {
                     <label htmlFor="otp">Enter the OTP sent to your email/phone</label>
                     <input
                         type="text"
-                        className="form-control"
+                        className="form-control mt-2 mb-4"
                         id="otp"
                         placeholder="Enter OTP"
                         value={otp}
@@ -59,9 +59,11 @@ function OTPVerification() {
                     />
                 </div>
 
-                <button type="submit" className="btn btn-primary btn-block">
-                    Verify OTP
-                </button>
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <button type="submit" className="btn btn-block text-white" style={{ background: '#112D4E' }}>
+                        Verify OTP
+                    </button>
+                </div>
             </form>
 
             <div className="text-center mt-3">

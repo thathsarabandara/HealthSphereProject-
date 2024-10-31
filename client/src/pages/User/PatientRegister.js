@@ -166,10 +166,10 @@ function App() {
           <div className="text-center my-3">
             <small>or register with</small>
           </div>
-          <button className="btn btn-outline-primary btn-block social-btn">
+          <button className="btn btn-outline-primary btn-block social-btn ms-5">
             <i className="fab fa-facebook-f"></i> Register with Facebook
           </button>
-          <button className="btn btn-outline-danger btn-block social-btn">
+          <button className="btn btn-outline-danger btn-block social-btn ms-3">
             <i className="fab fa-google"></i> Register with Google
           </button>
 
