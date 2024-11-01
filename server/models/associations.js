@@ -12,7 +12,6 @@ const { Payment } = require('./transactions/Payment');
 const { Reservation } = require('./healthcare/Reservation');
 const { Schedule } = require('./healthcare/Schedule');
 const { Refund } = require('./transactions/Refund');
-const { Clinic } = require('./healthcare/Clinic');
 const { Prescription } = require('./healthcare/Prescription');
 const { Review } = require('./content/Review');
 const { Cart } = require('./ecommerce/Cart');
@@ -48,14 +47,11 @@ Admin.belongsTo(User, { foreignKey: 'User_id' });
 Schedule.belongsTo(Doctor, { foreignKey: 'doctor_id' });
 ScheduleCancel.belongsTo(Schedule, { foreignKey: 'schedule_id' });
 
-Reservation.belongsTo(Clinic, { foreignKey: 'clinic_id' });
+Reservation.belongsTo(Schedule, { foreignKey: 'schedule_id' });
 Reservation.belongsTo(Patient, { foreignKey: 'patient_id' });
 Reservation.belongsTo(Payment, { foreignKey: 'payment_id' });
 
 Refund.belongsTo(Payment, { foreignKey: 'payment_id' });
-
-Clinic.belongsTo(Schedule, { foreignKey: 'schedule_id' });
-Clinic.belongsTo(Doctor, { foreignKey: 'doctor_id' });
 
 Prescription.belongsTo(Patient, { foreignKey: 'patient_id' });
 Prescription.belongsTo(Reservation, { foreignKey: 'reservation_id' });
@@ -91,7 +87,6 @@ module.exports = {
   Doctor,
   Schedule,
   ScheduleCancel,
-  Clinic,
   Reservation,
   Prescription,
   Notification,

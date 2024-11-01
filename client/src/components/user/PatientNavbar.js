@@ -36,34 +36,27 @@ function PatientNavbar() {
     fetchUserData(); // Fetch user data on mount
   }, []);
 
-  // Add a useEffect to watch for isAuthenticated changes
-  useEffect(() => {
-    if (isAuthenticated) {
-      fetchUserData(); // Refetch user data if authenticated
-    }
-  }, [isAuthenticated]);
-
   const toggleDropdown = () => {
     setShowDropdown(!showDropdown);
   };
 
   const handleLogout = async () => {
-      try {
-          const response = await axios.post('http://localhost:5000/logout', null, { withCredentials: true });
-          
-          if (response.status === 200) {
-              console.log('Logout successful:', response.data.message);
-              setIsAuthenticated(false);
-              setUser(null);
-              // Redirect to the homepage or login page
-              window.location.href = '/login'; // Adjust as necessary
-          }
-      } catch (error) {
-          console.error('Logout error:', error.response ? error.response.data : error.message);
-          // Handle error (e.g., show a notification)
+    try {
+      const response = await axios.post('http://localhost:5000/logout', null, { withCredentials: true });
+      
+      if (response.status === 200) {
+        console.log('Logout successful:', response.data.message);
+        setIsAuthenticated(false);
+        setUser(null);
+        // Redirect to the homepage or login page
+        window.location.href = '/login'; // Adjust as necessary
       }
+    } catch (error) {
+      console.error('Logout error:', error.response ? error.response.data : error.message);
+      // Handle error (e.g., show a notification)
+    }
   };
-  
+
   if (loading) {
     return <div>Loading...</div>; // Loading state while data is being fetched
   }
@@ -104,11 +97,11 @@ function PatientNavbar() {
                 <div className='user-section'>
                   <div className='profile-name d-flex flex-column'>
                     <h4 className='hello'>Welcome to the Healthsphere,</h4>
-                    <h5 className='name'>Dear, {user.name}</h5>
+                    <h5 className='name'>Dear, {user ? user.name : 'User'}</h5> {/* Added check here */}
                   </div>
                   <div className='profile-container'>
                       <img
-                        src={user.profilePicture || emptyImage}
+                        src={user?.profilePicture || emptyImage} // Use optional chaining here
                         alt='Profile'
                         className='profile-photo'
                         onClick={toggleDropdown}
@@ -135,12 +128,6 @@ function PatientNavbar() {
                     <MdAccountCircle className='account-icon' />
                   </div>
                 </div>
-
-
-
-
-                
-                 
             )}
           </div>
         </div>

@@ -18,56 +18,63 @@ function About() {
       </section>
 
       {/*-----------Section2-----------*/}
-      <section className='section2' style={{ padding: '5rem 0' }}>
-  <div className='container'>
-    <div className='row justify-content-center align-items-start g-0'> {/* Use g-0 on row */}
-      {/* Left column for the image */}
-      <div className='col-lg-6 col-md-8' style={{ padding: 0 }}> {/* Remove padding */}
-        <img 
-          src={Rectangle92} 
-          alt="Nurse with tablet" 
-          className="img-fluid rounded"
-          style={{ display: 'block', margin: '0 auto' }} // Ensures no margin is applied
-        />
-      </div>
+      <section className='section2 ms-5 me-5' style={{ padding: '5rem 0' }}>
+        <div className='container'>
+            <div className='row justify-content-center align-items-start g-0'> {/* Use g-0 on row to remove gaps */}
 
-      {/* Right column for the 'About Us' text */}
-      <div className='col-lg-6 col-md-8' style={{ padding: 0 }}> {/* Remove padding */}
-        <div 
-          className='text-white rounded'
-          style={{ backgroundColor: '#112D4E', padding: '30px', color: 'white' }}
-        >
-          <h2 
-            className="mb-4" 
-            style={{ fontFamily: 'Sansation', fontSize: '24px', fontWeight: 400 }}
-          >
-            About Us
-          </h2>
-          <p style={{ fontFamily: 'Sansation', fontSize: '16px', fontWeight: 400 }}>
-            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's 
-            standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a 
-            type specimen book.
-          </p>
-          <p style={{ fontFamily: 'Sansation', fontSize: '16px', fontWeight: 400 }}>
-            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's 
-            standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a 
-            type specimen book.
-          </p>
-          <p style={{ fontFamily: 'Sansation', fontSize: '16px', fontWeight: 400 }}>
-            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's 
-            standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a 
-            type specimen book.
-          </p>
-          <p style={{ fontFamily: 'Sansation', fontSize: '16px', fontWeight: 400 }}>
-            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's 
-            standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a 
-            type specimen book.
-          </p>
+            {/* Left column for the image */}
+            <div className='col-lg-6 col-md-8' style={{ padding: 0 }}>
+                <img 
+                src={Rectangle92} 
+                alt="Nurse with tablet" 
+                className="img-fluid rounded" 
+                style={{ display: 'block', width: '100%' , borderRadius: '8px' }} // Makes the image responsive and removes margin
+                />
+            </div>
+
+            {/* Right column for the 'About Us' text */}
+            <div className='col-lg-6 col-md-8' style={{ padding: 0 }}>
+                <div 
+                className='text-white rounded'
+                style={{ backgroundColor: '#112D4E', padding: '30px', color: 'white' }}
+                >
+                <h2 
+                    className="mb-4 mt-4" 
+                    style={{ fontFamily: 'Sansation', fontSize: '24px', fontWeight: 400 }}
+                >
+                    About Us
+                </h2>
+                <p style={{ fontFamily: 'Sansation', fontSize: '16px', fontWeight: 400 }}>
+                    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's 
+                    standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a 
+                    type specimen book.
+                </p>
+                <p style={{ fontFamily: 'Sansation', fontSize: '16px', fontWeight: 400 }}>
+                    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's 
+                    standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a 
+                    type specimen book.
+                </p>
+                <p style={{ fontFamily: 'Sansation', fontSize: '16px', fontWeight: 400 }}>
+                    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's 
+                    standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a 
+                    type specimen book.
+                </p>
+                <p style={{ fontFamily: 'Sansation', fontSize: '16px', fontWeight: 400 }}>
+                    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's 
+                    standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a 
+                    type specimen book.
+                </p>
+                <p style={{ fontFamily: 'Sansation', fontSize: '16px', fontWeight: 400 }}>
+                    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's 
+                    standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a 
+                    type specimen book.
+                </p>
+                </div>
+            </div>
+
+            </div>
         </div>
-      </div>
-    </div>
-  </div>
-</section>
+        </section>
 
 
 

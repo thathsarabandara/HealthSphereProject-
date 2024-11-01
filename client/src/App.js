@@ -14,7 +14,6 @@ import PatientPackages from './pages/User/PatientPackages';
 import PatientLogin from './pages/User/PatientLogin';
 import PatientRegister from './pages/User/PatientRegister';
 import OTPVerification from './pages/User/OTPVerification';
-
 import PatientProfile from './pages/User/PatientProfile';
 import ResetPassword from './pages/User/ResetPassword';
 import PatientPasswordReset from './pages/User/PatientPasswordReset';
@@ -25,8 +24,13 @@ import PatientPrescriptionHistory from './pages/User/PatientPrescriptionHistory'
 import Refund from './pages/User/Refund';
 import Error403 from './pages/ErrorPages/Error403';
 import Error404 from './pages/ErrorPages/Error404';
+import DoctorDetails from './pages/User/DoctorDetails';
+import Reservations from './pages/User/Reservations';
 import DoctorRegister from './pages/doctor/DoctorRegister';
 import DoctorLogin from './pages/doctor/DoctorLogin';
+import DoctorAbout from './pages/doctor/DoctorAbout';
+import DoctorHome from './pages/doctor/DoctorHome';
+
 
 const getNavbarAndFooter = (path) => {
   let NavbarComponent, FooterComponent;
@@ -54,6 +58,7 @@ function App() {
       <Routes>
         <Route path="/" element={<PatientHome />} />
         <Route path="/finddoctors" element={<PatientDoctors />} />
+        <Route path="/finddoctors/:category" element={<DoctorDetails />} />
         <Route path="/packages" element={<PatientPackages />} />
         <Route path="/laboratory" element={<PatientLaboratory />} />
         <Route path="/pharmacy" element={<PatientPharmacy />} />
@@ -69,8 +74,13 @@ function App() {
         <Route path="/cart" element={<Cart/>} />
         <Route path="/payment" element={<Payment/>} />
         <Route path="/refund" element={<Refund/>} />
+        <Route path="/reservations" element={<Reservations/>} />
+
         <Route path="/doctor/login" element={<DoctorLogin />} />
         <Route path="/doctor/register" element={<DoctorRegister/>} />
+        <Route path="/doctor/about" element={<DoctorAbout/>} />
+        <Route path="/doctor/home" element={<DoctorHome/>} />
+
         <Route path="/error403" element={<Error403/>} />
         <Route path="/error404" element={<Error404/>} />
         {/* Add more routes as necessary */}

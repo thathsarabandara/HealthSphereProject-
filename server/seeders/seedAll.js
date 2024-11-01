@@ -1,30 +1,65 @@
-const { seedGroups }  = require('./groupsSeeder');
-const { seedPermissions } =  require('./permissionSeeder');
-const { seedGroupPermissions } =  require('./groupPermissionSeeder');
-const { seedSpecilization } = require('./specializationSeeder');
+const sequelize = require('../config/db'); // Adjust the path according to your structure
+// const { seedUsers } = require('./auth/userSeeders'); // Adjust the path according to your structure
+// const { seedUserPasswords } = require('./auth/userPasswordsSeeder'); // Adjust the path according to your structure
+// const { seedGroups } = require('./auth/groupSeeder'); // Adjust the path according to your structure
+// const { seedPermissions } = require('./auth/permissionSeeder'); // Adjust the path according to your structure
+// const { seedGroupPermissions } = require('./auth/groupPermissionSeeder'); // Adjust the path according to your structure
+// const { seedUserGroups } = require('./auth/userGroupsSeeder'); // Adjust the path according to your structure
+// const { seedSpecializations } = require('./healthcare/specializationSeeder'); // Adjust the path according to your structure
+// const { seedDoctors } = require('./healthcare/doctorSeeder'); // Adjust the path according to your structure
+// const { seedPatients } = require('./healthcare/patientSeeder'); // Adjust the path according to your structure
+// const { seedSchedules } = require('./healthcare/scheduleSeeder'); // Adjust the path according to your structure
 
-async function seedAll() {
+const seedDatabase = async () => {
     try {
-        console.log('Starting group seeding...');
-        await seedGroups();
-        console.log('Group seeding completed.');
-        
-        console.log('Starting permission seeding...');
-        await seedPermissions();
-        console.log('Permission seeding completed.');
+        await sequelize.sync({ force: false });
 
-        console.log('Starting Group permission seeding...');
-        await seedGroupPermissions();
-        console.log('Group Permission seeding completed.');
-        
-        console.log('Starting Specialization seeding...');
-        await seedSpecilization();
-        console.log('Specialization seeding completed.');
+        // console.log('Seeding users...');
+        // await seedUsers();
+        // console.log('Users seeded successfully!');
 
-        console.log('All seeds executed successfully.');
-    } catch (err) {
-        console.error('Error Occurred in Seeds:', err.stack || err);
+        // console.log('Seeding user passwords...');
+        // await seedUserPasswords();
+        // console.log('User passwords seeded successfully!');
+
+        // console.log('Seeding groups...');
+        // await seedGroups();
+        // console.log('Groups seeded successfully!');
+
+        // console.log('Seeding permissions...');
+        // await seedPermissions();
+        // console.log('Permissions seeded successfully!');
+
+        // console.log('Seeding group permissions...');
+        // await seedGroupPermissions();
+        // console.log('Group permissions seeded successfully!');
+
+        // console.log('Seeding user groups...');
+        // await seedUserGroups();
+        // console.log('User groups seeded successfully!');
+
+        // console.log('Seeding specializations...');
+        // await seedSpecializations();
+        // console.log('Specializations seeded successfully!');
+
+        // console.log('Seeding doctors...');
+        // await seedDoctors();
+        // console.log('Doctors seeded successfully!');
+
+        // console.log('Seeding patients...');
+        // await seedPatients();
+        // console.log('Patients seeded successfully!');
+
+        // console.log('Seeding schedules...');
+        // await seedSchedules();
+        // console.log('Schedules seeded successfully!');
+
+        console.log('Database seeded successfully!');
+        process.exit();
+    } catch (error) {
+        console.error('Error seeding database:', error);
+        process.exit(1);
     }
-}
+};
 
-seedAll();
+seedDatabase();

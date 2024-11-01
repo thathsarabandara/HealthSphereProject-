@@ -15,7 +15,6 @@ require('../models/content/Review');
 require('../models/ecommerce/Cart');
 require('../models/ecommerce/CartItem');
 
-require('../models/healthcare/Clinic');
 require('../models/healthcare/Doctor');
 require('../models/healthcare/Patient');
 require('../models/healthcare/Prescription');
