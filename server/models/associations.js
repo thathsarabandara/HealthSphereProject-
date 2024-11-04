@@ -63,6 +63,7 @@ Cart.belongsTo(Patient, { foreignKey: 'patient_id' });
 Cart.belongsTo(CartItem, { foreignKey: 'cart_item_id' });
 
 Notification.belongsTo(User, { foreignKey: 'user_id' });
+Payment.belongsTo(User, {foreignKey:  'user_id'})
 
 // Define security relationships 
 AuditLog.belongsTo(User, { foreignKey: 'user_id' });

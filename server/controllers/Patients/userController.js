@@ -47,7 +47,6 @@ exports.loadDoctors = async (req, res) => {
     try {
         // Step 1: Get the specialization from URL parameters
         const categoryName = req.params.specialization;
-        console.log(categoryName);
         
         // Step 2: Find the specialization in the database
         const specialization = await Specialization.findOne({ where: { name: categoryName } });
@@ -63,7 +62,7 @@ exports.loadDoctors = async (req, res) => {
             }
         });
 
-        if (!doctors.length) {
+        if (!Array.isArray(doctors) || doctors.length === 0) {
             return res.status(404).json({ message: 'No doctors found for this specialization' });
         }
 
@@ -74,8 +73,8 @@ exports.loadDoctors = async (req, res) => {
         const schedules = await Schedule.findAll({ 
             where: { 
                 doctor_id: doctors.map(doctor => doctor.id), // Filter schedules by doctor IDs
-                date: { [Op.gte]: today }, // Get schedules for today and future dates
-                status: 'approved' // Only approved schedules
+                schedule_date: { [Op.gte]: today }, // Get schedules for today and future dates
+                status: 'available' // Only approved schedules
             } 
         });
 
@@ -85,11 +84,10 @@ exports.loadDoctors = async (req, res) => {
 
             return doctorSchedules.map(schedule => ({
                 doctor_id: doctor.id,
-                doctorname: doctor.name,
-                date: schedule.date,
-                time: schedule.time,
-                profileLink: doctor.profileLink, // Assuming profileLink exists on doctor model
-                consultationFee: schedule.fee + 500 // Adding hospital charges
+                doctorname: doctor.first_name +' '+ doctor.last_name,
+                date: schedule.schedule_date,
+                time: schedule.schedule_time,
+                consultationFee: parseInt(schedule.fees) + 500.00 // Adding hospital charges
             }));
         }).flat(); // Flatten the array to get a single array of doctor-schedule objects
 

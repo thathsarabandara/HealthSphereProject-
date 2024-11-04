@@ -45,8 +45,8 @@ function DoctorDetails() {
           {doctors.length > 0 ? (
             doctors.map(doctor => (
               <tr key={doctor.id}> {/* Assuming each doctor has a unique 'id' */}
-                <td>{doctor.id}</td>
-                <td>{doctor.name}</td>
+                <td>{doctor.doctor_id}</td>
+                <td>{doctor.doctorname}</td>
                 <td>{doctor.date}</td>
                 <td>{doctor.time}</td>
                 <td><a href={doctor.profileLink}>View</a></td> {/* Assuming profileLink is available */}

@@ -1,11 +1,20 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/db');
+const { User } = require('../auth/User');
 
 const Payment = sequelize.define('Payment', {
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true,
+    },
+    patient_id: {
+        type: DataTypes.INTEGER,
+        references: {
+            model: User,
+            key: 'id',
+        },
+        allowNull: false,
     },
     amount: {
         type: DataTypes.DECIMAL(10, 2),
