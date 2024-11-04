@@ -79,10 +79,10 @@ function DoctorNavbar() {
               <Link to="/doctor/about" className='nav-link active'>About Us</Link>
             </li>
             <li className="nav-item">
-              <Link to="/doctor/dashboard" className='nav-link active'>Dashboard</Link>
+              <Link to="/doctor/dashboard1" className='nav-link active'>Dashboard</Link>
             </li>
             <li className='nav-item'>
-              <Link to="/schedule" className='nav-link active'>Schedule</Link>
+              <Link to="/doctor/schedule" className='nav-link active'>Schedule</Link>
             </li>
             <li className='nav-item'>
               <Link to="/doctor/videoconsultation" className='nav-link active'>Video Consultation</Link>

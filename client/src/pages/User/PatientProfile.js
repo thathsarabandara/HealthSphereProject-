@@ -108,7 +108,7 @@ function PatientProfile() {
                       value={profileData.patientId}
                       onChange={handleInputChange}
                       placeholder="Enter Patient ID"
-                     
+                      
                     />
                   </div>
                 </div>

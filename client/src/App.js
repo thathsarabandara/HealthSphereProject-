@@ -30,7 +30,13 @@ import DoctorRegister from './pages/doctor/DoctorRegister';
 import DoctorLogin from './pages/doctor/DoctorLogin';
 import DoctorAbout from './pages/doctor/DoctorAbout';
 import DoctorHome from './pages/doctor/DoctorHome';
-
+import DoctorSchedule from './pages/doctor/DoctorSchedule';
+import DoctorDashboard from './pages/doctor/DoctorDashboard';
+import DoctorDashboard1 from './pages/doctor/DoctorDashboard1';
+import DoctorVideoConsultation from './pages/doctor/DoctorVideoConsultation';
+import DoctorClinic from './pages/doctor/DoctorClinic';
+import DoctorPrescription from './pages/doctor/DoctorPrescription';
+import DoctorProfile from './pages/doctor/DoctorProfile';
 
 const getNavbarAndFooter = (path) => {
   let NavbarComponent, FooterComponent;
@@ -80,6 +86,13 @@ function App() {
         <Route path="/doctor/register" element={<DoctorRegister/>} />
         <Route path="/doctor/about" element={<DoctorAbout/>} />
         <Route path="/doctor/home" element={<DoctorHome/>} />
+        <Route path="/doctor/schedule" element={<DoctorSchedule/>} />
+        <Route path="/doctor/dashboard" element={<DoctorDashboard/>} />
+        <Route path="/doctor/dashboard1" element={<DoctorDashboard1/>} />
+        <Route path="/doctor/videoconsultation" element={<DoctorVideoConsultation/>} />
+        <Route path="/doctor/clinic" element={<DoctorClinic/>} />
+        <Route path="/doctor/prescription" element={<DoctorPrescription/>} />
+        <Route path="/doctor/profile" element={<DoctorProfile/>} />
 
         <Route path="/error403" element={<Error403/>} />
         <Route path="/error404" element={<Error404/>} />

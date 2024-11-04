@@ -24,23 +24,13 @@ function PatientHome() {
   return (
     <div className="container-fluid p-0 position-relative">
       {/* Background Image */}
-      
-      {/*<div className="img-container ">
-        <img src={Home1} className="img-fluid w-100" alt="Home" style={{ objectFit: 'cover', height: '100vh' }} />
-      </div>*/}
       <div className="img-container">
-        <img src={Home1} className="img-fluid w-100" alt="Home" style={{ objectFit: 'cover', height: 'auto', maxHeight: '100vh' }} />
+        <img src={Home1} className="img-fluid w-100 min-vh-100" alt="Home" style={{ objectFit: 'cover'}} />
       </div>
 
-      
 
-      
-
-      
-
-      {/* Content overlaying the image */}
       <div className="container position-absolute  start-50 text-white" style={{ transform: 'translate(-50%, -80%)',  marginTop: '-200px'}}>
-        <div className="row">
+        <div className="row xs-justify-content-center">
           {/* Upper Text */}
           <div className="col-12 col-md-8 ms-md-5 text-center text-md-start">
             <h6 className="text-black mb-3 fs-6 fs-md-5 fs-lg-4">
@@ -49,7 +39,7 @@ function PatientHome() {
           </div>
 
           {/* Main Heading */}
-          <div className="col-12 col-md-8 ms-md-5 text-center text-md-start">
+          <div className="col-12 col-lg-12 col-md-8 ms-md-5 text-center text-md-start">
             <h1 className="text-black display-5 display-md-4 display-lg-3 mb-3">
             Get Better Care For Your Health<br />
             with Health <span className="sphere text-white">Sphere</span>
@@ -58,8 +48,8 @@ function PatientHome() {
 
           {/* Buttons */}
           <div className="col-12 col-md-8 ms-md-5 d-flex flex-column flex-md-row justify-content-md-start justify-content-center gap-3 mb-4">
-            <button className="btn btn-primary px-4 w-100 w-md-auto">Make Appointment</button>
-            <button className="btn btn-outline-primary px-4 w-100 w-md-auto">Find Doctor</button>
+            <button className="btn btn-primary px-4 w-auto w-md-auto" style={{background: '#C8D8F6', color: 'black'}}>Make Appointment</button>
+            <button className="btn btn-outline-primary px-4 w-auto w-md-auto" style={{background: '#C8D8F6', color: 'black'}}>Find Doctor</button>
           </div>
 
           {/* Social Media Icons */}
@@ -78,27 +68,17 @@ function PatientHome() {
 
       {/* Lower Text */}
       
-      {/*<div className='lower'>
-        <div className="position-absolute bottom-0 w-100 text-center">
-          <span className="middle text-white fs-1 p-3">"Your Health is our Priority"</span>
+      <div className="position-absolute start-50 translate-middle text-center">
+            <span className="middle text-white fs-1 fs-md-4 p-3" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            "Your Health is our Priority"
+            </span>
         </div>
-      </div>*/}
-      <div className="position-absolute  start-50 translate-middle text-center ">
-        <span className="middle text-white fs-1 p-3" >"Your Health is our Priority"</span>
-      </div>
 
-      {/*<div className='home2'>
-        <div className='container-fluid'>
-          <div className='row'>
-            <div className='col'>
-              <h1 className='firstheading '>Welcome to Health Code</h1>
-              <h6 className='secondheading'>We Dedicated to You</h6>
-              <h3 className='thirdheading'>Compassion, Innovation & Excell</h3>
-            </div>
+      
 
-          </div>
-        </div>
-      </div>*/}
+
+
+     {/*------------section1----------*/}
       <section className='section1 py-5'>
         <div className='container'>
           <div className='row text-center'>
