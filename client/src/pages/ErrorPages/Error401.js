@@ -1,8 +1,13 @@
 import React from 'react'
+import Error from './Error'
 
 function Error401() {
   return (
-    <div>Error401</div>
+    <Error 
+      errorimg={error401} 
+      errorCode="401" 
+      errorMessage="Unauthorized. You need to log in to access this page." 
+    />
   )
 }
 

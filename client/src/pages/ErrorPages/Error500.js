@@ -1,8 +1,13 @@
 import React from 'react'
+import Error from './Error'
 
 function Error500() {
   return (
-    <div>Error500</div>
+    <Error 
+      errorimg={error500} 
+      errorCode="500" 
+      errorMessage="Internal Server Error. Please try again later." 
+    />
   )
 }
 

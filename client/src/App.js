@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import PatientNavbar from './components/user/PatientNavbar';
 import DoctorNavbar from './components/doctor/DoctorNavbar';
@@ -37,6 +38,8 @@ import DoctorVideoConsultation from './pages/doctor/DoctorVideoConsultation';
 import DoctorClinic from './pages/doctor/DoctorClinic';
 import DoctorPrescription from './pages/doctor/DoctorPrescription';
 import DoctorProfile from './pages/doctor/DoctorProfile';
+import Loader from './components/common/Loader';
+
 
 const getNavbarAndFooter = (path) => {
   let NavbarComponent, FooterComponent;
@@ -57,6 +60,11 @@ const getNavbarAndFooter = (path) => {
 function App() {
   const location = useLocation();
   const { NavbarComponent, FooterComponent } = getNavbarAndFooter(location.pathname);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    setTimeout(() => setIsLoading(false), 3000); // Simulate loading time
+  }, []);
 
   return (
     <div>

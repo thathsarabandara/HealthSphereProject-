@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react';
 import Home1 from "../../assets/images/Rectangle 9 (3).svg"
 import '../../styles/Home.css'
 import '@fortawesome/fontawesome-free/css/all.min.css';
@@ -17,11 +17,37 @@ import Img6 from '../../assets/images/img-1 (6).svg'
 import Img7 from '../../assets/images/img-1 (7).svg' 
 import Img8 from '../../assets/images/img-1 (8).svg'
 import Img9 from '../../assets/images/img-1 (9).svg' 
+import Loader from '../../components/common/Loader';
 
 
 
 function PatientHome() {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    setTimeout(() => setIsLoading(false), 3000); // Simulate loading time
+  }, []);
+
   return (
+    isLoading ? 
+    (
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#f0f4f8',
+        zIndex: 9999
+      }}>
+        <Loader />
+      </div>
+    ) 
+    : 
+    (
     <div className="container-fluid p-0 position-relative">
       {/* Background Image */}
       <div className="img-container">
@@ -175,8 +201,8 @@ function PatientHome() {
 
 
 
-   
-  )
+    )
+  );
 }
 
 export default PatientHome;

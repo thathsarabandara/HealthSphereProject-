@@ -7,7 +7,7 @@ import emptyImage from '../../assets/images/emptyProfile.png';
 import axios from 'axios';
 
 function PatientNavbar() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(sessionStorage.getItem('isAuthenticated') === 'true');
   const [user, setUser] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -18,14 +18,17 @@ function PatientNavbar() {
       const response = await axios.get('http://localhost:5000/', { withCredentials: true });
       if (response.status === 200) {
         setIsAuthenticated(true);
+        sessionStorage.setItem('isAuthenticated', 'true');
         setUser(response.data.data);
       } else {
         setIsAuthenticated(false);
+        sessionStorage.removeItem('isAuthenticated');
         setUser(null);
       }
     } catch (error) {
       console.error('Error fetching user data:', error);
       setIsAuthenticated(false);
+      sessionStorage.removeItem('isAuthenticated');
       setUser(null);
     } finally {
       setLoading(false);
@@ -33,7 +36,17 @@ function PatientNavbar() {
   };
 
   useEffect(() => {
-    fetchUserData(); // Fetch user data on mount
+    // Fetch user data on mount
+    fetchUserData();
+
+    // Listen for login event
+    const handleLoginEvent = () => {
+      fetchUserData();
+    };
+    window.addEventListener("userLogin", handleLoginEvent);
+
+    // Clean up event listener on unmount
+    return () => window.removeEventListener("userLogin", handleLoginEvent);
   }, []);
 
   const toggleDropdown = () => {
@@ -43,17 +56,15 @@ function PatientNavbar() {
   const handleLogout = async () => {
     try {
       const response = await axios.post('http://localhost:5000/logout', null, { withCredentials: true });
-      
       if (response.status === 200) {
         console.log('Logout successful:', response.data.message);
         setIsAuthenticated(false);
+        sessionStorage.removeItem('isAuthenticated');
         setUser(null);
-        // Redirect to the homepage or login page
-        window.location.href = '/login'; // Adjust as necessary
+        window.location.href = '/login'; // Redirect to login page after logout
       }
     } catch (error) {
       console.error('Logout error:', error.response ? error.response.data : error.message);
-      // Handle error (e.g., show a notification)
     }
   };
 
@@ -94,40 +105,40 @@ function PatientNavbar() {
 
           <div className='header'>
             {isAuthenticated ? (
-                <div className='user-section'>
-                  <div className='profile-name d-flex flex-column'>
-                    <h4 className='hello'>Welcome to the Healthsphere,</h4>
-                    <h5 className='name'>Dear, {user ? user.name : 'User'}</h5> {/* Added check here */}
-                  </div>
-                  <div className='profile-container'>
-                      <img
-                        src={user?.profilePicture || emptyImage} // Use optional chaining here
-                        alt='Profile'
-                        className='profile-photo'
-                        onClick={toggleDropdown}
-                      />
-                      {showDropdown && (
-                        <div className='profile-dropdown'>
-                          <Link to='/userprofile' className='dropdown-item'>Profile</Link>
-                          <Link to='/user_prescription' className='dropdown-item'>User Prescriptions</Link>
-                          <Link to='/user_payments' className='dropdown-item'>User Payments</Link>
-                          <Link to="#" className='dropdown-item' onClick={handleLogout}>Logout</Link>
-                        </div>
-                      )}
-                  </div>
+              <div className='user-section'>
+                <div className='profile-name d-flex flex-column'>
+                  <h4 className='hello'>Welcome to HealthSphere,</h4>
+                  <h5 className='name'>Dear, {user ? user.name : 'User'}</h5>
                 </div>
+                <div className='profile-container'>
+                  <img
+                    src={user?.profilePicture || emptyImage}
+                    alt='Profile'
+                    className='profile-photo'
+                    onClick={toggleDropdown}
+                  />
+                  {showDropdown && (
+                    <div className='profile-dropdown'>
+                      <Link to='/userprofile' className='dropdown-item'>Profile</Link>
+                      <Link to='/user_prescription' className='dropdown-item'>User Prescriptions</Link>
+                      <Link to='/user_payments' className='dropdown-item'>User Payments</Link>
+                      <Link to="#" className='dropdown-item' onClick={handleLogout}>Logout</Link>
+                    </div>
+                  )}
+                </div>
+              </div>
             ) : (
-                <div className='btn-container ms-5'>
-                  <button className='btn1 btn-outline'>
-                    <Link to='/register' style={{ textDecoration: 'none', color: 'inherit' }}>Register</Link>
-                  </button>
-                  <button className='btn2 btn-outline'>
-                    <Link to='/login' style={{ textDecoration: 'none', color: 'inherit' }}>Log in</Link>
-                  </button>
-                  <div className='icon'>
-                    <MdAccountCircle className='account-icon' />
-                  </div>
+              <div className='btn-container ms-5'>
+                <button className='btn1 btn-outline'>
+                  <Link to='/register' style={{ textDecoration: 'none', color: 'inherit' }}>Register</Link>
+                </button>
+                <button className='btn2 btn-outline'>
+                  <Link to='/login' style={{ textDecoration: 'none', color: 'inherit' }}>Log in</Link>
+                </button>
+                <div className='icon'>
+                  <MdAccountCircle className='account-icon' />
                 </div>
+              </div>
             )}
           </div>
         </div>
