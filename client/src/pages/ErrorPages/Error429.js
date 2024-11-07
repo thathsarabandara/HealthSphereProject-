@@ -1,5 +1,6 @@
 import React from 'react'
 import Error from './Error'
+import error429 from '../../assets/images/Rectangle 9 (1).svg';
 
 function Error429() {
   return (

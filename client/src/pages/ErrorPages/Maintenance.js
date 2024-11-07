@@ -1,5 +1,6 @@
 import React from 'react'
 import Error from './Error'
+import maintenanceImage from '../../assets/images/Rectangle 9 (1).svg';
 
 function Maintenance() {
   return (

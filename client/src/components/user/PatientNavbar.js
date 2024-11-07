@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import '../../styles/Navbar.css';
 import banner from '../../assets/images/banner-img.png';
-import { MdAccountCircle } from "react-icons/md";
+import { MdAccountCircle, MdShoppingCart } from "react-icons/md"; // Import cart icon
 import emptyImage from '../../assets/images/emptyProfile.png';
 import axios from 'axios';
 
@@ -101,15 +101,22 @@ function PatientNavbar() {
             <li className='nav-item'>
               <Link to="/about" className='nav-link active'>About Us</Link>
             </li>
+
+            {/* Cart Icon, placed after other nav items */}
+            <li className='nav-item'>
+              <Link to="/cart" className="nav-link active">
+                <MdShoppingCart className="cart-icon" />
+              </Link>
+            </li>
           </ul>
 
           <div className='header'>
             {isAuthenticated ? (
               <div className='user-section'>
-                <div className='profile-name d-flex flex-column'>
-                  <h4 className='hello'>Welcome to HealthSphere,</h4>
-                  <h5 className='name'>Dear, {user ? user.name : 'User'}</h5>
-                </div>
+                 <div className='profile-name d-flex flex-column'>
+                    <h4 className='hello'>Welcome to the Healthsphere,</h4>
+                    <h5 className='name'>Dear, {user ? user.name : 'User'}</h5> {/* Added check here */}
+                  </div>
                 <div className='profile-container'>
                   <img
                     src={user?.profilePicture || emptyImage}
@@ -120,8 +127,8 @@ function PatientNavbar() {
                   {showDropdown && (
                     <div className='profile-dropdown'>
                       <Link to='/userprofile' className='dropdown-item'>Profile</Link>
-                      <Link to='/user_prescription' className='dropdown-item'>User Prescriptions</Link>
-                      <Link to='/user_payments' className='dropdown-item'>User Payments</Link>
+                      <Link to='/user_prescription' className='dropdown-item'>Prescriptions</Link>
+                      <Link to='/user_payments' className='dropdown-item'>Payments</Link>
                       <Link to="#" className='dropdown-item' onClick={handleLogout}>Logout</Link>
                     </div>
                   )}

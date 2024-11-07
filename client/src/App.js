@@ -39,6 +39,14 @@ import DoctorClinic from './pages/doctor/DoctorClinic';
 import DoctorPrescription from './pages/doctor/DoctorPrescription';
 import DoctorProfile from './pages/doctor/DoctorProfile';
 import Loader from './components/common/Loader';
+import DataAccesDenied from './pages/ErrorPages/DataAccesDenied';
+import Error400 from './pages/ErrorPages/Error400';
+import Error401 from './pages/ErrorPages/Error401';
+import Error408 from './pages/ErrorPages/Error408';
+import Error429 from './pages/ErrorPages/Error429';
+import Error500 from './pages/ErrorPages/Error500';
+import Error503 from './pages/ErrorPages/Error503';
+import Maintenance from './pages/ErrorPages/Maintenance';
 
 
 const getNavbarAndFooter = (path) => {
@@ -89,6 +97,17 @@ function App() {
         <Route path="/payment" element={<Payment/>} />
         <Route path="/refund" element={<Refund/>} />
         <Route path="/reservations" element={<Reservations/>} />
+
+        <Route path="/error/accessdenied" element={<DataAccesDenied/>} />
+        <Route path="/error/400" element={<Error400/>} />
+        <Route path="/error/401" element={<Error401/>} />
+        <Route path="/error/403" element={<Error403/>} />
+        <Route path="/error/404" element={<Error404/>} />
+        <Route path="/error/408" element={<Error408/>} />
+        <Route path="/error/429" element={<Error429/>} />
+        <Route path="/error/500" element={<Error500/>} />
+        <Route path="/error/503" element={<Error503/>} />
+        <Route path="/error/maintenance" element={<Maintenance/>} />
 
         <Route path="/doctor/login" element={<DoctorLogin />} />
         <Route path="/doctor/register" element={<DoctorRegister/>} />
