@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { triggerLoginEvent } from './authEvents'; // Make sure to adjust the import path
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import '../../styles/temp.css';
@@ -21,6 +22,9 @@ function Login() {
             setError('');
             setEmail('');
             setPassword('');
+            
+            sessionStorage.setItem('isAuthenticated', 'true'); // Persist authentication state
+            triggerLoginEvent()
 
             // Navigate to the desired route after successful login
             navigate('/'); // Change this to your desired route

@@ -6,40 +6,31 @@ const authMiddleware = require('../middleware/auth/authenticateJWT');
 const {authorizeRole} = require('../middleware/auth/authorizeRole');
 const {rateLimiterMiddleware} = require('../middleware/rateLimit/rateLimiter')
 
-// router.get('/', authMiddleware , (req, res) => {
-//     res.send('User List');
-// });
-
-router.get('/', rateLimiterMiddleware, userController.authHome);
-router.get('/home', rateLimiterMiddleware ,userController.authHome );
+router.get('/', rateLimiterMiddleware ,userController.authHome );
 router.get('/finddoctor', rateLimiterMiddleware);
+router.post('/finddoctor', rateLimiterMiddleware, userController.searchDoctors);
 router.get('/finddoctor/:specialization', rateLimiterMiddleware, userController.loadDoctors);
-router.get('/finddoctor/:specialization/reservation',[authMiddleware , authorizeRole('user')]);
-router.get('/finddoctor/:specialization/:doctor',);
-router.get('/package',);
-router.get('/pharamacy',[authMiddleware , authorizeRole('user')]);
-router.get('/labratory',[authMiddleware , authorizeRole('user')]);
-router.get('/aboutus',);
-router.get('/404_error',);
-router.get('/403_error',);
-router.get('/429_error',(req,res) => {
-    res.send('Too Much request!');
-});
-router.get('/userprofile',[authMiddleware , authorizeRole('user')]);
-router.get('/user_prescription',[authMiddleware , authorizeRole('user')]);
-router.get('/user_payments',[authMiddleware , authorizeRole('user')]);
-router.get('/cart',[authMiddleware , authorizeRole('user')]);
-router.get('/checkout',[authMiddleware , authorizeRole('user')]);
-router.get('/refund',[authMiddleware , authorizeRole('user')]);
-router.get('/refund/request',[authMiddleware , authorizeRole('user')]);
-router.post('/resetpassword',userAuthController.resetPassword);
-router.get('/resetpassword/validate',userAuthController.validateToken);
-router.post('/resetpasswordRequest', userAuthController.resetPasswordRequest);
-router.post('/logout', userAuthController.logout);
-router.post('/verifyuser', userAuthController.verifyUser );
-router.get('/resendotp', userAuthController.resendOTP);
-router.post('/register',userAuthController.register);
-router.post('/login',userAuthController.login);
+router.get('/finddoctor/:specialization/reservation',[authMiddleware , authorizeRole('user'),rateLimiterMiddleware]);
+router.get('/finddoctor/:specialization/:doctor',[authMiddleware , authorizeRole('user'),rateLimiterMiddleware]);
+router.get('/package',[authMiddleware , authorizeRole('user'),rateLimiterMiddleware]);
+router.get('/pharamacy',[authMiddleware , authorizeRole('user'),rateLimiterMiddleware]);
+router.get('/labratory',[authMiddleware , authorizeRole('user'),rateLimiterMiddleware]);
+router.get('/aboutus',rateLimiterMiddleware);
+router.get('/userprofile',[authMiddleware , authorizeRole('user'),rateLimiterMiddleware]);
+router.get('/userprescription',[authMiddleware , authorizeRole('user'),rateLimiterMiddleware]);
+router.get('/userpayments',[authMiddleware , authorizeRole('user'),rateLimiterMiddleware]);
+router.get('/cart',[authMiddleware , authorizeRole('user'),rateLimiterMiddleware]);
+router.get('/checkout',[authMiddleware , authorizeRole('user'),rateLimiterMiddleware]);
+router.get('/refund',[authMiddleware , authorizeRole('user'),rateLimiterMiddleware]);
+router.get('/refund/request',[authMiddleware , authorizeRole('user'),rateLimiterMiddleware]);
+router.post('/resetpassword',rateLimiterMiddleware,userAuthController.resetPassword);
+router.get('/resetpassword/validate',rateLimiterMiddleware,userAuthController.validateToken);
+router.post('/resetpasswordRequest',rateLimiterMiddleware, userAuthController.resetPasswordRequest);
+router.post('/logout',rateLimiterMiddleware, userAuthController.logout);
+router.post('/verifyuser',rateLimiterMiddleware, userAuthController.verifyUser );
+router.get('/resendotp',rateLimiterMiddleware, userAuthController.resendOTP);
+router.post('/register',rateLimiterMiddleware,userAuthController.register);
+router.post('/login',rateLimiterMiddleware,userAuthController.login);
 
 
 module.exports = router;

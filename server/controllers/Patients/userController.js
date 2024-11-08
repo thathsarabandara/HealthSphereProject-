@@ -6,6 +6,7 @@ const { Schedule } = require("../../models/healthcare/Schedule");
 const { Specialization } = require("../../models/healthcare/Specialization");
 const { Op } = require('sequelize'); // Ensure to import Op for query operators
 const moment = require('moment'); // Import moment for date manipulation
+const Sequelize = require('sequelize');
 
 exports.authHome = async (req, res) => {
     try {
@@ -18,17 +19,17 @@ exports.authHome = async (req, res) => {
         const isValidToken = await findUserID(token);
 
         if (!isValidToken) {
-            return res.status(400).json({ message: 'Token expired or not a valid token' });
+            return res.status(401).json({ message: 'Token expired or not a valid token' });
         }
 
         const user = await findUserById(isValidToken.user_id);
 
         if (!user) {
-            return res.status(400).json({ message: 'User not found' });
+            return res.status(401).json({ message: 'User not found' });
         }
 
         if (!user.isVerified) {
-            return res.status(400).json({ message: 'User is not verified!' });
+            return res.status(401).json({ message: 'User is not verified!' });
         }
 
         // Return user information if authentication and verification are successful
@@ -99,5 +100,95 @@ exports.loadDoctors = async (req, res) => {
     } catch (error) {
         console.error("Error loading doctors:", error);
         res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+exports.searchDoctors = async (req, res) => {
+    const { doctorName, specialization, sessionTime, date } = req.body.searchData;
+
+    // Validate the search data
+    if (!doctorName && !specialization && !sessionTime && !date) {
+        return res.status(400).json({ message: 'At least one search criterion must be provided' });
+    }
+
+    // Build the search query object
+    let query = {};
+
+    // If doctor name is provided, search by first_name and/or last_name
+    if (doctorName) {
+        const doctorsByName = await Doctor.findAll({
+            where: {
+                [Sequelize.Op.or]: [
+                    { first_name: { [Sequelize.Op.like]: `%${doctorName}%` } },
+                    { last_name: { [Sequelize.Op.like]: `%${doctorName}%` } }
+                ]
+            }
+        });
+        if (doctorsByName.length > 0) {
+            query.doctor_id = { [Sequelize.Op.in]: doctorsByName.map(doc => doc.doctor_id) };
+        } else {
+            return res.status(404).json({ message: 'Doctor not found' });
+        }
+    }
+
+    // If specialization is provided, find doctors by specialization
+    if (specialization) {
+        const doctorsBySpecialization = await Doctor.findAll({
+            where: { specialization_id: specialization }
+        });
+        if (doctorsBySpecialization.length > 0) {
+            query.doctor_id = { [Sequelize.Op.in]: doctorsBySpecialization.map(doc => doc.doctor_id) };
+        } else {
+            return res.status(404).json({ message: 'No doctors found with the given specialization' });
+        }
+    }
+
+    // If session time is provided, add it to the query
+    if (sessionTime) {
+        query.schedule_time = sessionTime; // Adjust if necessary to match your data format
+    }
+
+    // If date is provided, add it to the query
+    if (date) {
+        query.schedule_date = date; // Adjust format if necessary
+    }
+
+    try {
+        // Query the database for schedules based on the query object with JOIN to Doctor table
+        const schedules = await Schedule.findAll({
+            where: query,
+            include: [{
+                model: Doctor,
+                as: 'doctor', // Make sure this alias matches your model association
+                attributes: ['first_name', 'last_name'] // Include first_name and last_name
+            }]
+        });
+
+        // If no schedules are found, return a message
+        if (schedules.length === 0) {
+            return res.status(404).json({ message: 'No doctors found for the given search criteria' });
+        }
+
+        // Construct the response data according to the frontend expectations
+        const response = schedules.map(schedule => {
+            const doctor = schedule.doctor ? schedule.doctor.first_name + ' ' + schedule.doctor.last_name : 'Unknown Doctor';
+            
+            return {
+                doctor_id: schedule.doctor_id,
+                doctorname: doctor,
+                date: schedule.schedule_date,
+                time: schedule.schedule_time,
+                consultationFee: parseFloat(schedule.fees) + 500.00 // Adding hospital charges
+            };
+        });
+
+        // Filter out schedules without valid doctor data
+        const filteredResponse = response.filter(doc => doc.date && doc.time); // Ensure there are schedules present
+
+        // Send the response
+        res.status(200).json(filteredResponse);
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ message: 'An error occurred while searching for doctors' });
     }
 };
