@@ -26,6 +26,7 @@ import Error403 from './pages/ErrorPages/Error403';
 import Error404 from './pages/ErrorPages/Error404';
 import DoctorDetails from './pages/User/DoctorDetails';
 import Reservations from './pages/User/Reservations';
+import PatientDashboard from './pages/User/PatientDashboard';
 import DoctorRegister from './pages/doctor/DoctorRegister';
 import DoctorLogin from './pages/doctor/DoctorLogin';
 import DoctorAbout from './pages/doctor/DoctorAbout';
@@ -81,6 +82,7 @@ function App() {
         <Route path="/payment" element={<Payment/>} />
         <Route path="/refund" element={<Refund/>} />
         <Route path="/reservations" element={<Reservations/>} />
+        <Route path="/dashboard" element={<PatientDashboard/>} />
 
         <Route path="/doctor/login" element={<DoctorLogin />} />
         <Route path="/doctor/register" element={<DoctorRegister/>} />
