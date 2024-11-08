@@ -51,7 +51,7 @@ const rateLimiterMiddleware = async (req, res, next) => {
       //   message: 'Too many requests',
       //   retryAfter: Math.ceil(err.msBeforeNext / 1000), // Retry time in seconds
       // });
-      return res.status(429).redirect('/429_error')
+      return res.status(429)
     }
     // Handle other errors
     console.error('Error in rate limiter middleware:', err);
