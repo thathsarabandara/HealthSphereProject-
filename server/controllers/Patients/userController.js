@@ -13,7 +13,7 @@ exports.authHome = async (req, res) => {
         const token = req.cookies['token'];
 
         if (!token) {
-            return res.status(400).json({ message: 'User token not found' });
+            return res.status(401).json({ message: 'User token not found' });
         }
 
         const isValidToken = await findUserID(token);

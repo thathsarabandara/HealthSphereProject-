@@ -25,6 +25,18 @@ const Cart = sequelize.define('Cart', {
         },
         allowNull: false,
     },
+    unit_price:{
+        type: DataTypes.INTEGER,
+        references: {
+            model: CartItem,
+            key: 'price',
+        },
+        allowNull: false,
+    },
+    quantity: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
     total_price: {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false,

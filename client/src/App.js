@@ -98,7 +98,6 @@ function App() {
         <Route path="/payment" element={<Payment/>} />
         <Route path="/refund" element={<Refund/>} />
         <Route path="/reservations" element={<Reservations/>} />
-        <Route path="/dashboard" element={<PatientDashboard/>} />
 
         <Route path="/error/accessdenied" element={<DataAccesDenied/>} />
         <Route path="/error/400" element={<Error400/>} />
@@ -123,8 +122,6 @@ function App() {
         <Route path="/doctor/prescription" element={<DoctorPrescription/>} />
         <Route path="/doctor/profile" element={<DoctorProfile/>} />
 
-        <Route path="/error403" element={<Error403/>} />
-        <Route path="/error404" element={<Error404/>} />
         {/* Add more routes as necessary */}
       </Routes>
       <FooterComponent />
