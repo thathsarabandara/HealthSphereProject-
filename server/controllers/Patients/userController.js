@@ -104,91 +104,68 @@ exports.loadDoctors = async (req, res) => {
 };
 
 exports.searchDoctors = async (req, res) => {
-    const { doctorName, specialization, sessionTime, date } = req.body.searchData;
-
+    const { doctorName, specialization, sessionTime, sessionDate } = req.body.searchData;
+    console.log(doctorName);
+    console.log(specialization);
+    console.log(sessionTime);
+    console.log(sessionDate);
     // Validate the search data
-    if (!doctorName && !specialization && !sessionTime && !date) {
+    if (!doctorName && !specialization && !sessionTime && !sessionDate) {
         return res.status(400).json({ message: 'At least one search criterion must be provided' });
     }
 
-    // Build the search query object
-    let query = {};
-
-    // If doctor name is provided, search by first_name and/or last_name
-    if (doctorName) {
-        const doctorsByName = await Doctor.findAll({
-            where: {
-                [Sequelize.Op.or]: [
-                    { first_name: { [Sequelize.Op.like]: `%${doctorName}%` } },
-                    { last_name: { [Sequelize.Op.like]: `%${doctorName}%` } }
-                ]
-            }
-        });
-        if (doctorsByName.length > 0) {
-            query.doctor_id = { [Sequelize.Op.in]: doctorsByName.map(doc => doc.doctor_id) };
-        } else {
-            return res.status(404).json({ message: 'Doctor not found' });
-        }
-    }
-
-    // If specialization is provided, find doctors by specialization
-    if (specialization) {
-        const doctorsBySpecialization = await Doctor.findAll({
-            where: { specialization_id: specialization }
-        });
-        if (doctorsBySpecialization.length > 0) {
-            query.doctor_id = { [Sequelize.Op.in]: doctorsBySpecialization.map(doc => doc.doctor_id) };
-        } else {
-            return res.status(404).json({ message: 'No doctors found with the given specialization' });
-        }
-    }
-
-    // If session time is provided, add it to the query
-    if (sessionTime) {
-        query.schedule_time = sessionTime; // Adjust if necessary to match your data format
-    }
-
-    // If date is provided, add it to the query
-    if (date) {
-        query.schedule_date = date; // Adjust format if necessary
-    }
-
     try {
-        // Query the database for schedules based on the query object with JOIN to Doctor table
-        const schedules = await Schedule.findAll({
-            where: query,
-            include: [{
-                model: Doctor,
-                as: 'doctor', // Make sure this alias matches your model association
-                attributes: ['first_name', 'last_name'] // Include first_name and last_name
-            }]
-        });
+        // Prepare the doctor search filters
+        let doctorFilters = {};
 
-        // If no schedules are found, return a message
-        if (schedules.length === 0) {
-            return res.status(404).json({ message: 'No doctors found for the given search criteria' });
+        if (doctorName) {
+            doctorFilters[Op.or] = [
+                { first_name: { [Op.like]: `%${doctorName}%` } },
+                { last_name: { [Op.like]: `%${doctorName}%` } }
+            ];
+        }
+        if (specialization) {
+            doctorFilters.specialization_id = specialization;
         }
 
-        // Construct the response data according to the frontend expectations
+        // Find matching doctors
+        const doctors = await Doctor.findAll({ where: doctorFilters });
+        if (doctors.length === 0) {
+            return res.status(404).json({ message: 'No doctors found matching the criteria' });
+        }
+
+        // Extract doctor IDs for schedule search
+        const doctorIds = doctors.map(doc => doc.id);
+        console.log(doctorIds);
+
+        // Prepare the schedule search filters
+        let scheduleFilters = { doctor_id: { [Op.in]: doctorIds } };
+        if (sessionTime) scheduleFilters.schedule_time = sessionTime;
+        if (sessionDate) scheduleFilters.schedule_date = sessionDate;
+
+        // Find matching schedules
+        const schedules = await Schedule.findAll({ where: scheduleFilters });
+        if (schedules.length === 0) {
+            return res.status(404).json({ message: 'No schedules found matching the criteria' });
+        }
+
+        // Construct and send the response
         const response = schedules.map(schedule => {
-            const doctor = schedule.doctor ? schedule.doctor.first_name + ' ' + schedule.doctor.last_name : 'Unknown Doctor';
-            
+            const doctor = doctors.find(doc => doc.id === schedule.doctor_id);
+            if (!doctor) return null; // If doctor is not found, skip this entry
+
             return {
-                doctor_id: schedule.doctor_id,
-                doctorname: doctor,
+                doctor_id: doctor.id,
+                doctorName: doctor.first_name + ' ' + doctor.last_name,
                 date: schedule.schedule_date,
                 time: schedule.schedule_time,
                 consultationFee: parseFloat(schedule.fees) + 500.00 // Adding hospital charges
             };
-        });
+        }); // Filter out any null entries
 
-        // Filter out schedules without valid doctor data
-        const filteredResponse = response.filter(doc => doc.date && doc.time); // Ensure there are schedules present
-
-        // Send the response
-        res.status(200).json(filteredResponse);
+        res.status(200).json(response);
     } catch (err) {
         console.error(err);
-        return res.status(500).json({ message: 'An error occurred while searching for doctors' });
+        res.status(500).json({ message: 'An error occurred while searching for doctors' });
     }
 };

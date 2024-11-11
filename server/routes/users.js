@@ -17,6 +17,7 @@ router.get('/pharamacy',[authMiddleware , authorizeRole('user'),rateLimiterMiddl
 router.get('/labratory',[authMiddleware , authorizeRole('user'),rateLimiterMiddleware]);
 router.get('/aboutus',rateLimiterMiddleware);
 router.get('/userprofile',[authMiddleware , authorizeRole('user'),rateLimiterMiddleware]);
+router.put('/userprofile',[authMiddleware , authorizeRole('user'),rateLimiterMiddleware]);
 router.get('/userprescription',[authMiddleware , authorizeRole('user'),rateLimiterMiddleware]);
 router.get('/userpayments',[authMiddleware , authorizeRole('user'),rateLimiterMiddleware]);
 router.get('/cart',[authMiddleware , authorizeRole('user'),rateLimiterMiddleware]);

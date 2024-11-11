@@ -78,9 +78,6 @@ function DoctorNavbar() {
             <li className="nav-item">
               <Link to="/doctor/about" className='nav-link active'>About Us</Link>
             </li>
-            <li className="nav-item">
-              <Link to="/doctor/dashboard1" className='nav-link active'>Dashboard</Link>
-            </li>
             <li className='nav-item'>
               <Link to="/doctor/schedule" className='nav-link active'>Schedule</Link>
             </li>
@@ -89,9 +86,6 @@ function DoctorNavbar() {
             </li>
             <li className='nav-item'>
               <Link to="/doctor/clinic" className='nav-link active'>Clinic</Link>
-            </li>
-            <li className='nav-item'>
-              <Link to="/doctor/profile" className='nav-link active'>Profile</Link>
             </li>
           </ul>
 

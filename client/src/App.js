@@ -48,6 +48,7 @@ import Error429 from './pages/ErrorPages/Error429';
 import Error500 from './pages/ErrorPages/Error500';
 import Error503 from './pages/ErrorPages/Error503';
 import Maintenance from './pages/ErrorPages/Maintenance';
+import DoctorsProfile from './pages/User/DoctorsProfile';
 
 
 const getNavbarAndFooter = (path) => {
@@ -82,6 +83,8 @@ function App() {
         <Route path="/" element={<PatientHome />} />
         <Route path="/finddoctors" element={<PatientDoctors />} />
         <Route path="/finddoctors/:category" element={<DoctorDetails />} />
+        <Route path="/finddoctors/:category/reservation/:scheduleid" element={<Reservations/>} />
+        <Route path="/finddoctorse" element={<DoctorsProfile />} />
         <Route path="/packages" element={<PatientPackages />} />
         <Route path="/laboratory" element={<PatientLaboratory />} />
         <Route path="/pharmacy" element={<PatientPharmacy />} />
@@ -97,7 +100,6 @@ function App() {
         <Route path="/cart" element={<Cart/>} />
         <Route path="/payment" element={<Payment/>} />
         <Route path="/refund" element={<Refund/>} />
-        <Route path="/reservations" element={<Reservations/>} />
 
         <Route path="/error/accessdenied" element={<DataAccesDenied/>} />
         <Route path="/error/400" element={<Error400/>} />
@@ -113,14 +115,14 @@ function App() {
         <Route path="/doctor/login" element={<DoctorLogin />} />
         <Route path="/doctor/register" element={<DoctorRegister/>} />
         <Route path="/doctor/about" element={<DoctorAbout/>} />
-        <Route path="/doctor/home" element={<DoctorHome/>} />
+        <Route path="/doctor/" element={<DoctorHome/>} />
         <Route path="/doctor/schedule" element={<DoctorSchedule/>} />
         <Route path="/doctor/dashboard" element={<DoctorDashboard/>} />
         <Route path="/doctor/dashboard1" element={<DoctorDashboard1/>} />
         <Route path="/doctor/videoconsultation" element={<DoctorVideoConsultation/>} />
         <Route path="/doctor/clinic" element={<DoctorClinic/>} />
         <Route path="/doctor/prescription" element={<DoctorPrescription/>} />
-        <Route path="/doctor/profile" element={<DoctorProfile/>} />
+        <Route path="/doctor/fullRegister" element={<DoctorProfile/>} />
 
         {/* Add more routes as necessary */}
       </Routes>

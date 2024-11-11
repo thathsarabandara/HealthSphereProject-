@@ -34,10 +34,10 @@ function PatientDoctors() {
 
     // Prepare the search criteria for the API call
     const searchData = {
-      doctorName: searchCriteria.doctorName || '',
-      specialization: searchCriteria.specialization || '',
-      sessionTime: searchCriteria.sessionTime || '',
-      date: searchCriteria.date || ''
+      doctorName: searchCriteria.doctorName || null,
+      specialization: searchCriteria.specialization || null,
+      sessionTime: searchCriteria.sessionTime || null,
+      sessionDate: searchCriteria.date || null
     };
 
     // Fetch data from backend based on search criteria
@@ -160,6 +160,7 @@ function PatientDoctors() {
             <table className="table">
               <thead>
                 <tr>
+                  <th>Schedule ID</th>
                   <th>Doctor ID</th>
                   <th>Doctor Name</th>
                   <th>Date</th>
@@ -172,8 +173,9 @@ function PatientDoctors() {
               <tbody>
                 {doctorData.map((schedule, index) => (
                   <tr key={index}>
+                    <td>{schedule.schedule_id}</td>
                     <td>{schedule.doctor_id}</td>
-                    <td>{schedule.doctorname}</td>
+                    <td>{schedule.doctorName}</td>
                     <td>{schedule.date}</td>
                     <td>{schedule.time}</td>
                     <td>
