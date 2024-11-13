@@ -1,21 +1,22 @@
 const express = require('express');
+const authMiddleware = require('../middleware/auth/authenticateJWT');
+const { authorizeRole } = require('../middleware/auth/authorizeRole');
+const { rateLimiterMiddleware } = require('../middleware/rateLimit/rateLimiter');
+const doctorAuthController =  require('../controllers/Doctors/doctorAuthController');
+const doctorController =  require('../controllers/Doctors/doctorController');
 const router = express.Router();
 
-router.get('/', (req, res) => {
-    res.send('Doctor List');
-});
-router.get('/doctor',);
-router.get('/doctor/home',);
-router.get('/doctor/aboutus',);
-router.get('/doctor/dashboard',);
-router.get('/doctor/schedule',);
-router.get('/doctor/videoconsultation',);
-router.get('/doctor/clinic',);
-router.get('/doctor/clinic/patientprofile',);
-router.get('/doctor/clinic/prescription',);
-router.get('/doctor/login',);
-router.get('/doctor/register',);
-router.get('/doctor/fullregister',);
+
+router.get('/',rateLimiterMiddleware,doctorController);
+router.get('/aboutus',rateLimiterMiddleware,);
+router.get('/schedule',[authMiddleware , authorizeRole('doctor'),rateLimiterMiddleware]);
+router.get('/videoconsultation',[authMiddleware , authorizeRole('doctor'),rateLimiterMiddleware]);
+router.get('/clinic',[authMiddleware , authorizeRole('doctor'),rateLimiterMiddleware]);
+router.get('/clinic/patientprofile',[authMiddleware , authorizeRole('doctor'),rateLimiterMiddleware]);
+router.get('/clinic/prescription',[authMiddleware , authorizeRole('doctor'),rateLimiterMiddleware]);
+router.get('/login',rateLimiterMiddleware,doctorAuthController.login);
+router.post('/register',rateLimiterMiddleware,doctorAuthController.register);
+router.post('/fullregister',rateLimiterMiddleware,);
 
 
 module.exports = router;

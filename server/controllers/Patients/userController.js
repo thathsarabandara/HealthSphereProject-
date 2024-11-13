@@ -269,3 +269,22 @@ exports.searchDoctors = async (req, res) => {
         res.status(500).json({ message: 'An error occurred while searching for doctors' });
     }
 };
+exports.loadPrescription =(req,res) =>{
+
+}
+
+exports.loadPayment= (req,res) => {
+
+}
+
+exports.loadCart = (req,res) =>{
+
+}
+
+exports.loadCheckout = (req,res) =>{
+
+}
+
+exports.loadRefund = (req,res) =>{
+    
+}

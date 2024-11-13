@@ -18,11 +18,11 @@ router.get('/labratory',[authMiddleware , authorizeRole('patient'),rateLimiterMi
 router.get('/aboutus',rateLimiterMiddleware);
 router.get('/userprofile',[authMiddleware ,authorizeRole('patient'), rateLimiterMiddleware],userController.profileLoad);
 router.put('/userprofile',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware],userController.saveProfile);
-router.get('/userprescription',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware]);
-router.get('/userpayments',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware]);
-router.get('/cart',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware]);
-router.get('/checkout',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware]);
-router.get('/refund',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware]);
+router.get('/userprescription',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware],userController.loadPrescription);
+router.get('/userpayments',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware], userController.loadPayment);
+router.get('/cart',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware], userController.loadCart);
+router.get('/checkout',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware],userController.loadCheckout);
+router.get('/refund',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware],userController.loadRefund);
 router.get('/refund/request',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware]);
 router.post('/resetpassword',rateLimiterMiddleware,userAuthController.resetPassword);
 router.get('/resetpassword/validate',rateLimiterMiddleware,userAuthController.validateToken);

@@ -10,6 +10,8 @@ const { createTempToken, findTempToken ,updateExpiredat} = require('../../models
 const { createUserPassword, findPassword, passwordDeactivate } = require('../../models/auth/UserPassword');
 const {createPasswordResetRequest, findPasswordResetToken} = require('../../models/security/PasswordResetRequest');
 const { getLocationFromIP } = require('../../services/locationHelper');
+const { UserGroup } = require('../../models/auth/UserGroup');
+const { Doctor } = require('../../models/healthcare/Doctor');
 
 exports.register = async (req, res) => {
     const {username, email, password} = req.body;
@@ -22,8 +24,12 @@ exports.register = async (req, res) => {
     try {
         // 3. Create a new user (unverified)
         const newUser = await createUser(username, email);
-        console.log('2')
+
         const newpassword = await createUserPassword(newUser.id, password);
+        await UserGroup.create(
+            {user_id: newUser.id},
+            {group_id: 2},
+        )
         await sendOTP(email);
         // 4. Generate a temporary token for OTP verification
         const tempToken = await tokenutils.generateToken(email,newpassword.passwordHash);
@@ -83,10 +89,12 @@ exports.verifyUser = async (req, res) => {
         const user = await User.updateVerify(UnverifiedUser.id)
         
         // 4. Create a patient record for the user
-        const newPatient = await createPatient(UnverifiedUser.id);
+        const newDoctor = await Doctor.create({
+            user_id: UnverifiedUser.id
+        })
 
         // 5. Send a welcome email
-        await sendWelcomeMessage(UnverifiedUser.username, newPatient.id, UnverifiedUser.email);
+        await sendWelcomeMessage(UnverifiedUser.username, newDoctor.id, UnverifiedUser.email);
 
         return res.status(200).json({ message: 'OTP verified successfully, registration complete!' });
     } catch (err) {
@@ -94,6 +102,9 @@ exports.verifyUser = async (req, res) => {
         return res.status(500).json({ error: 'OTP verification failed' });
     }
 };
+exports.fullRegister = (req,res) =>{
+    
+}
 
 exports.resendOTP = async (req,res) => {
     const token = req.cookies['verifytoken'];
