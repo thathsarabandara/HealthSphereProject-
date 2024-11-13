@@ -10,6 +10,7 @@ const { createTempToken, findTempToken ,updateExpiredat} = require('../../models
 const { createUserPassword, findPassword, passwordDeactivate } = require('../../models/auth/UserPassword');
 const {createPasswordResetRequest, findPasswordResetToken} = require('../../models/security/PasswordResetRequest');
 const { getLocationFromIP } = require('../../services/locationHelper');
+const { UserGroup } = require('../../models/auth/UserGroup');
 
 exports.register = async (req, res) => {
     const {username, email, password} = req.body;
@@ -24,6 +25,10 @@ exports.register = async (req, res) => {
         const newUser = await createUser(username, email);
         console.log('2')
         const newpassword = await createUserPassword(newUser.id, password);
+        await UserGroup.create(
+            {user_id: newUser.id},
+            {group_id: 1},
+        )
         await sendOTP(email);
         // 4. Generate a temporary token for OTP verification
         const tempToken = await tokenutils.generateToken(email,newpassword.passwordHash);

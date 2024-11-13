@@ -115,11 +115,38 @@ exports.profileLoad = async (req, res) => {
     }
 };
 
-exports.saveProfile= async(req,res) =>{
-    const {id,first_name,last_name,date_of_birth,gender,phone_number,address,profile_picture}= req.body.profileData;
-    
+exports.saveProfile = async (req, res) => {
+    const { id, first_name, last_name, date_of_birth, gender, phone_number, address, profile_picture } = req.body.profileData;
 
-}
+    try {
+        // Find the patient by ID and update their details
+        const [updatedRows] = await Patient.update(
+            {
+                first_name,
+                last_name,
+                date_of_birth,
+                gender,
+                phone_number,
+                address,
+                profile_picture
+            },
+            {
+                where: { id } // Update where patient ID matches
+            }
+        );
+
+        // Check if any rows were updated
+        if (updatedRows === 0) {
+            return res.status(404).json({ message: 'Patient not found or no changes made' });
+        }
+
+        return res.status(200).json({ message: 'Profile updated successfully' });
+    } catch (error) {
+        console.error('Error updating profile:', error);
+        return res.status(500).json({ message: 'An internal error occurred' });
+    }
+};
+
 exports.loadDoctors = async (req, res) => {
     try {
         // Step 1: Get the specialization from URL parameters
