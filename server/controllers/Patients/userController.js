@@ -7,36 +7,107 @@ const { Specialization } = require("../../models/healthcare/Specialization");
 const { Op } = require('sequelize'); // Ensure to import Op for query operators
 const moment = require('moment'); // Import moment for date manipulation
 const Sequelize = require('sequelize');
+const { Patient } = require("../../models/healthcare/Patient");
 
-exports.authHome = async (req, res) => {
+// Utility function to find user by token
+exports.findUserByToken = async (token) => {
     try {
-        const token = req.cookies['token'];
-
         if (!token) {
-            return res.status(401).json({ message: 'User token not found' });
+            throw { status: 401, message: 'User token not found' };
         }
 
         const isValidToken = await findUserID(token);
 
         if (!isValidToken) {
-            return res.status(401).json({ message: 'Token expired or not a valid token' });
+            throw { status: 401, message: 'Token expired or not a valid token' };
         }
 
         const user = await findUserById(isValidToken.user_id);
 
         if (!user) {
-            return res.status(401).json({ message: 'User not found' });
+            throw { status: 401, message: 'User not found' };
         }
 
         if (!user.isVerified) {
-            return res.status(401).json({ message: 'User is not verified!' });
+            throw { status: 401, message: 'User is not verified!' };
         }
 
+        // Return user information if authentication and verification are successful
+        return user;
+
+    } catch (error) {
+        // Pass error to the calling function
+        throw error.status ? error : { status: 500, message: 'An internal error occurred' };
+    }
+};
+
+// Route handler function
+exports.authHome = async (req, res) => {
+    try {
+        const token = req.cookies['token'];
+
+        const user = await this.findUserByToken(token);
+
+        if (!user) {
+            return res.status(401).json({ message: 'User not found' });
+        }
+
+        const patientData = await Patient.findOne({
+            where: { user_id: user.id }
+        });
+
+        if (!patientData) {
+            return res.status(404).json({ message: 'Patient data not found' });
+        }        
+        return res.status(200).json({
+            message: 'User authenticated successfully',
+            data: {
+                name: user.username,
+                email: user.email,
+                id: patientData.id,
+                first_name: patientData.first_name,
+                last_name: patientData.last_name,
+                date_of_birth: patientData.date_of_birth,
+                gender: patientData.gender,
+                phone_number: patientData.phone_number,
+                address: patientData.address,
+                profile_picture: patientData.profile_picture, // Assuming profile_picture is available
+            }
+        });
+        
+    } catch (error) {
+        return res.status(error.status || 500).json({ message: error.message });
+    }
+};
+
+
+exports.profileLoad = async (req, res) => {
+    try {
+        const token = req.cookies['token'];
+
+        const user = await this.findUserByToken(token);
+
+        const patientData = await Patient.findOne({where:
+            {user_id: user.id}
+        })
+        if(!patientData){
+            return res.status(404).json({message: 'Patient Datat not found'})
+        }
         // Return user information if authentication and verification are successful
         return res.status(200).json({
             message: 'User authenticated successfully',
             data: {
                 name: user.username,
+                id: patientData.id,
+                email: user.email,
+                first_name: patientData.first_name,
+                last_name : patientData.last_name,
+                date_of_birth : patientData.date_of_birth,
+                gender : patientData.gender,
+                phone_number : patientData.phone_number,
+                address : patientData.address,
+                profile_picture: patientData.first_name,
+                registrationDate: patientData.created_at,
             }
         });
     } catch (error) {
@@ -44,6 +115,11 @@ exports.authHome = async (req, res) => {
     }
 };
 
+exports.saveProfile= async(req,res) =>{
+    const {id,first_name,last_name,date_of_birth,gender,phone_number,address,profile_picture}= req.body.profileData;
+    
+
+}
 exports.loadDoctors = async (req, res) => {
     try {
         // Step 1: Get the specialization from URL parameters
@@ -105,10 +181,7 @@ exports.loadDoctors = async (req, res) => {
 
 exports.searchDoctors = async (req, res) => {
     const { doctorName, specialization, sessionTime, sessionDate } = req.body.searchData;
-    console.log(doctorName);
-    console.log(specialization);
-    console.log(sessionTime);
-    console.log(sessionDate);
+
     // Validate the search data
     if (!doctorName && !specialization && !sessionTime && !sessionDate) {
         return res.status(400).json({ message: 'At least one search criterion must be provided' });

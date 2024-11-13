@@ -16,7 +16,7 @@ router.get('/package',[authMiddleware , authorizeRole('user'),rateLimiterMiddlew
 router.get('/pharamacy',[authMiddleware , authorizeRole('user'),rateLimiterMiddleware]);
 router.get('/labratory',[authMiddleware , authorizeRole('user'),rateLimiterMiddleware]);
 router.get('/aboutus',rateLimiterMiddleware);
-router.get('/userprofile',[authMiddleware , authorizeRole('user'),rateLimiterMiddleware]);
+router.get('/userprofile',userController.profileLoad);
 router.put('/userprofile',[authMiddleware , authorizeRole('user'),rateLimiterMiddleware]);
 router.get('/userprescription',[authMiddleware , authorizeRole('user'),rateLimiterMiddleware]);
 router.get('/userpayments',[authMiddleware , authorizeRole('user'),rateLimiterMiddleware]);

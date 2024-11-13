@@ -21,10 +21,9 @@ function PatientProfile() {
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
-        const userId = "123"; // Replace with dynamic user ID, if needed.
-        const response = await axios.get(`http://localhost:5000/api/user-profile/${userId}`); // Replace with your backend API
+        const response = await axios.get(`http://localhost:5000/userprofile`, {withCredentials: true}); // Replace with your backend API
         if (response.status === 200) {
-          setProfileData(response.data); // Assuming the API returns data in the required format
+          setProfileData(response.data.data); // Assuming the API returns data in the required format
         }
       } catch (error) {
         console.error('Error fetching profile data:', error);
@@ -105,10 +104,10 @@ function PatientProfile() {
                       className="form-control"
                       id="patientId"
                       name="patientId"
-                      value={profileData.patientId}
+                      value={profileData.id}
                       onChange={handleInputChange}
                       placeholder="Enter Patient ID"
-                      
+                      disabled
                     />
                   </div>
                 </div>
@@ -117,12 +116,13 @@ function PatientProfile() {
                   <div className="form-group mt-3">
                     <label htmlFor="regDate"><b>Registration Date</b></label>
                     <input
-                      type="date"
+                      type="text"
                       className="form-control"
                       id="regDate"
                       name="registrationDate"
                       value={profileData.registrationDate}
                       onChange={handleInputChange}
+                      disabled
                     />
                   </div>
                 </div>
@@ -135,7 +135,7 @@ function PatientProfile() {
                       className="form-control"
                       id="firstName"
                       name="firstName"
-                      value={profileData.firstName}
+                      value={profileData.first_name}
                       onChange={handleInputChange}
                       placeholder="Enter First Name"
                     />
@@ -150,7 +150,7 @@ function PatientProfile() {
                       className="form-control"
                       id="lastName"
                       name="lastName"
-                      value={profileData.lastName}
+                      value={profileData.last_name}
                       onChange={handleInputChange}
                       placeholder="Enter Last Name"
                     />
@@ -165,7 +165,7 @@ function PatientProfile() {
                       className="form-control"
                       id="phoneNumber"
                       name="phoneNumber"
-                      value={profileData.phoneNumber}
+                      value={profileData.phone_number}
                       onChange={handleInputChange}
                       placeholder="Enter Phone Number"
                     />
@@ -198,6 +198,7 @@ function PatientProfile() {
                       value={profileData.email}
                       onChange={handleInputChange}
                       placeholder="Enter Email"
+                      disabled
                     />
                   </div>
                 </div>

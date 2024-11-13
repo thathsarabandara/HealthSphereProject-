@@ -51,8 +51,15 @@ function PatientHome() {
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setAuthenticated] = useState(false);
   const [error, setError] = useState(null);
-  const [profilePicture, setProfilePicture] = useState('/path/to/default/profile/picture.jpg');
-  const [patientName, setPatientName] = useState('Patient Name');
+  const [profilePicture, setProfilePicture] = useState('../../assets/images/profileImg.png');
+  const [patientId, setPatientId] = useState(null);
+  const [useremail, setEmail] = useState(null);
+  const [patientFirstName, setPatientFirstName] = useState('----');
+  const [patientLastName, setPatientLastName] = useState('----');
+  const [patientDateOfBirth, setPatientDateOfBirth] = useState('----');
+  const [patientGender, setPatientGender] = useState('----');
+  const [patientPhoneNumber, setPatientPhoneNumber] = useState('----');
+  const [patientAddress, setPatientAddress] = useState('----');
   const navigate = useNavigate();
 
    // Sample data for Blood Sugar (Bar Chart)
@@ -114,8 +121,16 @@ function PatientHome() {
         const response = await axios.get('http://localhost:5000/', { withCredentials: true });
         if (response.status === 200) {
           setAuthenticated(true);
-          setProfilePicture(response.data.profilePicture); // Assuming profile picture is sent
-          setPatientName(response.data.name); // Assuming patient name is sent
+          setPatientId(response.data.data.id);
+          setEmail(response.data.data.email);
+          setPatientFirstName(response.data.data.first_name);
+          setPatientLastName(response.data.data.last_name);
+          setPatientDateOfBirth(response.data.data.date_of_birth);
+          setPatientGender(response.data.data.gender);
+          setPatientPhoneNumber(response.data.data.phone_number);
+          setPatientAddress(response.data.data.address);
+          // setPatientProfilePicture(response.data.profile_picture);
+
         }
       } catch (error) {
         if (error.response) {
@@ -165,7 +180,7 @@ function PatientHome() {
       {/* Header */}
       <div className="d-flex align-items-center justify-content-between border-bottom pb-3 mb-4">
         <div>
-          <h2 className="font-weight-bold mb-0">Hello, Damien Smith! 👋</h2>
+          <h2 className="font-weight-bold mb-0">Hello, {patientFirstName} {patientLastName}👋</h2>
           <p className="mb-0"><b>Welcome to your Dashboard! 🌟📊</b></p>
         </div>
       </div>
@@ -177,18 +192,19 @@ function PatientHome() {
           <div className="card h-100 shadow-sm">
             <div className="card-body text-center">
               <img
-                src={PatientImg}
-                alt="Damien Smith"
+                src={profilePicture}
+                alt="profile"
                 className="rounded-circle mb-3"
                 style={{ width: '150px', height: '150px' }}
               />
-              <h5 className="mb-1">Damien Smith</h5>
-              <small className="text-muted">Male - 34 yrs 6 mos</small>
-
+              <h5 className="mb-1">{patientId} - {patientFirstName} {patientLastName}</h5>
+              <small className="text-muted">
+                {patientGender} - {new Date().toLocaleDateString()} - {patientDateOfBirth}
+              </small>
               <div style={{ textAlign: 'left', marginTop: '1rem' }}>
-                <p><strong>DOB:</strong> 17/02/1990</p>
-                <p><strong>Address:</strong> 89/4, Maha Ambalangoda, Ambalangoda.</p>
-                <p><strong>Contacts:</strong> damiensmith@gmail.com |<br /> +94 72 200 2000</p>
+                <p><strong>DOB:</strong> {patientDateOfBirth} </p>
+                <p><strong>Address:</strong> {patientAddress}</p>
+                <p><strong>Contacts:</strong> {useremail} |<br /> {patientPhoneNumber}</p>
                 <p><strong>Active Conditions:</strong> Hypertension, Asthma, Dermatitis</p>
                 <p><strong>Allergies:</strong> Latex, Levaquin, Peanuts, Penicillin</p>
               </div>
