@@ -31,15 +31,12 @@ function Cart() {
   const discountAmount = Number(couponDiscount);
 
   // Delete item function
-  const handleDelete = async (itemId) => {
+  const handleDelete = async (id) => {
     try {
-      // Optionally send a delete request to the server to remove the item
-      await axios.put(`http://localhost:5000/cart/${itemId}`, { withCredentials: true });
-
-      // Update the cart items in state
-      setCartItems(cartItems.filter(item => item.id !== itemId));
+      await axios.put(`http://localhost:5000/cart/${id}`, {}, { withCredentials: true });
+      setCartItems((prevItems) => prevItems.filter(item => item.id !== id)); // Remove item from state
     } catch (error) {
-      console.error("Failed to delete item:", error);
+      console.error('Failed to delete item:', error);
     }
   };
 

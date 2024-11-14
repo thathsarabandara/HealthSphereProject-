@@ -368,35 +368,33 @@ exports.loadCart = async (req, res) => {
 
 exports.deleteCartItem = async (req, res) => {
     try {
-      const { itemId } = req.params;
-      console.log(itemId);
-      const token = req.cookies['token'];
-  
-      // Validate token and retrieve user
-      const userToken = await Token.findOne({ where: { token } });
-      if (!userToken) {
-        return res.status(401).json({ message: 'Unauthorized' });
-      }
-  
-      // Find the cart item for the user
-      const cartItem = await CartItem.findOne({
-        where: { id: itemId, user_id: userToken.user_id },
-      });
-  
-      if (!cartItem) {
-        return res.status(404).json({ message: 'Cart item not found' });
-      }
-  
-      // Update the status to 'deleted' instead of deleting the item
-      cartItem.status = 'deleted';
-      await cartItem.save();
-  
-      return res.status(200).json({ message: 'Cart item marked as deleted successfully' });
+        const { id } = req.params;
+        console.error(id);
+        const token = req.cookies['token'];
+
+        // Validate token and retrieve user
+        const userToken = await Token.findOne({ where: { token } });
+        if (!userToken) {
+            return res.status(401).json({ message: 'Unauthorized' });
+        }
+
+        // Find the cart item belonging to the user and update the status
+        const cartItem = await Cart.findOne({
+            where: { id, user_id: userToken.user_id, status: 'pending' }
+        });
+
+        if (!cartItem) {
+            return res.status(404).json({ message: 'Item not found or already deleted' });
+        }
+
+        // Update status to 'deleted'
+        await cartItem.update({ status: 'deleted' });
+        return res.status(200).json({ message: 'Item deleted successfully' });
     } catch (error) {
-      console.error(error);
-      return res.status(500).json({ message: 'An error occurred', error: error.message });
+        console.error(error);
+        return res.status(500).json({ message: 'An error occurred', error: error.message });
     }
-  };
+};
   
 
 exports.loadPrescription =(req,res) =>{
