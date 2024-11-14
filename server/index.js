@@ -9,6 +9,7 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const sync = require('./config/sync');
 const {ipapiCorsOptions ,corsOptions} = require('./middleware/cors/corsMiddleware');
+const auditLogMiddleware = require('./middleware/logging/auditLogMiddleware');
 
 // portNumber for the server
 const PORT = process.env.PORT || 5000;
@@ -16,7 +17,7 @@ const PORT = process.env.PORT || 5000;
 // Middleware Setup
 app.use(helmet()); // Security middleware
 app.use(cookieParser()); // Cookie parser middleware
-
+app.use(auditLogMiddleware);
 app.use(cors(corsOptions,ipapiCorsOptions)); // Use CORS middleware
 
 // Body Parser Middleware

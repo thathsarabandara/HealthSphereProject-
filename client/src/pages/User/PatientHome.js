@@ -135,8 +135,12 @@ function PatientHome() {
       } catch (error) {
         if (error.response) {
           const statusCode = error.response.status;
-          setAuthenticated(statusCode !== 401);
-          setError(statusCode !== 401 ? statusCode : null);
+          if(statusCode === 401){
+            setAuthenticated(false);
+          }else{
+            setAuthenticated(false);
+            setError(statusCode);
+          }
         } else {
           setError(500);
         }
