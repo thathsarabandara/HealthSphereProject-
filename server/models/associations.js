@@ -60,7 +60,9 @@ Review.belongsTo(Patient, { foreignKey: 'patient_id' });
 Review.belongsTo(Doctor, { foreignKey: 'doctor_id' });
 
 Cart.belongsTo(Patient, { foreignKey: 'patient_id' });
+CartItem.hasMany(Cart, { foreignKey: 'cart_item_id' });
 Cart.belongsTo(CartItem, { foreignKey: 'cart_item_id' });
+Cart.belongsTo(CartItem, { foreignKey: 'unit_price' });
 
 Notification.belongsTo(User, { foreignKey: 'user_id' });
 Payment.belongsTo(User, {foreignKey:  'user_id'})

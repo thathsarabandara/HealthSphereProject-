@@ -12,7 +12,7 @@ router.post('/finddoctor', rateLimiterMiddleware, userController.searchDoctors);
 router.get('/finddoctor/:specialization', rateLimiterMiddleware, userController.loadDoctors);
 router.get('/finddoctor/:specialization/reservation',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware]);
 router.get('/finddoctor/:specialization/:doctor',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware]);
-router.get('/package',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware]);
+router.post('/package/:id',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware],userController.addItems);
 router.get('/pharamacy',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware]);
 router.get('/labratory',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware]);
 router.get('/aboutus',rateLimiterMiddleware);

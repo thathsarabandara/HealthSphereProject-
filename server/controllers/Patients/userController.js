@@ -1,5 +1,5 @@
 const { now } = require("sequelize/lib/utils");
-const { findUserID } = require("../../models/auth/Token");
+const { findUserID, Token } = require("../../models/auth/Token");
 const { findUserById } = require("../../models/auth/User");
 const { Doctor } = require("../../models/healthcare/Doctor");
 const { Schedule } = require("../../models/healthcare/Schedule");
@@ -8,6 +8,8 @@ const { Op } = require('sequelize'); // Ensure to import Op for query operators
 const moment = require('moment'); // Import moment for date manipulation
 const Sequelize = require('sequelize');
 const { Patient } = require("../../models/healthcare/Patient");
+const { CartItem } = require("../../models/ecommerce/CartItem");
+const { Cart } = require("../../models/ecommerce/Cart");
 
 // Utility function to find user by token
 exports.findUserByToken = async (token) => {
@@ -269,15 +271,95 @@ exports.searchDoctors = async (req, res) => {
         res.status(500).json({ message: 'An error occurred while searching for doctors' });
     }
 };
+
+exports.addItems = async (req, res) => {
+    try {
+        const token = req.cookies['token'];
+
+        if (!token) {
+            return res.status(401).json({ message: 'Unauthorized: Token not found in cookies' });
+        }
+
+        const itemID = req.params.id;
+
+        // Check if the item is already in the cart
+        const cartRow = await Cart.findOne({ where: { cart_item_id: itemID } });
+        if (cartRow) {
+            return res.status(400).json({ message: 'Item is already added to the cart' });
+        }
+
+        // Find the user associated with the token
+        const user = await Token.findOne({ where: { token: token } });
+        if (!user) {
+            return res.status(401).json({ message: 'Unauthorized: Invalid token' });
+        }
+
+        // Find the item details from CartItem
+        const item = await CartItem.findOne({ where: { id: itemID } });
+        if (!item) {
+            return res.status(404).json({ message: 'Item not found' });
+        }
+
+        // Create a new cart entry
+        const cartSuccess = await Cart.create({
+            user_id: user.user_id,
+            cart_item_id: itemID,
+            unit_price: item.price,
+            quantity: 1,
+            total_price: item.price * 1,
+            status: 'Pending',
+        });
+
+        return res.status(201).json({ message: 'Item added to the cart', cart: cartSuccess });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'An error occurred', error: error.message });
+    }
+};
+
+exports.loadCart = async (req, res) => {
+    try {
+        const token = req.cookies['token'];
+
+        // Validate token and retrieve user
+        const userToken = await Token.findOne({ where: { token: token } });
+        if (!userToken) {
+            return res.status(401).json({ message: 'Unauthorized' });
+        }
+
+        // Fetch all cart items for the user, including item details from CartItem model
+        const cartItems = await Cart.findAll({
+            where: { user_id: userToken.user_id },
+            include: {
+                model: CartItem,
+                attributes: ['product_name']  // Include product_name from CartItem model
+            }
+        });
+
+        // Format the response with associated product data
+        const cartDetails = cartItems.map(item => ({
+            id: item.id,
+            productName: item.CartItem.product_name,  // Access product_name via the association
+            unitPrice: item.unit_price,
+            quantity: item.quantity,
+            totalPrice: item.total_price,
+            status: item.status,
+            createdAt: item.created_at,
+        }));
+
+        return res.status(200).json({ cart: cartDetails });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'An error occurred', error: error.message });
+    }
+};
+
+
 exports.loadPrescription =(req,res) =>{
 
 }
 
 exports.loadPayment= (req,res) => {
-
-}
-
-exports.loadCart = (req,res) =>{
 
 }
 
@@ -288,3 +370,4 @@ exports.loadCheckout = (req,res) =>{
 exports.loadRefund = (req,res) =>{
 
 }
+

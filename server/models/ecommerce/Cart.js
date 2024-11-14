@@ -1,7 +1,8 @@
+// Cart model
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/db');
-const {Patient} = require('../healthcare/Patient');
-const {CartItem} = require('./CartItem');
+const { CartItem } = require('./CartItem');
+const { User } = require('../auth/User');
 
 const Cart = sequelize.define('Cart', {
     id: {
@@ -9,10 +10,10 @@ const Cart = sequelize.define('Cart', {
         autoIncrement: true,
         primaryKey: true,
     },
-    patient_id: {
+    user_id: {
         type: DataTypes.INTEGER,
         references: {
-            model: Patient,
+            model: User,
             key: 'id',
         },
         allowNull: false,
@@ -25,8 +26,8 @@ const Cart = sequelize.define('Cart', {
         },
         allowNull: false,
     },
-    unit_price:{
-        type: DataTypes.INTEGER,
+    unit_price: {
+        type: DataTypes.DECIMAL(10, 2),
         references: {
             model: CartItem,
             key: 'price',
@@ -54,7 +55,7 @@ const Cart = sequelize.define('Cart', {
         defaultValue: DataTypes.NOW,
     },
 }, {
-    tableName: 'carts',
+    tableName: 'cart',
     timestamps: false,
 });
 

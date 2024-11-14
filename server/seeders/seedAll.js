@@ -9,6 +9,7 @@ const sequelize = require('../config/db'); // Adjust the path according to your 
 // const { seedDoctors } = require('./healthcare/doctorSeeder'); // Adjust the path according to your structure
 // const { seedPatients } = require('./healthcare/patientSeeder'); // Adjust the path according to your structure
 // const { seedSchedules } = require('./healthcare/scheduleSeeder'); // Adjust the path according to your structure
+ const { seedCartItems } = require('./ecommerce/cartItemsSeeder'); // Adjust the path according to your structure
 
 const seedDatabase = async () => {
     try {
