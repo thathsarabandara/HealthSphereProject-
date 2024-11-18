@@ -1,8 +1,8 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/db');
-const {Patient} = require('./Patient');
 const {Payment} = require('../transactions/Payment');
 const { Schedule } = require('./Schedule');
+const { User } = require('../auth/User');
 
 const Reservation = sequelize.define('Reservation', {
     id: {
@@ -17,10 +17,10 @@ const Reservation = sequelize.define('Reservation', {
             key: 'id',
         },
     },
-    patient_id: {
+    user_id: {
         type: DataTypes.INTEGER,
         references: {
-            model: Patient,
+            model: User,
             key: 'id',
         },
         allowNull: false,

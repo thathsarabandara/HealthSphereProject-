@@ -8,7 +8,7 @@ const Payment = sequelize.define('Payment', {
         autoIncrement: true,
         primaryKey: true,
     },
-    patient_id: {
+    user_id: {
         type: DataTypes.INTEGER,
         references: {
             model: User,

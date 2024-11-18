@@ -21,7 +21,7 @@ router.put('/userprofile',[authMiddleware , authorizeRole('patient'),rateLimiter
 router.get('/userprescription',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware],userController.loadPrescription);
 router.get('/userpayments',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware], userController.loadPayment);
 router.get('/cart',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware], userController.loadCart);
-router.put('/cart/:id', userController.deleteCartItem);
+router.put('/cart/:id',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware], userController.deleteCartItem);
 router.get('/checkout',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware],userController.loadCheckout);
 router.get('/refund',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware],userController.loadRefund);
 router.get('/refund/request',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware]);

@@ -283,7 +283,7 @@ exports.addItems = async (req, res) => {
         const itemID = req.params.id;
 
         // Check if the item is already in the cart
-        const cartRow = await Cart.findOne({ where: { cart_item_id: itemID } });
+        const cartRow = await Cart.findOne({ where: { cart_item_id: itemID , status: 'pending'} });
         if (cartRow) {
             return res.status(400).json({ message: 'Item is already added to the cart' });
         }
