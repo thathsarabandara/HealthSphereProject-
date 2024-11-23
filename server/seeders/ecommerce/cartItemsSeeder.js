@@ -33,8 +33,6 @@ const seedCartItems = async () => {
   }
 };
 
-seedCartItems();
-
 module.exports = {
   seedCartItems
 };

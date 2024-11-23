@@ -4,7 +4,13 @@ const userAuthController =  require('../controllers/Patients/userAuthController'
 const userController =  require('../controllers/Patients/userController');
 const authMiddleware = require('../middleware/auth/authenticateJWT');
 const {authorizeRole} = require('../middleware/auth/authorizeRole');
-const {rateLimiterMiddleware} = require('../middleware/rateLimit/rateLimiter')
+const {rateLimiterMiddleware} = require('../middleware/rateLimit/rateLimiter');
+const { profilePictureUpload } = require('../middleware/upload/profilePictureUpload');
+const multer = require('multer');
+const { v4: uuidv4 } = require('uuid');
+const fs = require('fs').promises;
+let path = require('path');
+
 
 router.get('/', rateLimiterMiddleware ,userController.authHome );
 router.get('/finddoctor', rateLimiterMiddleware);
@@ -17,7 +23,7 @@ router.get('/pharamacy',[authMiddleware , authorizeRole('patient'),rateLimiterMi
 router.get('/labratory',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware]);
 router.get('/aboutus',rateLimiterMiddleware);
 router.get('/userprofile',[authMiddleware ,authorizeRole('patient'), rateLimiterMiddleware],userController.profileLoad);
-router.put('/userprofile',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware],userController.saveProfile);
+router.put('/userprofile/:id',profilePictureUpload,userController.saveProfile);
 router.get('/userprescription',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware],userController.loadPrescription);
 router.get('/userpayments',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware], userController.loadPayment);
 router.get('/cart',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware], userController.loadCart);

@@ -1,5 +1,4 @@
-const User = require('../../models/auth/User');
-const { createUser, findByEmail, findUserById, findbyUsername} = require('../../models/auth/User'); 
+const { createUser, findByEmail, findUserById, findbyUsername , updateVerify} = require('../../models/auth/User'); 
 const { comparePassword } = require('../../utils/hashpassword');
 const { createToken } = require('../../models/auth/Token');
 const tokenutils = require('../../utils/tokenUtils');
@@ -7,50 +6,73 @@ const { sendOTP, verify } = require('../../services/otpService');
 const { createPatient } = require('../../models/healthcare/Patient');
 const { sendWelcomeMessage, sendUnusualLogin, sendPasswordResetEmails, sendPasswordChange } = require('../../services/emailServices');
 const { createTempToken, findTempToken ,updateExpiredat} = require('../../models/auth/Token');
-const { createUserPassword, findPassword, passwordDeactivate } = require('../../models/auth/UserPassword');
+const { createUserPassword, findPassword, passwordDeactivate, UserPassword } = require('../../models/auth/UserPassword');
 const {createPasswordResetRequest, findPasswordResetToken} = require('../../models/security/PasswordResetRequest');
 const { getLocationFromIP } = require('../../services/locationHelper');
+const { where } = require('sequelize');
 const { UserGroup } = require('../../models/auth/UserGroup');
+const { User } = require('../../models/auth/User');
 
 exports.register = async (req, res) => {
-    const {username, email, password} = req.body;
+    const { username, email, password } = req.body;
 
     // Check if all fields are provided
     if (!username || !email || !password) {
         return res.status(400).json({ error: 'Username, email, and password are required' });
     }
 
+    let newUser;
     try {
-        // 3. Create a new user (unverified)
-        const newUser = await createUser(username, email);
-        console.log('2')
-        const newpassword = await createUserPassword(newUser.id, password);
-        await UserGroup.create(
-            {user_id: newUser.id},
-            {group_id: 1},
-        )
-        await sendOTP(email);
-        // 4. Generate a temporary token for OTP verification
-        const tempToken = await tokenutils.generateToken(email,newpassword.passwordHash);
+        // 1. Create a new user (unverified)
+        newUser = await User.create({ username, email });
+        if (!newUser || !newUser.id) {
+            return res.status(500).json({ error: 'User creation failed or returned invalid data.' });
+        }
 
-        // 5. Save tempToken in TempToken table for the user
+        // 2. Create user password
+        const newPassword = await createUserPassword(newUser.id, password);
+        if (!newPassword) {
+            return res.status(500).json({ error: 'Password creation failed.' });
+        }
+
+        // 3. Assign the user to a group
+        await UserGroup.create({
+            user_id: newUser.id,
+            group_id: 1
+        });
+
+        // 4. Send OTP for email verification
+        await sendOTP(email);
+
+        // 5. Generate a temporary token for OTP verification
+        const tempToken = await tokenutils.generateToken(email, newPassword.passwordHash);
+
+        // 6. Save tempToken in TempToken table for the user
         await createTempToken(newUser.id, tempToken);
 
-        // 6. Set a cookie for token
+        // 7. Set a cookie for token
         return res.status(200)
             .cookie('verifytoken', tempToken, {
                 httpOnly: true,
-                secure: process.env.NODE_ENV === 'production', // Only use secure in production
-                maxAge: 1000 * 600 * 2,  // Token expiration: 10 minutes
-                sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax', // Set to 'Lax' for development
+                secure: process.env.NODE_ENV === 'production', 
+                maxAge: 1000 * 600 * 2, 
+                sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax', 
             })
             .json({ message: 'User registered successfully. Please verify OTP.' });
-        
+
     } catch (error) {
         console.error('Error during registration:', error);
+        if (newUser && newUser.id) {
+            // Cleanup if newUser exists
+            await UserPassword.destroy({ where: { user_id: newUser.id } });
+            await User.destroy({ where: { id: newUser.id } });
+        }
         res.status(500).json({ error: 'Registration failed' });
     }
 };
+
+
+
 
 exports.verifyUser = async (req, res) => {
     const otp = req.body.otp;
@@ -85,10 +107,15 @@ exports.verifyUser = async (req, res) => {
         }
         
         // 3. Mark the user as verified
-        const user = await User.updateVerify(UnverifiedUser.id)
+        const user = await updateVerify(UnverifiedUser.id)
         
         // 4. Create a patient record for the user
         const newPatient = await createPatient(UnverifiedUser.id);
+
+        await UserGroup.create({
+            user_id:UnverifiedUser.id,
+            group_id: 1,
+        })
 
         // 5. Send a welcome email
         await sendWelcomeMessage(UnverifiedUser.username, newPatient.id, UnverifiedUser.email);

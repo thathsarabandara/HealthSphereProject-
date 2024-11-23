@@ -1,14 +1,14 @@
 const sequelize = require('../config/db'); // Adjust the path according to your structure
-// const { seedUsers } = require('./auth/userSeeders'); // Adjust the path according to your structure
-// const { seedUserPasswords } = require('./auth/userPasswordsSeeder'); // Adjust the path according to your structure
-// const { seedGroups } = require('./auth/groupSeeder'); // Adjust the path according to your structure
-// const { seedPermissions } = require('./auth/permissionSeeder'); // Adjust the path according to your structure
-// const { seedGroupPermissions } = require('./auth/groupPermissionSeeder'); // Adjust the path according to your structure
-// const { seedUserGroups } = require('./auth/userGroupsSeeder'); // Adjust the path according to your structure
-// const { seedSpecializations } = require('./healthcare/specializationSeeder'); // Adjust the path according to your structure
-// const { seedDoctors } = require('./healthcare/doctorSeeder'); // Adjust the path according to your structure
-// const { seedPatients } = require('./healthcare/patientSeeder'); // Adjust the path according to your structure
-// const { seedSchedules } = require('./healthcare/scheduleSeeder'); // Adjust the path according to your structure
+const { seedUsers } = require('./auth/userSeeders'); // Adjust the path according to your structure
+const { seedUserPasswords } = require('./auth/userPasswordsSeeder'); // Adjust the path according to your structure
+const { seedGroups } = require('./auth/groupSeeder'); // Adjust the path according to your structure
+const { seedPermissions } = require('./auth/permissionSeeder'); // Adjust the path according to your structure
+const { seedGroupPermissions } = require('./auth/groupPermissionSeeder'); // Adjust the path according to your structure
+const { seedUserGroups } = require('./auth/userGroupsSeeder'); // Adjust the path according to your structure
+const { seedSpecializations } = require('./healthcare/specializationSeeder'); // Adjust the path according to your structure
+const { seedDoctors } = require('./healthcare/doctorSeeder'); // Adjust the path according to your structure
+const { seedPatients } = require('./healthcare/patientSeeder'); // Adjust the path according to your structure
+const { seedSchedules } = require('./healthcare/scheduleSeeder'); // Adjust the path according to your structure
  const { seedCartItems } = require('./ecommerce/cartItemsSeeder'); // Adjust the path according to your structure
 
 const seedDatabase = async () => {
@@ -51,9 +51,13 @@ const seedDatabase = async () => {
         // await seedPatients();
         // console.log('Patients seeded successfully!');
 
-        // console.log('Seeding schedules...');
-        // await seedSchedules();
-        // console.log('Schedules seeded successfully!');
+        console.log('Seeding schedules...');
+        await seedSchedules();
+        console.log('Schedules seeded successfully!');
+
+        console.log('Seeding schedules...');
+        await seedCartItems();
+        console.log('Schedules seeded successfully!');
 
         console.log('Database seeded successfully!');
         process.exit();

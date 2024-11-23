@@ -5,6 +5,11 @@ const { Permission } = require('./auth/Permission');
 const { GroupPermission } = require('./auth/GroupPermission');
 const { Token } = require('./auth/Token');
 const { Patient } = require('./healthcare/Patient');
+const { PatientAllergy } = require('./healthcare/PatientAllergy');
+const { PatientBloodSugar } = require('./healthcare/PatientBloodSugar');
+const { PatientBMI } = require('./healthcare/PatientBMI');
+const { PatientCondition } = require('./healthcare/PatientCondition');
+const { PatientHeartRate } = require('./healthcare/PatientHeartRate');
 const { Doctor } = require('./healthcare/Doctor');
 const { Specialization } = require('./healthcare/Specialization');
 const { ScheduleCancel } = require('./healthcare/ScheduleCancel');
@@ -76,6 +81,11 @@ PasswordResetRequest.belongsTo(User, { foreignKey: 'user_id' });
 TwoFactorAuth.belongsTo(User, { foreignKey: 'user_id' });
 Session.belongsTo(User, { foreignKey: 'user_id' });
 SecurityQuestion.belongsTo(User, { foreignKey: 'user_id' });
+PatientAllergy.belongsTo(Patient, {foreignKey: 'patient_id'});
+PatientBloodSugar.belongsTo(Patient, {foreignKey: 'patient_id'});
+PatientBMI.belongsTo(Patient, {foreignKey: 'patient_id'});
+PatientCondition.belongsTo(Patient, {foreignKey: 'patient_id'});
+PatientHeartRate.belongsTo(Patient, {foreignKey: 'patient_id'});
 
 module.exports = { 
   User,

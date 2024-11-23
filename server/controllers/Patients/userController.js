@@ -73,7 +73,7 @@ exports.authHome = async (req, res) => {
                 gender: patientData.gender,
                 phone_number: patientData.phone_number,
                 address: patientData.address,
-                profile_picture: patientData.profile_picture, // Assuming profile_picture is available
+                profile_picture: patientData.profilePictureLocation, // Assuming profile_picture is available
             }
         });
         
@@ -108,7 +108,7 @@ exports.profileLoad = async (req, res) => {
                 gender : patientData.gender,
                 phone_number : patientData.phone_number,
                 address : patientData.address,
-                profile_picture: patientData.first_name,
+                profilePicture: patientData.profilePictureLocation,
                 registrationDate: patientData.created_at,
             }
         });
@@ -118,7 +118,8 @@ exports.profileLoad = async (req, res) => {
 };
 
 exports.saveProfile = async (req, res) => {
-    const { id, first_name, last_name, date_of_birth, gender, phone_number, address, profile_picture } = req.body.profileData;
+    const { id, first_name, last_name, date_of_birth, gender, phone_number, address,  } = req.body;
+    const profilePictureLocation = req.profile_picture;
 
     try {
         // Find the patient by ID and update their details
@@ -130,7 +131,7 @@ exports.saveProfile = async (req, res) => {
                 gender,
                 phone_number,
                 address,
-                profile_picture
+                profilePictureLocation
             },
             {
                 where: { id } // Update where patient ID matches

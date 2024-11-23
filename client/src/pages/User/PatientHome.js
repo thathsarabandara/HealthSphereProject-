@@ -121,6 +121,7 @@ function PatientHome() {
         const response = await axios.get('http://localhost:5000/', { withCredentials: true });
         if (response.status === 200) {
           setAuthenticated(true);
+          const profile = `http://localhost:5000/uploads/storage/patient/${response.data.data.id}/profilepictures/${response.data.data.profile_picture}`;
           setPatientId(response.data.data.id);
           setEmail(response.data.data.email);
           setPatientFirstName(response.data.data.first_name);
@@ -129,8 +130,7 @@ function PatientHome() {
           setPatientGender(response.data.data.gender);
           setPatientPhoneNumber(response.data.data.phone_number);
           setPatientAddress(response.data.data.address);
-          // setPatientProfilePicture(response.data.profile_picture);
-
+          setProfilePicture(profile);
         }
       } catch (error) {
         if (error.response) {
@@ -185,7 +185,7 @@ function PatientHome() {
       <div className="d-flex align-items-center justify-content-between border-bottom pb-3 mb-4">
         <div>
           <h2 className="font-weight-bold mb-0">Hello, {patientFirstName} {patientLastName}👋</h2>
-          <p className="mb-0"><b>Welcome to your Dashboard! 🌟📊</b></p>
+          <p className="mb-0"><b>Welcome to your Healthsphere Dashboard! 🌟📊</b></p>
         </div>
       </div>
 

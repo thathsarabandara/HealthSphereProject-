@@ -10,9 +10,12 @@ const cookieParser = require('cookie-parser');
 const sync = require('./config/sync');
 const {ipapiCorsOptions ,corsOptions} = require('./middleware/cors/corsMiddleware');
 const auditLogMiddleware = require('./middleware/logging/auditLogMiddleware');
+const path = require('path');
 
 // portNumber for the server
 const PORT = process.env.PORT || 5000;
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Middleware Setup
 app.use(helmet()); // Security middleware

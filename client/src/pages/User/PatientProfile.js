@@ -1,29 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import '../../styles/user/PatientProfile.css';
+import emptyImage from '../../assets/images/emptyProfile.png';
 import axios from 'axios'; // Import axios to make HTTP requests
 
 function PatientProfile() {
   const [profileData, setProfileData] = useState({
-    patientId: '',
+    id: '',
     registrationDate: '',
-    firstName: '',
-    lastName: '',
-    phoneNumber: '',
+    first_name: '',
+    last_name: '',
+    last_name: '',
     gender: '',
     email: '',
     address: '',
     profilePicture: '', // If you want to display a profile picture
   });
-  
+
   const [loading, setLoading] = useState(true);
 
-  // Fetch profile data when the component mounts
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/userprofile`, {withCredentials: true}); // Replace with your backend API
+        const response = await axios.get(`http://localhost:5000/userprofile`, { withCredentials: true }); // Replace with your backend API
         if (response.status === 200) {
-          setProfileData(response.data.data); // Assuming the API returns data in the required format
+          const data = response.data.data;
+  
+          // Update the profilePicture path if it exists
+          if (data.profilePicture) {
+            data.profilePicture = `http://localhost:5000/uploads/storage/patient/${data.id}/profilepictures/${data.profilePicture}`;
+          }
+          console.log(data);
+          setProfileData(data); // Set the modified data
+          console.log(profileData);
         }
       } catch (error) {
         console.error('Error fetching profile data:', error);
@@ -31,9 +39,10 @@ function PatientProfile() {
         setLoading(false);
       }
     };
-
+  
     fetchProfileData();
-  }, []);
+  }, []); // Empty dependency array ensures this runs only once when the component mounts
+  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -43,53 +52,104 @@ function PatientProfile() {
     });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      // Make an API call to save the profile data (e.g., POST or PUT request)
-      const response = await axios.put(`http://localhost:5000/api/user-profile/${profileData.patientId}`, profileData);
-      if (response.status === 200) {
-        alert('Profile updated successfully!');
-      }
-    } catch (error) {
-      console.error('Error updating profile:', error);
-    }
-  };
-
+  
   if (loading) {
     return <div>Loading...</div>;
   }
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProfileData({
+          ...profileData,
+          profilePicture: reader.result,  // For image preview (base64)
+          fileObject: file,               // Keep the file object for upload
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+  
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append('id', profileData.id)
+    formData.append('first_name', profileData.first_name);
+    formData.append('last_name', profileData.last_name);
+    formData.append('phone_number', profileData.phone_number);
+    formData.append('gender', profileData.gender);
+    formData.append('date_of_birth', profileData.date_of_birth);
+    formData.append('address', profileData.address);
+  
+    // Send the actual file
+    if (profileData.fileObject) {
+      formData.append('profilePicture', profileData.fileObject); 
+
+    axios.put(`http://localhost:5000/userprofile/${profileData.id}`, formData)
+         .then(res => {
+          alert('Profile updated successfully!');
+         })
+         .catch(err => {
+          console.error('Error updating profile:', err);
+         });
+      }
+    }
+  
   return (
+    <div>
     <div className="container mt-5 mb-5">
       <div className="row gutters">
         {/* Profile Picture Section */}
-        <div className="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12" >
-          <div className="card h-100" style={{ background: '#ECE6E6'}}>
-            <div className="card-body">
-              <div className="account-settings">
-                <div className="user-avatar">
-                  <div style={{
-                    width: '100%',
-                    height: '250px',
-                    background: '#BEBEBE',
-                    borderRadius: '50%',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    fontSize: '1.2rem',
-                    color: '#fff'
-                  }}>
-                    Add a photo
-                  </div>
-                </div>
-                <div className="mt-3">
-                  <button className="btn w-100" style={{background: '#112D4E', color: 'white'}}>Edit Profile Picture</button>
-                </div>
-              </div>
+        <div className="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12">
+      <div className="card h-100" style={{ background: '#ECE6E6' }}>
+        <div className="card-body">
+          <div className="account-settings">
+            <div className="user-avatar">
+              <img
+                style={{
+                  width: '30vh',
+                  height: '30vh',
+                  maxHeight: '250px',
+                  borderRadius: '50%',
+                  background: '#bebebe',
+                }}
+                src={profileData.profilePicture || emptyImage}
+                alt="profile"
+                onError={(e) => {
+                  e.target.onerror = null; // Prevent infinite loop
+                  e.target.src = emptyImage; // Use fallback image
+                }}
+              />
+            </div>
+            <div className="mt-3">
+              <input
+                type="file"
+                id="profile-picture-upload"
+                accept="image/*"
+                style={{ display: 'none' }} // Hide the default input
+                onChange={handleFileChange}
+              />
+              <label
+                htmlFor="profile-picture-upload"
+                className="btn w-100"
+                style={{
+                  background: '#112D4E',
+                  color: 'white',
+                  cursor: 'pointer',
+                  textAlign: 'center',
+                }}
+              >
+                Edit Profile Picture
+              </label>
             </div>
           </div>
         </div>
+      </div>
+    </div>
+
+     
 
         {/* Form Section */}
         <div className="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-12">
@@ -103,7 +163,7 @@ function PatientProfile() {
                       type="text"
                       className="form-control"
                       id="patientId"
-                      name="patientId"
+                      name="id"
                       value={profileData.id}
                       onChange={handleInputChange}
                       placeholder="Enter Patient ID"
@@ -134,7 +194,7 @@ function PatientProfile() {
                       type="text"
                       className="form-control"
                       id="firstName"
-                      name="firstName"
+                      name="first_name"
                       value={profileData.first_name}
                       onChange={handleInputChange}
                       placeholder="Enter First Name"
@@ -149,7 +209,7 @@ function PatientProfile() {
                       type="text"
                       className="form-control"
                       id="lastName"
-                      name="lastName"
+                      name="last_name"
                       value={profileData.last_name}
                       onChange={handleInputChange}
                       placeholder="Enter Last Name"
@@ -164,7 +224,7 @@ function PatientProfile() {
                       type="text"
                       className="form-control"
                       id="phoneNumber"
-                      name="phoneNumber"
+                      name="phone_number"
                       value={profileData.phone_number}
                       onChange={handleInputChange}
                       placeholder="Enter Phone Number"
@@ -183,6 +243,21 @@ function PatientProfile() {
                       value={profileData.gender}
                       onChange={handleInputChange}
                       placeholder="Enter Gender"
+                    />
+                  </div>
+                </div>
+
+                <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                  <div className="form-group mt-3">
+                    <label htmlFor="gender"><b>Date of birth</b></label>
+                    <input
+                      type="date"
+                      className="form-control"
+                      id="gender"
+                      name="date_of_birth"
+                      value={profileData.date_of_birth}
+                      onChange={handleInputChange}
+
                     />
                   </div>
                 </div>
@@ -209,6 +284,7 @@ function PatientProfile() {
                     <textarea
                       className="form-control"
                       id="address"
+                      name='address'
                       rows="3"
                       value={profileData.address}
                       onChange={handleInputChange}
@@ -224,7 +300,7 @@ function PatientProfile() {
                     <button type="button" className="btn btn-secondary">
                       Cancel
                     </button>
-                    <button type="button" className="btn btn-primary">
+                    <button type="button" className="btn btn-primary" onClick={handleSubmit}>
                       Save
                     </button>
                   </div>
@@ -234,6 +310,7 @@ function PatientProfile() {
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 }

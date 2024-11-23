@@ -24,7 +24,7 @@ const User = sequelize.define('User', {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
         allowNull: false,
-    }
+    },
 }, {
     tableName: 'users',
     timestamps: true,
