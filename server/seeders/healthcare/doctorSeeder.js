@@ -1,6 +1,5 @@
 const sequelize = require('../../config/db');
 const { Doctor } = require('../../models/healthcare/Doctor');
-const { Specialization } = require('../../models/healthcare/Specialization');
 
 const seedDoctors = async () => {
   try {

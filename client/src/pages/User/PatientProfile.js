@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import '../../styles/user/PatientProfile.css';
 import emptyImage from '../../assets/images/emptyProfile.png';
 import axios from 'axios'; // Import axios to make HTTP requests
+let pp;
 
 function PatientProfile() {
   const [profileData, setProfileData] = useState({
@@ -27,11 +28,10 @@ function PatientProfile() {
   
           // Update the profilePicture path if it exists
           if (data.profilePicture) {
-            data.profilePicture = `http://localhost:5000/uploads/storage/patient/${data.id}/profilepictures/${data.profilePicture}`;
+            pp = `http://localhost:5000/uploads/storage/patient/${data.id}/profilepictures/${data.profilePicture}`;
+            data.profilePicture = '';
           }
-          console.log(data);
-          setProfileData(data); // Set the modified data
-          console.log(profileData);
+          setProfileData(data); 
         }
       } catch (error) {
         console.error('Error fetching profile data:', error);
@@ -62,6 +62,7 @@ function PatientProfile() {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
+        pp = reader.result
         setProfileData({
           ...profileData,
           profilePicture: reader.result,  // For image preview (base64)
@@ -115,7 +116,7 @@ function PatientProfile() {
                   borderRadius: '50%',
                   background: '#bebebe',
                 }}
-                src={profileData.profilePicture || emptyImage}
+                src={pp || emptyImage}
                 alt="profile"
                 onError={(e) => {
                   e.target.onerror = null; // Prevent infinite loop
@@ -180,7 +181,7 @@ function PatientProfile() {
                       className="form-control"
                       id="regDate"
                       name="registrationDate"
-                      value={profileData.registrationDate}
+                      value={profileData.registrationDate.split('T')[0]}
                       onChange={handleInputChange}
                       disabled
                     />

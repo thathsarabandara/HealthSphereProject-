@@ -60,55 +60,12 @@ function PatientHome() {
   const [patientGender, setPatientGender] = useState('----');
   const [patientPhoneNumber, setPatientPhoneNumber] = useState('----');
   const [patientAddress, setPatientAddress] = useState('----');
+  const [allergies, setAllergies] = useState([]);
+  const [bloodSugar, setBloodSugar] = useState([]);
+  const [bmi, setBmi] = useState([]);
+  const [heartRate, setHeartRate] = useState([]);
+  const [conditions, setConditions] = useState([]);
   const navigate = useNavigate();
-
-   // Sample data for Blood Sugar (Bar Chart)
-   const bloodSugarData = {
-    labels: ['Jul 24', 'Jul 27', 'Jul 30', 'Aug 3', 'Aug 6'],
-    datasets: [
-      {
-        label: 'Blood Sugar',
-        data: [50, 80, 120, 90, 60],
-        backgroundColor: ['#4a90e2', '#4a90e2', '#e74c3c', '#4a90e2', '#4a90e2'],
-        borderRadius: 5,
-      },
-    ],
-  };
-
-  // Sample data for Heart Rate (Line Chart)
-  const heartRateData = {
-    labels: ['Jul 24', 'Jul 27', 'Jul 30', 'Aug 3', 'Aug 6'],
-    datasets: [
-      {
-        label: 'Heart Rate',
-        data: [72, 75, 78, 80, 74],
-        borderColor: '#4a90e2',
-        backgroundColor: 'rgba(74, 144, 226, 0.3)',
-        tension: 0.4,
-        fill: true,
-      },
-    ],
-  };
-
-  // Sample data for BMI (Bar Graph)
-  const bmiData = {
-    labels: ['Jul 24', 'Jul 27', 'Jul 30', 'Aug 3', 'Aug 6'],
-    datasets: [
-      {
-        label: 'BMI',
-        data: [22, 23.5, 25, 24, 26],
-        backgroundColor: bmi => {
-          // Dynamic color based on BMI value
-          const value = bmi.raw;
-          if (value < 18.5) return '#3498db'; // Underweight - Blue
-          if (value >= 18.5 && value <= 24.9) return '#2ecc71'; // Normal - Green
-          if (value >= 25 && value <= 29.9) return '#f1c40f'; // Overweight - Yellow
-          return '#e74c3c'; // Obese - Red
-        },
-        borderRadius: 5,
-      },
-    ],
-  };
 
   useEffect(() => {
     const loadingTimeout = setTimeout(() => setIsLoading(false), 3000);
@@ -122,15 +79,21 @@ function PatientHome() {
         if (response.status === 200) {
           setAuthenticated(true);
           const profile = `http://localhost:5000/uploads/storage/patient/${response.data.data.id}/profilepictures/${response.data.data.profile_picture}`;
-          setPatientId(response.data.data.id);
-          setEmail(response.data.data.email);
-          setPatientFirstName(response.data.data.first_name);
-          setPatientLastName(response.data.data.last_name);
-          setPatientDateOfBirth(response.data.data.date_of_birth);
-          setPatientGender(response.data.data.gender);
-          setPatientPhoneNumber(response.data.data.phone_number);
-          setPatientAddress(response.data.data.address);
+          const data =response.data.data
+          setPatientId(data.id);
+          setEmail(data.email);
+          setPatientFirstName(data.first_name);
+          setPatientLastName(data.last_name);
+          setPatientDateOfBirth(data.date_of_birth);
+          setPatientGender(data.gender);
+          setPatientPhoneNumber(data.phone_number);
+          setPatientAddress(data.address);
           setProfilePicture(profile);
+          setAllergies(data.allergies);
+          setBloodSugar(data.blood_sugar_levels);
+          setBmi(data.bmi);
+          setHeartRate(data.heart_rate);
+          setConditions(data.conditions);
         }
       } catch (error) {
         if (error.response) {
@@ -151,6 +114,80 @@ function PatientHome() {
 
     fetchData();
   }, []);
+
+    // Sample data for Blood Sugar (Bar Chart)
+    const bloodSugarData = {
+      labels: bloodSugar.length > 0 ? bloodSugar.map(record => new Date(record.measurement_time).toLocaleDateString()) : ['No Data'],
+      datasets: [
+        {
+          label: 'Blood Sugar',
+          data: bloodSugar.length > 0 ? bloodSugar.map(record => record.blood_sugar_level).concat(Array(5 - bloodSugar.length).fill(0)) : [0],
+          backgroundColor: bloodSugar.length > 0 ? bloodSugar.map(record => (record.blood_sugar_level > 100 ? '#e74c3c' : '#4a90e2')).concat(Array(5 - bloodSugar.length).fill('#e74c3c')) : ['#e74c3c'],
+          borderRadius: 5,
+        },
+      ],
+    };
+  
+    // Sample data for Heart Rate (Line Chart)
+    const heartRateData = {
+      labels: heartRate.length > 0 ? heartRate.map(record => new Date(record.measurement_time).toLocaleDateString()) : ['No Data'],
+      datasets: [
+        {
+          label: 'Heart Rate',
+          data: heartRate.length > 0 ? heartRate.map(record => record.heart_rate).concat(Array(5 - heartRate.length).fill(0)) : [0],
+          borderColor: '#4a90e2',
+          backgroundColor: 'rgba(74, 144, 226, 0.3)',
+          tension: 0.4,
+          fill: true,
+        },
+      ],
+    };
+  
+    // Sample data for BMI (Bar Graph)
+    const bmiData = {
+      labels: bmi.length > 0 ? bmi.map(record => new Date(record.measurement_date).toLocaleDateString()) : ['No Data'],
+      datasets: [
+        {
+          label: 'BMI',
+          data: bmi.length > 0 ? bmi.map(record => record.bmi_value).concat(Array(5 - bmi.length).fill(0)) : [0],
+          backgroundColor: bmi.length > 0 ? bmi.map(record => {
+            const value = record.bmi_value;
+            if (value < 18.5) return '#3498db'; // Underweight - Blue
+            if (value >= 18.5 && value <= 24.9) return '#2ecc71'; // Normal - Green
+            if (value >= 25 && value <= 29.9) return '#f1c40f'; // Overweight - Yellow
+            return '#e74c3c'; // Obese - Red
+          }).concat(Array(5 - bmi.length).fill('#e74c3c')) : ['#e74c3c'],
+          borderRadius: 5,
+        },
+      ],
+    };
+
+  function calculateAge(dateOfBirth) {
+    const dob = new Date(dateOfBirth); // Convert to Date object
+    const today = new Date(); // Current date
+  
+    // Calculate differences
+    let years = today.getFullYear() - dob.getFullYear();
+    let months = today.getMonth() - dob.getMonth();
+    let days = today.getDate() - dob.getDate();
+  
+    // Adjust if days are negative
+    if (days < 0) {
+      months--; // Borrow a month
+      const previousMonth = new Date(today.getFullYear(), today.getMonth(), 0); // Last day of previous month
+      days += previousMonth.getDate();
+    }
+  
+    // Adjust if months are negative
+    if (months < 0) {
+      years--; // Borrow a year
+      months += 12;
+    }
+  
+    return { years, months, days };
+  }
+  
+  const age = calculateAge(patientDateOfBirth);
 
   useEffect(() => {
     if (error) {
@@ -203,10 +240,10 @@ function PatientHome() {
               />
               <h5 className="mb-1">{patientId} - {patientFirstName} {patientLastName}</h5>
               <small className="text-muted">
-                {patientGender} - {new Date().toLocaleDateString()} - {patientDateOfBirth}
-              </small>
+                {patientGender} - Age {age.years} Years {age.months} Months  {age.days} Days
+               </small>
               <div style={{ textAlign: 'left', marginTop: '1rem' }}>
-                <p><strong>DOB:</strong> {patientDateOfBirth} </p>
+                <p><strong>DOB:</strong> {new Date(patientDateOfBirth).toLocaleDateString().split('T')[0]} </p>
                 <p><strong>Address:</strong> {patientAddress}</p>
                 <p><strong>Contacts:</strong> {useremail} |<br /> {patientPhoneNumber}</p>
                 <p><strong>Active Conditions:</strong> Hypertension, Asthma, Dermatitis</p>
@@ -299,6 +336,104 @@ function PatientHome() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+        {/* Medical Conditions List */}
+        <div className="card mb-4 shadow-sm">
+          <div className="card-header text-white" style={{ background: '#2A5D9C', color: 'white' }}>
+            <h4 className="mb-0"><FaClinicMedical /> Medical Conditions</h4>
+          </div>
+          <div className="card-body">
+            <table className="table table-hover">
+              <thead>
+                <tr>
+                  <th>Condition</th>
+                  <th>Severity</th>
+                  <th>Date Diagnosed</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {conditions.length > 0 ? (
+                  conditions.map((condition, index) => (
+                    <tr key={index}>
+                      <td>{condition.condition_name}</td>
+                      <td>
+                        <span 
+                            className={`badge 
+                              ${condition.severity === 'mild' ? 'bg-success' : 
+                                condition.severity === 'moderate' ? 'bg-warning' : 
+                                condition.severity === 'severe' ? 'bg-danger' : ''}`}
+                          >
+                          {condition.severity}
+                          </span>
+                        </td>
+                      <td>{new Date(condition.diagnosis_date).toLocaleDateString()}</td>
+                      <td>
+                        <span className={`badge ${condition.status === 'Active' ? 'bg-success' : 'bg-warning'}`}>
+                          {condition.notes}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="5" className="text-center">No medical conditions found</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        {/* Allergies List */}
+        <div className="card mb-4 shadow-sm">
+          <div className="card-header text-white" style={{ background: '#2A5D9C', color: 'white' }}>
+            <h4 className="mb-0"><FaClinicMedical /> Allergies</h4>
+          </div>
+          <div className="card-body">
+            <table className="table table-hover">
+              <thead>
+                <tr>
+                  <th>Allergy</th>
+                  <th>Type</th>
+                  <th>Severity</th>
+                  <th>description</th>
+                </tr>
+              </thead>
+              <tbody>
+                {allergies.length > 0 ? (
+                  allergies.map((allergy, index) => (
+                    <tr key={index}>
+                      <td>{allergy.allergy_name}</td>
+                      <td>
+                        <span className='badge badge-secondary bg-info'>
+                          {allergy.allergy_type}
+                        </span>
+                      </td>
+                      <td>
+                        <span 
+                          className={`badge 
+                            ${allergy.severity === 'mild' ? 'bg-success' : 
+                            allergy.severity === 'moderate' ? 'bg-warning' : 
+                            allergy.severity === 'severe' ? 'bg-danger' : ''}`}
+                        >
+                          {allergy.severity}
+                        </span>
+                      </td>
+                      <td>
+                        <span className='badge bg-warning'>
+                          {allergy.description}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="4" className="text-center">No allergies found</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
         </div>
         <div className="card mb-4 shadow-sm">

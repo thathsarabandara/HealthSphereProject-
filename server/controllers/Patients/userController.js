@@ -10,6 +10,11 @@ const Sequelize = require('sequelize');
 const { Patient } = require("../../models/healthcare/Patient");
 const { CartItem } = require("../../models/ecommerce/CartItem");
 const { Cart } = require("../../models/ecommerce/Cart");
+const { PatientAllergy } = require("../../models/healthcare/PatientAllergy");
+const { PatientBloodSugar } = require("../../models/healthcare/PatientBloodSugar");
+const { PatientBMI } = require("../../models/healthcare/PatientBMI");
+const { PatientHeartRate } = require("../../models/healthcare/PatientHeartRate");
+const { PatientCondition } = require("../../models/healthcare/PatientCondition");
 
 // Utility function to find user by token
 exports.findUserByToken = async (token) => {
@@ -60,7 +65,35 @@ exports.authHome = async (req, res) => {
 
         if (!patientData) {
             return res.status(404).json({ message: 'Patient data not found' });
-        }        
+        } 
+        const allergies = await PatientAllergy.findAll({
+            where: { patient_id: patientData.id }
+        });
+
+         // Get the latest 5 blood sugar records for the patient
+         const bloodSugar = await PatientBloodSugar.findAll({
+            where: { patient_id: patientData.id },
+            order: [['measurement_time', 'DESC']],
+            limit: 5
+        });
+
+        // Get the latest 5 BMI records for the patient
+        const bmi = await PatientBMI.findAll({
+            where: { patient_id: patientData.id },
+            order: [['measurement_date', 'DESC']],
+            limit: 5
+        });
+
+        // Get the latest 5 heart rate records for the patient
+        const heartRate = await PatientHeartRate.findAll({
+            where: { patient_id: patientData.id },
+            order: [['measurement_time', 'DESC']],
+            limit: 5
+        });
+
+        const conditions = await PatientCondition.findAll({
+            where: { patient_id: patientData.id }
+        });      
         return res.status(200).json({
             message: 'User authenticated successfully',
             data: {
@@ -73,7 +106,12 @@ exports.authHome = async (req, res) => {
                 gender: patientData.gender,
                 phone_number: patientData.phone_number,
                 address: patientData.address,
-                profile_picture: patientData.profilePictureLocation, // Assuming profile_picture is available
+                profile_picture: patientData.profilePictureLocation,
+                allergies: allergies,
+                blood_sugar_levels: bloodSugar,
+                bmi: bmi,
+                heart_rate: heartRate,
+                conditions: conditions, // Assuming profile_picture is available
             }
         });
         
@@ -118,25 +156,29 @@ exports.profileLoad = async (req, res) => {
 };
 
 exports.saveProfile = async (req, res) => {
-    const { id, first_name, last_name, date_of_birth, gender, phone_number, address,  } = req.body;
+    const { id, first_name, last_name, date_of_birth, gender, phone_number, address } = req.body;
     const profilePictureLocation = req.profile_picture;
 
     try {
-        // Find the patient by ID and update their details
-        const [updatedRows] = await Patient.update(
-            {
-                first_name,
-                last_name,
-                date_of_birth,
-                gender,
-                phone_number,
-                address,
-                profilePictureLocation
-            },
-            {
-                where: { id } // Update where patient ID matches
-            }
-        );
+        // Set the fields to be updated, with or without profile picture
+        const updateFields = {
+            first_name,
+            last_name,
+            date_of_birth,
+            gender,
+            phone_number,
+            address,
+        };
+
+        // Add the profile picture field if available
+        if (profilePictureLocation) {
+            updateFields.profilePictureLocation = profilePictureLocation;
+        }
+
+        // Update the patient's profile
+        const [updatedRows] = await Patient.update(updateFields, {
+            where: { id },
+        });
 
         // Check if any rows were updated
         if (updatedRows === 0) {
@@ -149,6 +191,7 @@ exports.saveProfile = async (req, res) => {
         return res.status(500).json({ message: 'An internal error occurred' });
     }
 };
+
 
 exports.loadDoctors = async (req, res) => {
     try {
