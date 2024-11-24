@@ -1,5 +1,5 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../../config/db');
+const sequelize = require('../../config/db'); // Ensure correct path to your Sequelize instance
 
 const Offer = sequelize.define('Offer', {
   id: {
@@ -42,4 +42,4 @@ const Offer = sequelize.define('Offer', {
   tableName: 'offers',
 });
 
-module.exports = Offer;
+module.exports = { Offer };

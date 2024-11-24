@@ -1,0 +1,45 @@
+const express = require('express');
+const router = express.Router();
+const loginController =  require('../controllers/Patients/loginController');
+const registerController =  require('../controllers/Patients/registerController');
+const cartController =  require('../controllers/Patients/cartController');
+const homeController =  require('../controllers/Patients/homeController');
+const paymentController =  require('../controllers/Patients/paymentController');
+const prescriptionController =  require('../controllers/Patients/prescriptionController');
+const profileController =  require('../controllers/Patients/profileController');
+const searchController =  require('../controllers/Patients/searchController');
+const authMiddleware = require('../middleware/auth/authenticateJWT');
+const {authorizeRole} = require('../middleware/auth/authorizeRole');
+const {rateLimiterMiddleware} = require('../middleware/rateLimit/rateLimiter');
+const { profilePictureUpload } = require('../middleware/upload/profilePictureUpload');
+
+router.get('/', rateLimiterMiddleware ,homeController.authHome );
+router.get('/finddoctor', rateLimiterMiddleware);
+router.post('/finddoctor', rateLimiterMiddleware, searchController.searchDoctors);
+router.get('/finddoctor/:specialization', rateLimiterMiddleware, searchController.loadDoctors);
+router.get('/finddoctor/:specialization/reservation',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware]);
+router.get('/finddoctor/:specialization/:doctor',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware]);
+router.post('/package/:id',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware],cartController.addItems);
+router.get('/pharamacy',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware]);
+router.get('/labratory',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware]);
+router.get('/aboutus',rateLimiterMiddleware);
+router.get('/userprofile',[authMiddleware ,authorizeRole('patient'), rateLimiterMiddleware],profileController.profileLoad);
+router.put('/userprofile/:id',profilePictureUpload,profileController.saveProfile);
+router.get('/userprescription',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware],prescriptionController.loadPrescription);
+router.get('/userpayments',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware], paymentController.loadPayment);
+router.get('/cart',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware], cartController.loadCart);
+router.put('/cart/:id',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware], cartController.deleteCartItem);
+router.get('/checkout',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware],paymentController.loadCheckout);
+router.get('/refund',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware],paymentController.loadRefund);
+router.get('/refund/request',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware]);
+router.post('/resetpassword',rateLimiterMiddleware,loginController.resetPassword);
+router.get('/resetpassword/validate',rateLimiterMiddleware,loginController.validateToken);
+router.post('/resetpasswordRequest',rateLimiterMiddleware, loginController.resetPasswordRequest);
+router.post('/logout',rateLimiterMiddleware, loginController.logout);
+router.post('/verifyuser',rateLimiterMiddleware, registerController.verifyUser );
+router.get('/resendotp',rateLimiterMiddleware, registerController.resendOTP);
+router.post('/register',rateLimiterMiddleware,registerController.register);
+router.post('/login',rateLimiterMiddleware,loginController.login);
+
+
+module.exports = router;

@@ -65,6 +65,7 @@ function PatientHome() {
   const [bmi, setBmi] = useState([]);
   const [heartRate, setHeartRate] = useState([]);
   const [conditions, setConditions] = useState([]);
+  const [medicalOffer, setOffers] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -94,6 +95,7 @@ function PatientHome() {
           setBmi(data.bmi);
           setHeartRate(data.heart_rate);
           setConditions(data.conditions);
+          setOffers(data.offer);
         }
       } catch (error) {
         if (error.response) {
@@ -246,8 +248,8 @@ function PatientHome() {
                 <p><strong>DOB:</strong> {new Date(patientDateOfBirth).toLocaleDateString().split('T')[0]} </p>
                 <p><strong>Address:</strong> {patientAddress}</p>
                 <p><strong>Contacts:</strong> {useremail} |<br /> {patientPhoneNumber}</p>
-                <p><strong>Active Conditions:</strong> Hypertension, Asthma, Dermatitis</p>
-                <p><strong>Allergies:</strong> Latex, Levaquin, Peanuts, Penicillin</p>
+                <p><strong>Active Conditions:</strong> {conditions.map(condition => condition.condition_name).join(', ')}</p>
+                <p><strong>Allergies:</strong> {allergies.map(allergie => allergie.allergy_name).join(', ')}</p>
               </div>
             </div>
           </div>
@@ -329,10 +331,20 @@ function PatientHome() {
             <div className="col-lg-4 col-md-6 mb-4">
               <div className="card h-100 shadow-sm bg-light">
                 <div className="card-body">
-                  <h5 className="card-title font-weight-bold"><FaGift /> Exclusive Offers</h5>
-                  <p className="mt-3"><strong>Discount:</strong> 20% off on next consultation</p>
-                  <p><strong>Expires:</strong> Sep 15, 2024</p>
-                  <button className="btn btn-success btn-block">Redeem Offer</button>
+                  {
+                    medicalOffer && medicalOffer.length > 0 ? (
+                      medicalOffer.map((offer, index) => (
+                        <div key={index} className="offer-item">
+                          <h5 className="card-title font-weight-bold"><FaGift /> {offer.title || "Exclusive Offers"}</h5>
+                          <p className="mt-3"><strong>Discount:</strong> {offer.description}</p>
+                          <p><strong>Expires:</strong> {new Date(offer.end_date).toLocaleDateString()}</p>
+                          <button className="btn btn-success btn-block">Redeem Offer</button>
+                        </div>
+                      ))
+                    ) : (
+                      <p style={{ textAlign: 'center' }}>No Offers</p>
+                    )
+                  }
                 </div>
               </div>
             </div>

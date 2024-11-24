@@ -1,0 +1,3 @@
+exports.loadPrescription = (req, res) =>{
+
+}
