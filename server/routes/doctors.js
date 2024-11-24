@@ -3,8 +3,9 @@ const router = express.Router();
 const authMiddleware = require('../middleware/auth/authenticateJWT');
 const { authorizeRole } = require('../middleware/auth/authorizeRole');
 const { rateLimiterMiddleware } = require('../middleware/rateLimit/rateLimiter');
-const doctorAuthController =  require('../controllers/Doctors/doctorAuthController');
-const doctorController =  require('../controllers/Doctors/doctorController');
+const { doctorFileHandleMiddleware } = require('../middleware/upload/doctorFileHandling');
+const loginController =  require('../controllers/Doctors/loginController');
+const registerController =  require('../controllers/Doctors/registerController');
 
 
 
@@ -15,9 +16,11 @@ router.get('/videoconsultation',[authMiddleware , authorizeRole('doctor'),rateLi
 router.get('/clinic',[authMiddleware , authorizeRole('doctor'),rateLimiterMiddleware]);
 router.get('/clinic/patientprofile',[authMiddleware , authorizeRole('doctor'),rateLimiterMiddleware]);
 router.get('/clinic/prescription',[authMiddleware , authorizeRole('doctor'),rateLimiterMiddleware]);
-router.get('/login',rateLimiterMiddleware,doctorAuthController.login);
-router.post('/register',rateLimiterMiddleware,doctorAuthController.register);
-router.post('/fullregister',rateLimiterMiddleware,);
+router.get('/login',rateLimiterMiddleware);
+router.post('/register',rateLimiterMiddleware,registerController.register);
+router.post('/verifyuser',rateLimiterMiddleware,registerController.verifyUser);
+router.get('/resendotp',rateLimiterMiddleware, registerController.resendOTP);
+router.post('/fullregister/:id',[ doctorFileHandleMiddleware, rateLimiterMiddleware],registerController.saveProfileDetails);
 
 
 module.exports = router;
