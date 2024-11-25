@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/db');
-const {User} = require('../auth/User');
-const {Specialization} = require('./Specialization');
+const { User } = require('../auth/User');
+const { Specialization } = require('./Specialization');
 
 const Doctor = sequelize.define('Doctor', {
     id: {
@@ -67,8 +67,12 @@ const Doctor = sequelize.define('Doctor', {
     medical_license_document: {
         type: DataTypes.STRING,
     },
-    professional_certifications: {
+    profile_picture: {
         type: DataTypes.STRING,
+    },
+    status: {
+        type: DataTypes.ENUM('pending', 'approved', 'suspended'),
+        allowNull: false,
     },
     created_at: {
         type: DataTypes.DATE,

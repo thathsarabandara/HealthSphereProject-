@@ -37,9 +37,9 @@ exports.login = async (req, res) => {
         // 5. Set token in the cookie
         res.cookie('token', token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production', // Only use secure in production
-            maxAge: 1000 * 3600,  // Token expiration: 10 minutes
-            sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax', // Set to 'Lax' for development
+            secure: process.env.NODE_ENV === 'production', 
+            maxAge: 1000 * 3600 *20, 
+            sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax', 
         });
 
         // 6. Send unusual login alert if needed

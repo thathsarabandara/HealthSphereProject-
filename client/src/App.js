@@ -50,6 +50,7 @@ import Error503 from './pages/ErrorPages/Error503';
 import Maintenance from './pages/ErrorPages/Maintenance';
 import DoctorsProfile from './pages/User/DoctorsProfile';
 import DoctorVerify from './pages/doctor/DoctorVerify';
+import WebBot from './components/Web Assistant/WebBot';
 
 
 const getNavbarAndFooter = (path) => {
@@ -128,6 +129,7 @@ function App() {
 
         {/* Add more routes as necessary */}
       </Routes>
+      <WebBot/>
       <FooterComponent />
     </div>
   );

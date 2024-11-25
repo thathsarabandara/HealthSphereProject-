@@ -15,7 +15,7 @@ function DoctorNavbar() {
   // Fetch user authentication status and profile data from the backend
   const fetchUserData = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/', { withCredentials: true });
+      const response = await axios.get('http://localhost:5000/doctor', { withCredentials: true });
       if (response.status === 200) {
         setIsAuthenticated(true);
         setUser(response.data.data);
@@ -105,9 +105,7 @@ function DoctorNavbar() {
                       />
                       {showDropdown && (
                         <div className='profile-dropdown'>
-                          <Link to='/userprofile' className='dropdown-item'>Profile</Link>
-                          <Link to='/user_prescription' className='dropdown-item'>User Prescriptions</Link>
-                          <Link to='/user_payments' className='dropdown-item'>User Payments</Link>
+                          <Link to='/doctor' className='dropdown-item'>Profile</Link>
                           <Link to="#" className='dropdown-item' onClick={handleLogout}>Logout</Link>
                         </div>
                       )}
