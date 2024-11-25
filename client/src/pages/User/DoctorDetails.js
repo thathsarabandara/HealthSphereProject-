@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios'; // Import Axios
 
 function DoctorDetails() {
   const { category } = useParams(); // Extract the category from URL parameters
   const [doctors, setDoctors] = useState([]); // State to hold doctor data
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (category) {
@@ -24,6 +25,10 @@ function DoctorDetails() {
       // Optionally, you can handle specific error messages or state updates here
     }
   };
+
+  const handleReservation = async (id) => {
+    navigate(`/finddoctors/${category}/reservation/${id}`);
+  }
 
   return (
     <div className="container">
@@ -51,7 +56,7 @@ function DoctorDetails() {
                 <td>{doctor.time}</td>
                 <td><a href={doctor.profileLink}>View</a></td> {/* Assuming profileLink is available */}
                 <td>Rs. {doctor.consultationFee}</td>
-                <td><button>Book</button></td>
+                <td><button onClick={() => handleReservation(doctor.schedule_id)}>Book</button></td>
               </tr>
             ))
           ) : (
