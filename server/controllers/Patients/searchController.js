@@ -75,9 +75,10 @@ exports.loadDoctors = async (req, res) => {
         // Step 6: Construct the response data according to the frontend expectations
         const response = doctors.map(doctor => {
             const doctorSchedules = schedules.filter(schedule => schedule.doctor_id === doctor.id); // Get schedules for each doctor
-
+            
             return doctorSchedules.map(schedule => ({
                 doctor_id: doctor.id,
+                schedule_id: schedule.id,
                 doctorname: doctor.first_name +' '+ doctor.last_name,
                 date: schedule.schedule_date,
                 time: schedule.schedule_time,

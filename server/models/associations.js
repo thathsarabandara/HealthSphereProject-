@@ -31,6 +31,9 @@ const { Session } = require('./security/Session');
 const { SecurityQuestion } = require('./security/SecurityQuestion');
 const { RateLimiting } = require('./security/RateLimiting');
 const { UserPassword } = require('./auth/UserPassword');
+const { BillingDetails } = require('./transactions/BillingDetails');
+const CardDetails = require('./transactions/CardDetails');
+const { BankReceipt } = require('./transactions/BankReciept');
 
 // Define auth relationships
 User.belongsToMany(Group, { through: UserGroup, foreignKey: 'user_id' });
@@ -48,6 +51,12 @@ Patient.belongsTo(User, { foreignKey: 'User_id' });
 Doctor.belongsTo(User, { foreignKey: 'user_id' });
 Doctor.belongsTo(Specialization, { foreignKey: 'specialization_id' });
 Admin.belongsTo(User, { foreignKey: 'User_id' });
+
+PatientAllergy.belongsTo(Patient, {foreignKey: 'patient_id'});
+PatientBloodSugar.belongsTo(Patient, {foreignKey: 'patient_id'});
+PatientBMI.belongsTo(Patient, {foreignKey: 'patient_id'});
+PatientCondition.belongsTo(Patient, {foreignKey: 'patient_id'});
+PatientHeartRate.belongsTo(Patient, {foreignKey: 'patient_id'});
 
 Schedule.belongsTo(Doctor, { foreignKey: 'doctor_id' });
 ScheduleCancel.belongsTo(Schedule, { foreignKey: 'schedule_id' });
@@ -70,7 +79,10 @@ Cart.belongsTo(CartItem, { foreignKey: 'cart_item_id' });
 Cart.belongsTo(CartItem, { foreignKey: 'unit_price' });
 
 Notification.belongsTo(User, { foreignKey: 'user_id' });
-Payment.belongsTo(User, {foreignKey:  'user_id'})
+Payment.belongsTo(User, {foreignKey:  'user_id'});
+Payment.belongsTo(BillingDetails, {foreignKey:  'billingDetails_id'});
+BillingDetails.belongsTo(CardDetails,{foreignKey: 'cardDetailsId'});
+BillingDetails.belongsTo(BankReceipt, {foreignKey: 'bankReceiptId'});
 
 // Define security relationships 
 AuditLog.belongsTo(User, { foreignKey: 'user_id' });
@@ -81,11 +93,7 @@ PasswordResetRequest.belongsTo(User, { foreignKey: 'user_id' });
 TwoFactorAuth.belongsTo(User, { foreignKey: 'user_id' });
 Session.belongsTo(User, { foreignKey: 'user_id' });
 SecurityQuestion.belongsTo(User, { foreignKey: 'user_id' });
-PatientAllergy.belongsTo(Patient, {foreignKey: 'patient_id'});
-PatientBloodSugar.belongsTo(Patient, {foreignKey: 'patient_id'});
-PatientBMI.belongsTo(Patient, {foreignKey: 'patient_id'});
-PatientCondition.belongsTo(Patient, {foreignKey: 'patient_id'});
-PatientHeartRate.belongsTo(Patient, {foreignKey: 'patient_id'});
+
 
 module.exports = { 
   User,

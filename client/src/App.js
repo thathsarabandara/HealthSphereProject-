@@ -99,7 +99,7 @@ function App() {
         <Route path="/paymenthistory" element={<PatientPaymentHistory/>} />
         <Route path="/prescriptionhistory" element={<PatientPrescriptionHistory/>} />
         <Route path="/cart" element={<Cart/>} />
-        <Route path="/payment" element={<Payment/>} />
+        <Route path="/checkout" element={<Payment/>} />
         <Route path="/refund" element={<Refund/>} />
 
         <Route path="/error/accessdenied" element={<DataAccesDenied/>} />

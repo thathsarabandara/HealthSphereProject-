@@ -32,6 +32,22 @@ const Reservation = sequelize.define('Reservation', {
             key: 'id',
         },
     },
+    reservation_name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    reservation_address: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    reservation_phonenumber: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
+    reservation_email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
     reservation_date: {
         type: DataTypes.DATEONLY,
         allowNull: false,
