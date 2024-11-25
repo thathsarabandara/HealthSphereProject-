@@ -15,6 +15,7 @@ const { seedPatientBloodSugar } = require('./healthcare/patientBloodSugarSeeder'
 const { seedPatientBMI } = require('./healthcare/patientBMISeeder'); 
 const { seedPatientCondition } = require('./healthcare/patientConditionSeeder'); 
 const { seedPatientHeartRate } = require('./healthcare/patientHeartRateSeeder'); 
+const { seedOffers } = require('./ecommerce/offerSeeder'); 
 
 const seedDatabase = async () => {
     try {
@@ -67,25 +68,29 @@ const seedDatabase = async () => {
         // await seedCartItems();
         // console.log('Cart items seeded successfully!');
 
-        console.log('Seeding patient allergies...');
-        await seedPatientAllergies();
-        console.log('Patient allergies seeded successfully!');
+        // console.log('Seeding patient allergies...');
+        // await seedPatientAllergies();
+        // console.log('Patient allergies seeded successfully!');
 
-        console.log('Seeding patient blood sugar records...');
-        await seedPatientBloodSugar();
-        console.log('Patient blood sugar records seeded successfully!');
+        // console.log('Seeding patient blood sugar records...');
+        // await seedPatientBloodSugar();
+        // console.log('Patient blood sugar records seeded successfully!');
 
-        console.log('Seeding patient BMI records...');
-        await seedPatientBMI();
-        console.log('Patient BMI records seeded successfully!');
+        // console.log('Seeding patient BMI records...');
+        // await seedPatientBMI();
+        // console.log('Patient BMI records seeded successfully!');
 
-        console.log('Seeding patient conditions...');
-        await seedPatientCondition();
-        console.log('Patient conditions seeded successfully!');
+        // console.log('Seeding patient conditions...');
+        // await seedPatientCondition();
+        // console.log('Patient conditions seeded successfully!');
 
-        console.log('Seeding patient heart rate records...');
-        await seedPatientHeartRate();
-        console.log('Patient heart rate records seeded successfully!');
+        // console.log('Seeding patient heart rate records...');
+        // await seedPatientHeartRate();
+        // console.log('Patient heart rate records seeded successfully!');
+
+        console.log('Seeding offers records...');
+        await seedOffers();
+        console.log('Offers records seeded successfully!');
 
         console.log('Database seeded successfully!');
         process.exit();

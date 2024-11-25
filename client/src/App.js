@@ -38,7 +38,7 @@ import DoctorDashboard1 from './pages/doctor/DoctorDashboard1';
 import DoctorVideoConsultation from './pages/doctor/DoctorVideoConsultation';
 import DoctorClinic from './pages/doctor/DoctorClinic';
 import DoctorPrescription from './pages/doctor/DoctorPrescription';
-import DoctorProfile from './pages/doctor/DoctorProfile';
+import DoctorFullRegister from './pages/doctor/DoctorFullRegister';
 import Loader from './components/common/Loader';
 import DataAccesDenied from './pages/ErrorPages/DataAccesDenied';
 import Error400 from './pages/ErrorPages/Error400';
@@ -49,6 +49,7 @@ import Error500 from './pages/ErrorPages/Error500';
 import Error503 from './pages/ErrorPages/Error503';
 import Maintenance from './pages/ErrorPages/Maintenance';
 import DoctorsProfile from './pages/User/DoctorsProfile';
+import DoctorVerify from './pages/doctor/DoctorVerify';
 
 
 const getNavbarAndFooter = (path) => {
@@ -114,6 +115,7 @@ function App() {
 
         <Route path="/doctor/login" element={<DoctorLogin />} />
         <Route path="/doctor/register" element={<DoctorRegister/>} />
+        <Route path="/doctor/verifyuser" element={<DoctorVerify/>} />
         <Route path="/doctor/about" element={<DoctorAbout/>} />
         <Route path="/doctor/" element={<DoctorHome/>} />
         <Route path="/doctor/schedule" element={<DoctorSchedule/>} />
@@ -122,7 +124,7 @@ function App() {
         <Route path="/doctor/videoconsultation" element={<DoctorVideoConsultation/>} />
         <Route path="/doctor/clinic" element={<DoctorClinic/>} />
         <Route path="/doctor/prescription" element={<DoctorPrescription/>} />
-        <Route path="/doctor/fullRegister" element={<DoctorProfile/>} />
+        <Route path="/doctor/fullregister/:id" element={<DoctorFullRegister/>} />
 
         {/* Add more routes as necessary */}
       </Routes>

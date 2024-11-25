@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const userRoutes = require('./routes/users');
+const patientRoutes = require('./routes/patients');
 const doctorRoutes = require('./routes/doctors');
 const adminRoutes = require('./routes/admins');
 const bodyParser = require('body-parser');
@@ -28,7 +28,7 @@ app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Routes
-app.use('/', userRoutes);
+app.use('/', patientRoutes);
 app.use('/doctor', doctorRoutes);
 app.use('/admin', adminRoutes);
 
