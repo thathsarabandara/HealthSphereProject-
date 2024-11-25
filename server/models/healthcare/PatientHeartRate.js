@@ -27,7 +27,11 @@ const PatientHeartRate = sequelize.define('PatientHeartRate', {
     notes: {
         type: DataTypes.TEXT,
         allowNull: true
-    }
+    },
+    status: {
+        type: DataTypes.ENUM('active', 'delete'),
+        allowNull: false
+    },
 }, {
     tableName: 'patient_heart_rate',
     timestamps: true

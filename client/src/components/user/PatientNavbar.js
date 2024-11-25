@@ -138,6 +138,7 @@ function PatientNavbar() {
                   {showDropdown && (
                     <div className='profile-dropdown'>
                       <Link to='/userprofile' className='dropdown-item'>Profile</Link>
+                      <Link to='/medicalcondions' className='dropdown-item'>Conditions</Link>
                       <Link to='/prescriptionhistory' className='dropdown-item'>Prescriptions</Link>
                       <Link to='/paymenthistory' className='dropdown-item'>Payments</Link>
                       <Link to="#" className='dropdown-item' onClick={handleLogout}>Logout</Link>

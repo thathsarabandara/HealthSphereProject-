@@ -28,6 +28,10 @@ const PatientAllergy = sequelize.define('PatientAllergy', {
         type: DataTypes.ENUM('mild', 'moderate', 'severe'),
         allowNull: false
     },
+    status: {
+        type: DataTypes.ENUM('active', 'delete'),
+        allowNull: false
+    },
     description: {
         type: DataTypes.TEXT,
         allowNull: true
