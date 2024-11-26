@@ -21,6 +21,7 @@ router.post('/finddoctor', rateLimiterMiddleware, searchController.searchDoctors
 router.get('/finddoctor/:specialization', rateLimiterMiddleware, searchController.loadDoctors);
 router.get('/reservation',rateLimiterMiddleware,reservationController.loadUserData);
 router.post('/reservation/:id',rateLimiterMiddleware,reservationController.saveReservation);
+router.get('/reservations/all',rateLimiterMiddleware,reservationController.loadReservations);
 router.get('/finddoctor/:specialization/:doctor',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware]);
 router.post('/package/:id',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware],cartController.addItems);
 router.get('/pharamacy',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware]);
