@@ -9,6 +9,7 @@ const prescriptionController =  require('../controllers/Patients/prescriptionCon
 const profileController =  require('../controllers/Patients/profileController');
 const searchController =  require('../controllers/Patients/searchController');
 const reservationController =  require('../controllers/Patients/reservationController');
+const conditionsController =  require('../controllers/Patients//conditionController');
 const authMiddleware = require('../middleware/auth/authenticateJWT');
 const {authorizeRole} = require('../middleware/auth/authorizeRole');
 const {rateLimiterMiddleware} = require('../middleware/rateLimit/rateLimiter');
@@ -23,7 +24,27 @@ router.post('/reservation/:id',rateLimiterMiddleware,reservationController.saveR
 router.get('/finddoctor/:specialization/:doctor',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware]);
 router.post('/package/:id',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware],cartController.addItems);
 router.get('/pharamacy',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware]);
-router.get('/labratory',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware]);
+router.get('/labratory',[authMiddleware,authorizeRole('patient'),rateLimiterMiddleware]);
+router.get('/allergies', [rateLimiterMiddleware], conditionsController.getAllergies);
+router.post('/allergies', [rateLimiterMiddleware], conditionsController.createAllergy);
+router.put('/allergies', [rateLimiterMiddleware], conditionsController.deleteAllergy);
+
+router.get('/bloodSugar', [rateLimiterMiddleware], conditionsController.getBloodSugar);
+router.post('/bloodSugar', [rateLimiterMiddleware], conditionsController.createBloodSugar);
+router.put('/bloodSugar', [rateLimiterMiddleware], conditionsController.deleteBloodSugar);
+
+router.get('/bmi', [rateLimiterMiddleware], conditionsController.getBmi);
+router.post('/bmi', [rateLimiterMiddleware], conditionsController.createBmi);
+router.put('/bmi', [rateLimiterMiddleware], conditionsController.deleteBmi);
+
+router.get('/conditions', [rateLimiterMiddleware], conditionsController.getConditions);
+router.post('/conditions', [rateLimiterMiddleware], conditionsController.createCondition);
+router.put('/conditions', [rateLimiterMiddleware], conditionsController.deleteCondition);
+
+router.get('/heartRates', [rateLimiterMiddleware], conditionsController.getHeartRates);
+router.post('/heartRates', [rateLimiterMiddleware], conditionsController.createHeartRate);
+router.put('/heartRates', [rateLimiterMiddleware], conditionsController.deleteHeartRate);
+
 router.get('/aboutus',rateLimiterMiddleware);
 router.get('/userprofile',[authMiddleware ,authorizeRole('patient'), rateLimiterMiddleware],profileController.profileLoad);
 router.put('/userprofile/:id',profilePictureUpload,profileController.saveProfile);

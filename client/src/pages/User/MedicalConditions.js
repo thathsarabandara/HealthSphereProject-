@@ -11,7 +11,22 @@ function MedicalConditions() {
   // Generic fetch data function
   const fetchData = async (endpoint, setter) => {
     try {
-      const response = await axios.get(endpoint);
+      const response = await axios.get(endpoint, {withCredentials:true});
+      const data = response.data.map((item) => {
+        if (item.measurement_date) {
+          // Convert date to YYYY-MM-DD
+          item.measurement_date = new Date(item.measurement_date).toISOString().split('T')[0];
+        }
+        if (item.measurement_time) {
+          // Convert datetime to YYYY-MM-DDTHH:MM
+          item.measurement_time = new Date(item.measurement_time).toISOString().slice(0, 16);
+        }
+        if (item.diagnosis_date) {
+          // Convert to YYYY-MM-DD
+          item.diagnosis_date = new Date(item.diagnosis_date).toISOString().split('T')[0];
+        }  
+        return item;
+      });  
       setter(response.data);
     } catch (error) {
       console.error(`Error fetching data from ${endpoint}:`, error);
@@ -28,8 +43,8 @@ function MedicalConditions() {
   }, []);
 
   // Handle row addition
-  const handleAddRow = (setter, data) => {
-    setter([...data, { status: 'active' }]); // Add a new row with active status
+  const handleAddRow = (setter, defaultData) => {
+    setter((prevData) => [...prevData, defaultData]);
   };
 
   // Handle row update
@@ -39,27 +54,49 @@ function MedicalConditions() {
     setter(updatedData);
   };
 
-  // Handle soft delete (mark as "deleted")
-  const handleDeleteRow = (index, setter, data) => {
-    const updatedData = [...data];
-    updatedData[index].status = 'deleted';
-    setter(updatedData);
-  };
-
   // Handle save section using PUT to a specific endpoint
   const handleSaveSection = async (endpoint, data, setter) => {
+    console.log(endpoint, data, setter);
     try {
-      await axios.put(endpoint, data);
-      alert(`${endpoint} saved successfully!`);
-      // Optionally refetch data to synchronize with the backend
-      fetchData(endpoint, setter);
+      const newRows = data.filter((row) => !row.id); // New rows
+      const existingRows = data.filter((row) => row.id); // Existing rows
+      console.log(newRows);
+      // Create new rows
+      if (newRows.length > 0) {
+        console.log('hi');
+        await axios.post(endpoint, newRows, {withCredentials: true}); // POST for new rows
+      }
+  
+      alert('Data saved successfully!');
+      fetchData(endpoint, setter); // Refresh data
     } catch (error) {
       console.error(`Error saving data to ${endpoint}:`, error);
+      alert('Failed to save data.');
     }
   };
+  
+  
 
+  const handleDeleteRow = async (index, setter, data, endpoint) => {
+    const rowToDelete = data[index];
+    try {
+      // Sending the ID and status update to the backend
+      await axios.put(endpoint, { id: rowToDelete.id, status: 'deleted' });
+  
+      // Update frontend state after successful backend update
+      const updatedData = [...data];
+      updatedData[index].status = 'deleted';
+      setter(updatedData);
+  
+      alert('Row deleted successfully!');
+    } catch (error) {
+      console.error('Error deleting row:', error);
+      alert('Failed to delete row.');
+    }
+  };
+  
   // Render dynamic table
-  const renderDynamicTable = (sectionName, data, sectionSetter, columns, endpoint) => (
+  const renderDynamicTable = (sectionName, data, sectionSetter, columns, endpoint, defaultRow) => (
     <div className="mb-4">
       <h5>{sectionName}</h5>
       <div className="table-responsive">
@@ -88,13 +125,13 @@ function MedicalConditions() {
                   </td>
                 ))}
                 <td>
-                  <button
-                    className="btn btn-sm btn-danger"
-                    onClick={() => handleDeleteRow(index, sectionSetter, data)}
-                  >
-                    Delete
-                  </button>
-                </td>
+                <button
+                  className="btn btn-sm btn-danger"
+                  onClick={() => handleDeleteRow(index, sectionSetter, data, endpoint)}
+                >
+                  Delete
+                </button>
+              </td>
               </tr>
             ))}
           </tbody>
@@ -102,7 +139,7 @@ function MedicalConditions() {
       </div>
       <button
         className="btn btn-primary btn-sm"
-        onClick={() => handleAddRow(sectionSetter, data)}
+        onClick={() => handleAddRow(sectionSetter, defaultRow)}
       >
         Add Row
       </button>
@@ -120,27 +157,70 @@ function MedicalConditions() {
       <div className="card">
         <div className="card-body">
           <h3 className="text-center">Health Records</h3>
-          {renderDynamicTable('Allergies', allergies, setAllergies, [
-            { label: 'Allergy', field: 'name' },
-            { label: 'Severity', field: 'severity' },
-            { label: 'Notes', field: 'notes' },
-          ], '/api/allergies')}
-          {renderDynamicTable('Blood Sugar', bloodSugar, setBloodSugar, [
-            { label: 'Value (mg/dL)', field: 'value', type: 'number' },
-            { label: 'Date', field: 'date', type: 'date' },
-          ], '/api/bloodSugar')}
-          {renderDynamicTable('BMI', bmi, setBmi, [
-            { label: 'BMI Value', field: 'value', type: 'number' },
-            { label: 'Date', field: 'date', type: 'date' },
-          ], '/api/bmi')}
-          {renderDynamicTable('Conditions', conditions, setConditions, [
-            { label: 'Condition', field: 'name' },
-            { label: 'Notes', field: 'notes' },
-          ], '/api/conditions')}
-          {renderDynamicTable('Heart Rates', heartRates, setHeartRates, [
-            { label: 'Heart Rate (bpm)', field: 'rate', type: 'number' },
-            { label: 'Date', field: 'date', type: 'date' },
-          ], '/api/heartRates')}
+          {renderDynamicTable(
+            'Allergies',
+            allergies,
+            setAllergies,
+            [
+              { label: 'Allergy Name', field: 'allergy_name' },
+              { label: 'Allergy Type', field: 'allergy_type' },
+              { label: 'Severity', field: 'severity' },
+              { label: 'Description', field: 'description' },
+            ],
+            'http://localhost:5000/allergies',
+            { allergy_name: '', allergy_type: '', severity: '', description: '', status: 'active' }
+          )}
+          {renderDynamicTable(
+            'Blood Sugar',
+            bloodSugar,
+            setBloodSugar,
+            [
+              { label: 'Blood Sugar Level (mg/dL)', field: 'blood_sugar_level', type: 'number' },
+              { label: 'Measurement Time', field: 'measurement_time', type: 'datetime-local' },
+              { label: 'Notes', field: 'notes' },
+            ],
+            'http://localhost:5000/bloodSugar',
+            { blood_sugar_level: 0, measurement_time: '', notes: '', status: 'active' }
+          )}
+          {renderDynamicTable(
+            'BMI',
+            bmi,
+            setBmi,
+            [
+              { label: 'BMI Value', field: 'bmi_value', type: 'number' },
+              { label: 'Height (cm)', field: 'height', type: 'number' },
+              { label: 'Weight (kg)', field: 'weight', type: 'number' },
+              { label: 'Measurement Date', field: 'measurement_date', type: 'date' },
+              { label: 'Notes', field: 'notes' },
+            ],
+            'http://localhost:5000/bmi',
+            { bmi_value: 0, height: 0, weight: 0, measurement_date: '', notes: '', status: 'active' }
+          )}
+          {renderDynamicTable(
+            'Conditions',
+            conditions,
+            setConditions,
+            [
+              { label: 'Condition Name', field: 'condition_name' },
+              { label: 'Severity', field: 'severity' },
+              { label: 'Diagnosis Date', field: 'diagnosis_date', type: 'date' },
+              { label: 'Notes', field: 'notes' },
+            ],
+            'http://localhost:5000/conditions',
+            { condition_name: '', severity: 'mild', diagnosis_date: '', notes: '', status: 'active' }
+          )}
+          {renderDynamicTable(
+            'Heart Rates',
+            heartRates,
+            setHeartRates,
+            [
+              { label: 'Heart Rate (bpm)', field: 'heart_rate', type: 'number' },
+              { label: 'Measurement Time', field: 'measurement_time', type: 'datetime-local' },
+              { label: 'Notes', field: 'notes' },
+            ],
+            'http://localhost:5000/heartRates',
+            { heart_rate: 0, measurement_time: '', notes: '', status: 'active' }
+          )}
         </div>
       </div>
     </div>

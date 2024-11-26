@@ -27,7 +27,6 @@ const { AuditLog } = require('./security/AuditLog');
 const { FailedLoginAttempt } = require('./security/FailedLoginAttempt');
 const { PasswordResetRequest } = require('./security/PasswordResetRequest');
 const { TwoFactorAuth } = require('./security/TwoFactorAuth');
-const { Session } = require('./security/Session');
 const { SecurityQuestion } = require('./security/SecurityQuestion');
 const { RateLimiting } = require('./security/RateLimiting');
 const { UserPassword } = require('./auth/UserPassword');
@@ -91,7 +90,6 @@ RateLimiting.belongsTo(UserGroup, { foreignKey: 'user_group_id' });
 
 PasswordResetRequest.belongsTo(User, { foreignKey: 'user_id' });
 TwoFactorAuth.belongsTo(User, { foreignKey: 'user_id' });
-Session.belongsTo(User, { foreignKey: 'user_id' });
 SecurityQuestion.belongsTo(User, { foreignKey: 'user_id' });
 
 
