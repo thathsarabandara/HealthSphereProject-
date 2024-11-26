@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import '../../styles/Navbar.css';
 import banner from '../../assets/images/banner-img.png';
-import { MdAccountCircle, MdShoppingCart } from "react-icons/md"; // Import cart icon
+import { MdAccountCircle, MdEvent, MdShoppingCart } from "react-icons/md"; // Import cart icon
 import emptyImage from '../../assets/images/emptyProfile.png';
 import axios from 'axios';
 
@@ -117,6 +117,11 @@ function PatientNavbar() {
             <li className='nav-item'>
               <Link to="/cart" className="nav-link active">
                 <MdShoppingCart className="cart-icon" />
+              </Link>
+            </li>
+            <li className='nav-item'>
+              <Link to="/bookings" className="nav-link active">
+                <MdEvent className="booking-icon" />
               </Link>
             </li>
           </ul>

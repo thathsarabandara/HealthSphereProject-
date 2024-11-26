@@ -52,6 +52,7 @@ import DoctorsProfile from './pages/User/DoctorsProfile';
 import DoctorVerify from './pages/doctor/DoctorVerify';
 import WebBot from './components/Web Assistant/WebBot';
 import MedicalConditions from './pages/User/MedicalConditions';
+import Bookings from './pages/User/Bookings';
 
 
 const getNavbarAndFooter = (path) => {
@@ -102,6 +103,7 @@ function App() {
         <Route path="/paymenthistory" element={<PatientPaymentHistory/>} />
         <Route path="/prescriptionhistory" element={<PatientPrescriptionHistory/>} />
         <Route path="/cart" element={<Cart/>} />
+        <Route path="/bookings" element={<Bookings/>} />
         <Route path="/checkout" element={<Payment/>} />
         <Route path="/refund" element={<Refund/>} />
 

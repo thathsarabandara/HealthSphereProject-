@@ -27,6 +27,7 @@ const Reservation = sequelize.define('Reservation', {
     },
     payment_id: {
         type: DataTypes.INTEGER,
+        allowNull:true,
         references: {
             model: Payment,
             key: 'id',

@@ -30,22 +30,6 @@ const BillingDetails = sequelize.define('BillingDetails', {
         isEmail: true, // Ensures valid email format
       },
     },
-    cardDetailsId: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      references: {
-        model: CardDetails,
-        key: 'id',
-      },
-    },
-    bankReceiptId: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      references: {
-        model: BankReceipt,
-        key: 'id',
-      },
-    },
     created_at: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
