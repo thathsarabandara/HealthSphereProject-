@@ -31,7 +31,7 @@ function DoctorDetails() {
   }
 
   const handleProfileView = async (id) => {
-    navigate(`/doctorProfile/${id}`);
+    navigate(`/profileDoctor/${id}`);
   }
 
   return (

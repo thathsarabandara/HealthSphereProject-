@@ -23,6 +23,7 @@ router.get('/finddoctor/:specialization', rateLimiterMiddleware, searchControlle
 router.get('/reservation',rateLimiterMiddleware,reservationController.loadUserData);
 router.get('/doctorprofile/:doctorid',rateLimiterMiddleware,doctorProfileController.loadDoctorProfile);
 router.post('/reservation/:id',rateLimiterMiddleware,reservationController.saveReservation);
+router.get('/cancelreservation/:id',rateLimiterMiddleware,reservationController.cancelReservation);
 router.get('/reservations/all',rateLimiterMiddleware,reservationController.loadReservations);
 router.get('/finddoctor/:specialization/:doctor',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware]);
 router.post('/package/:id',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware],cartController.addItems);

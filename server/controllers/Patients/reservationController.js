@@ -236,7 +236,7 @@ exports.loadReservations = async (req, res) => {
                     : 'N/A',
             };
         });
-        
+
         res.status(200).json({
             message: 'Reservations loaded successfully',
             reservations: formattedReservations,
@@ -245,4 +245,48 @@ exports.loadReservations = async (req, res) => {
         console.error('Error loading reservations:', error);
         res.status(500).json({ message: 'Server error', error: error.message });
     }
+};
+
+exports.cancelReservation = async (req, res) => {
+  try {
+    const { id } = req.params; // Extract reservation ID from params
+    const token = req.cookies['token']; // Extract the token from cookies
+
+    if (!token) {
+      return res.status(401).json({ error: 'Unauthorized access. Token is missing.' });
+    }
+
+    // Find the user associated with the token
+    const tokenRecord = await Token.findOne({
+      where: { token }
+    });
+
+    if (!tokenRecord) {
+      return res.status(401).json({ error: 'Unauthorized access. Invalid token.' });
+    }
+
+    // Validate that the reservation belongs to the user
+    const isValidReservation = await Reservation.findOne({
+      where: {
+        user_id: tokenRecord.user_id,
+        id: id,
+        status: { [Op.ne]: 'canceled'} // Ensure it's not already canceled
+      }
+    });
+
+    if (!isValidReservation) {
+      return res.status(404).json({ error: 'Reservation not found or already canceled.' });
+    }
+
+    // Update the reservation status to 'canceled'
+    await Reservation.update(
+      { status: 'canceled' },
+      { where: { id: id } }
+    );
+
+    return res.status(200).json({ message: 'Reservation canceled successfully.' });
+  } catch (error) {
+    console.error('Error canceling reservation:', error);
+    return res.status(500).json({ error: 'An error occurred while canceling the reservation.' });
+  }
 };
