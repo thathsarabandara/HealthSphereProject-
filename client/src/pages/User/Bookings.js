@@ -84,10 +84,10 @@ const Bookings = () => {
                 <strong>Description:</strong> {booking.doctor_details.description}
               </p>
               <p>
-                <strong>Specializations:</strong> {booking.doctor_details.specializations}
+                <strong>Specializations:</strong> {booking.doctor_details.specialization}
               </p>
               <Link
-                to={`/doctor-details/${booking.doctor_details.name}`}
+                to={`/doctorprofile/${booking.doctor_details.id}`}
                 className="btn btn-info btn-lg mt-3"
               >
                 View Full Doctor Profile <MdInfo className="ms-2" />

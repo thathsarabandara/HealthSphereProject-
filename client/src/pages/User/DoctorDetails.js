@@ -30,6 +30,10 @@ function DoctorDetails() {
     navigate(`/finddoctors/${category}/reservation/${id}`);
   }
 
+  const handleProfileView = async (id) => {
+    navigate(`/doctorProfile/${id}`);
+  }
+
   return (
     <div className="container">
       <h2 className="title">Channel A {category}</h2>
@@ -54,7 +58,7 @@ function DoctorDetails() {
                 <td>{doctor.doctorname}</td>
                 <td>{doctor.date}</td>
                 <td>{doctor.time}</td>
-                <td><a href={doctor.profileLink}>View</a></td> {/* Assuming profileLink is available */}
+                <td><button onClick={() => handleProfileView(doctor.doctor_id)}>view</button></td> {/* Assuming profileLink is available */}
                 <td>Rs. {doctor.consultationFee}</td>
                 <td><button onClick={() => handleReservation(doctor.schedule_id)}>Book</button></td>
               </tr>
