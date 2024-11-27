@@ -5,6 +5,7 @@ const { Op } = require('sequelize');
 const { Schedule } = require("../../models/healthcare/Schedule");
 const { Reservation } = require("../..//models/healthcare/Reservation");
 const { Specialization } = require("../../models/healthcare/Specialization");
+const { Doctor } = require("../../models/healthcare/Doctor");
 
 exports.loadUserData = async (req, res) => {
     try {
@@ -132,7 +133,7 @@ exports.saveReservation = async (req, res) => {
 const findDoctorsByIds = async (doctorIds) => {
     return await Doctor.findAll({
         where: { id: doctorIds },
-        attributes: ['id', 'first_name', 'last_name', 'medical_license_number', 'description', 'specialization_id'], // Only fetch required fields
+        attributes: ['id', 'first_name', 'last_name', 'medical_license_number', 'bio', 'specialization_id'], // Only fetch required fields
     });
 };
 
@@ -183,6 +184,7 @@ exports.loadReservations = async (req, res) => {
 
         // Fetch reservations
         const reservations = await findReservationsByUserId(userId);
+
         if (reservations.length === 0) {
             return res.status(404).json({ message: 'No reservations found' });
         }
@@ -207,18 +209,18 @@ exports.loadReservations = async (req, res) => {
             return {
                 reservation_id: reservation.id,
                 reservation_status: reservation.status,
-                schedule_date: schedule?.date || 'N/A',
-                schedule_time: schedule?.time || 'N/A',
+                schedule_date: schedule?.schedule_date || 'N/A',
+                schedule_time: schedule?.schedule_time || 'N/A',
                 doctor_details: doctor
                     ? {
-                          name: doctor.name,
-                          description: doctor.description,
-                          specializations: doctor.specializations,
+                          name: doctor.first_name+' '+doctor.last_name,
+                          description: doctor.bio,
+                          specializations: doctor.specialization_id,
                       }
                     : 'N/A',
             };
         });
-
+console.log(formattedReservations)
         res.status(200).json({
             message: 'Reservations loaded successfully',
             reservations: formattedReservations,

@@ -11,7 +11,6 @@ router.get('/admin/dashboard',);
 router.get('/admin/managedoctors',);
 router.get('/admin/managepatient',);
 router.get('/admin/refund',);
-router.post('/register',adminAuthController.register)
 router.post('/login',adminAuthController.login);
 
 module.exports = router;

@@ -24,49 +24,49 @@ const seedDatabase = async () => {
         console.log('Database synced successfully!');
 
         // Begin seeding
-        console.log('Seeding users...');
-        await seedUsers();
-        console.log('Users seeded successfully!');
+        // console.log('Seeding users...');
+        // await seedUsers();
+        // console.log('Users seeded successfully!');
 
-        console.log('Seeding user passwords...');
-        await seedUserPasswords();
-        console.log('User passwords seeded successfully!');
+        // console.log('Seeding user passwords...');
+        // await seedUserPasswords();
+        // console.log('User passwords seeded successfully!');
 
-        console.log('Seeding groups...');
-        await seedGroups();
-        console.log('Groups seeded successfully!');
+        // console.log('Seeding groups...');
+        // await seedGroups();
+        // console.log('Groups seeded successfully!');
 
-        console.log('Seeding permissions...');
-        await seedPermissions();
-        console.log('Permissions seeded successfully!');
+        // console.log('Seeding permissions...');
+        // await seedPermissions();
+        // console.log('Permissions seeded successfully!');
 
-        console.log('Seeding group permissions...');
-        await seedGroupPermissions();
-        console.log('Group permissions seeded successfully!');
+        // console.log('Seeding group permissions...');
+        // await seedGroupPermissions();
+        // console.log('Group permissions seeded successfully!');
 
-        console.log('Seeding user groups...');
-        await seedUserGroups();
-        console.log('User groups seeded successfully!');
+        // console.log('Seeding user groups...');
+        // await seedUserGroups();
+        // console.log('User groups seeded successfully!');
 
-        console.log('Seeding specializations...');
-        await seedSpecializations();
-        console.log('Specializations seeded successfully!');
+        // console.log('Seeding specializations...');
+        // await seedSpecializations();
+        // console.log('Specializations seeded successfully!');
 
-        console.log('Seeding doctors...');
-        await seedDoctors();
-        console.log('Doctors seeded successfully!');
+        // console.log('Seeding doctors...');
+        // await seedDoctors();
+        // console.log('Doctors seeded successfully!');
 
-        console.log('Seeding patients...');
-        await seedPatients();
-        console.log('Patients seeded successfully!');
+        // console.log('Seeding patients...');
+        // await seedPatients();
+        // console.log('Patients seeded successfully!');
 
-        console.log('Seeding schedules...');
-        await seedSchedules();
-        console.log('Schedules seeded successfully!');
+        // console.log('Seeding schedules...');
+        // await seedSchedules();
+        // console.log('Schedules seeded successfully!');
 
-        console.log('Seeding cart items...');
-        await seedCartItems();
-        console.log('Cart items seeded successfully!');
+        // console.log('Seeding cart items...');
+        // await seedCartItems();
+        // console.log('Cart items seeded successfully!');
 
         console.log('Seeding patient allergies...');
         await seedPatientAllergies();
@@ -88,9 +88,9 @@ const seedDatabase = async () => {
         await seedPatientHeartRate();
         console.log('Patient heart rate records seeded successfully!');
 
-        console.log('Seeding offers records...');
-        await seedOffers();
-        console.log('Offers records seeded successfully!');
+        // console.log('Seeding offers records...');
+        // await seedOffers();
+        // console.log('Offers records seeded successfully!');
 
         console.log('Database seeded successfully!');
         process.exit();
