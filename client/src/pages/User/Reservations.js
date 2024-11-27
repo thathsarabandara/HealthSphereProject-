@@ -44,7 +44,7 @@ function Reservations() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`http://localhost:5000/reservation/${scheduleid}`, formData);
+      const response = await axios.post(`http://localhost:5000/reservation/${scheduleid}`, formData, {withCredentials: true});
       if (response.status === 200 || response.status === 201) {
         alert('Reservation submitted successfully!');
         setFormData({ name: '', address: '', phone_number: '', email: '' });

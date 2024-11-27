@@ -15,6 +15,7 @@ require('../models/content/Review');
 require('../models/ecommerce/Cart');
 require('../models/ecommerce/CartItem');
 require('../models/ecommerce/Offer');
+require('../models/ecommerce/UserOffer');
 
 require('../models/healthcare/Doctor');
 require('../models/healthcare/Patient');
@@ -33,17 +34,18 @@ require('../models/security/AuditLog');
 require('../models/security/FailedLoginAttempt');
 require('../models/security/PasswordResetRequest');
 require('../models/security/RateLimiting');
-require('../models/security/SecurityIncidentResponse');
-require('../models/security/SecurityPolicies');
 require('../models/security/SecurityQuestion');
-require('../models/security/Session');
 require('../models/security/TwoFactorAuth');
-require('../models/security/WhitelistedInputs');
-require('../models/security/cspConfigurations');
-require('../models/security/validationRules');
+require('../models/security/UserBlackList');
 
 require('../models/transactions/Payment');
 require('../models/transactions/Refund');
+require('../models/transactions/BillingDetails');
+require('../models/transactions/BankReciept');
+require('../models/transactions/CardDetails');
+require('../models/transactions/BankBillings');
+require('../models/transactions/CardBilings');
+
 
 const syncDatabase = async () => {
     try {

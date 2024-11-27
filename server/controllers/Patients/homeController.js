@@ -57,26 +57,26 @@ exports.authHome = async (req, res) => {
             return res.status(404).json({ message: 'Patient data not found' });
         } 
         const allergies = await PatientAllergy.findAll({
-            where: { patient_id: patientData.id }
+            where: { patient_id: patientData.id, status:'active' }
         });
 
          // Get the latest 5 blood sugar records for the patient
          const bloodSugar = await PatientBloodSugar.findAll({
-            where: { patient_id: patientData.id },
+            where: { patient_id: patientData.id, status: 'active' },
             order: [['measurement_time', 'DESC']],
             limit: 5
         });
 
         // Get the latest 5 BMI records for the patient
         const bmi = await PatientBMI.findAll({
-            where: { patient_id: patientData.id },
+            where: { patient_id: patientData.id, status:'active' },
             order: [['measurement_date', 'DESC']],
             limit: 5
         });
 
         // Get the latest 5 heart rate records for the patient
         const heartRate = await PatientHeartRate.findAll({
-            where: { patient_id: patientData.id },
+            where: { patient_id: patientData.id, status: 'active' },
             order: [['measurement_time', 'DESC']],
             limit: 5
         });
@@ -84,7 +84,7 @@ exports.authHome = async (req, res) => {
         const offers = await Offer.findAll({limit:2});
 
         const conditions = await PatientCondition.findAll({
-            where: { patient_id: patientData.id }
+            where: { patient_id: patientData.id , status: 'active'}
         });      
         return res.status(200).json({
             message: 'User authenticated successfully',

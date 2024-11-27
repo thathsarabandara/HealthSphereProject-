@@ -44,7 +44,7 @@ const styles = {
     width: '60px',  
     height: '60px',
     borderRadius: '50%',  
-    animation: 'shake 0.5s ease-in-out infinite', 
+    animation: 'shake 1.5s ease-in-out infinite', 
     transition: 'transform 0.3s ease, opacity 0.3s ease',  
   },
   iframeContainer: {

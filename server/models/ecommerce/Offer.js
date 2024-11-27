@@ -21,8 +21,11 @@ const Offer = sequelize.define('Offer', {
   },
   discount: {
     type: DataTypes.FLOAT,
-    allowNull: true,
-    defaultValue: 0,
+    allowNull: false,
+  },
+  cupon_code: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
   },
   start_date: {
     type: DataTypes.DATE,

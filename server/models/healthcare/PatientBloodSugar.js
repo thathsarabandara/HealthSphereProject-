@@ -27,7 +27,11 @@ const PatientBloodSugar = sequelize.define('PatientBloodSugar', {
     notes: {
         type: DataTypes.TEXT,
         allowNull: true
-    }
+    },
+    status: {
+        type: DataTypes.ENUM('active', 'delete'),
+        allowNull: false
+    },
 }, {
     tableName: 'patient_blood_sugar',
     timestamps: true

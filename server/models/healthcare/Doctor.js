@@ -44,6 +44,10 @@ const Doctor = sequelize.define('Doctor', {
         type: DataTypes.STRING,
         allowNull: false,
     },
+    bio: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
     specialization_id: {
         type: DataTypes.INTEGER,
         references: {
