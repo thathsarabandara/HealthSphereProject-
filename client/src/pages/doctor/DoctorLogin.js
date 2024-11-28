@@ -15,7 +15,7 @@ const navigate = useNavigate();
 const handleSubmit = async (e) => {
       e.preventDefault();
       try {
-          const response = await axios.post('http://localhost:5000/login', { email, password }, { withCredentials: true });
+          const response = await axios.post('http://localhost:5000/doctor/login', { email, password }, { withCredentials: true });
 
           setSuccess(response.data.message);
           setError('');
@@ -23,7 +23,7 @@ const handleSubmit = async (e) => {
           setPassword('');
 
           // Navigate to the desired route after successful login
-          navigate('/'); // Change this to your desired route
+          navigate('/doctor/'); // Change this to your desired route
       } catch (err) {
           setError(err.response?.data?.error || 'Login failed. Please try again.');
           setSuccess('');

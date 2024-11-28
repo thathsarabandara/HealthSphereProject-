@@ -1,3 +1,4 @@
+// CartItem model
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/db');
 
@@ -9,10 +10,6 @@ const CartItem = sequelize.define('CartItem', {
     },
     product_name: {
         type: DataTypes.STRING,
-        allowNull: false,
-    },
-    quantity: {
-        type: DataTypes.INTEGER,
         allowNull: false,
     },
     price: {
@@ -30,6 +27,12 @@ const CartItem = sequelize.define('CartItem', {
 }, {
     tableName: 'cart_items',
     timestamps: false,
+    indexes: [
+        {
+            unique: false,
+            fields: ['price'], // Add an index on price
+        },
+    ],
 });
 
 module.exports = {

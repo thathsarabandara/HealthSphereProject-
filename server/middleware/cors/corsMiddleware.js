@@ -1,6 +1,6 @@
 const corsOptions = {
     origin: ['https://api.zoom.us','https://meet.google.com','http://localhost:3000'],
-    methods: ['GET', 'POST'],
+    methods: ['GET', 'POST','PUT'],
     credentials: true,
 }; 
 const ipapiCorsOptions = {

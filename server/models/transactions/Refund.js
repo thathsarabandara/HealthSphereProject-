@@ -8,6 +8,7 @@ const Refund = sequelize.define('Refund', {
         autoIncrement: true,
         primaryKey: true,
     },
+    
     payment_id: {
         type: DataTypes.INTEGER,
         references: {
