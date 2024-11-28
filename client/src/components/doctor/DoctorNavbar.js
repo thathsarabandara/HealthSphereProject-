@@ -49,7 +49,6 @@ function DoctorNavbar() {
         console.log('Logout successful:', response.data.message);
         setIsAuthenticated(false);
         setUser(null);
-        console.log('hi');
         // Redirect to the homepage or login page
         window.location.href = '/login'; // Adjust as necessary
       }
@@ -58,6 +57,20 @@ function DoctorNavbar() {
       // Handle error (e.g., show a notification)
     }
   };
+
+  useEffect(() => {
+    // Fetch user data on mount
+    fetchUserData();
+
+    // Listen for login event
+    const handleLoginEvent = () => {
+      fetchUserData();
+    };
+    window.addEventListener("userLogin", handleLoginEvent);
+
+    // Clean up event listener on unmount
+    return () => window.removeEventListener("userLogin", handleLoginEvent);
+  }, []);
 
   if (loading) {
     return <div>Loading...</div>; // Loading state while data is being fetched

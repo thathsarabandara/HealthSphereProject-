@@ -21,6 +21,10 @@ router.get('/videoconsultation',[authMiddleware , authorizeRole('doctor'),rateLi
 router.get('/clinic',[authMiddleware , authorizeRole('doctor'),rateLimiterMiddleware]);
 router.get('/clinic/patientprofile',[authMiddleware , authorizeRole('doctor'),rateLimiterMiddleware]);
 router.get('/clinic/prescription',[authMiddleware , authorizeRole('doctor'),rateLimiterMiddleware]);
+router.post('/resetpassword',rateLimiterMiddleware,loginController.resetPassword);
+router.get('/resetpassword/validate',rateLimiterMiddleware,loginController.validateToken);
+router.post('/resetpasswordRequest',rateLimiterMiddleware, loginController.resetPasswordRequest);
+router.post('/logout',rateLimiterMiddleware, loginController.logout);
 router.post('/login',rateLimiterMiddleware,loginController.login);
 router.post('/register',rateLimiterMiddleware,registerController.register);
 router.post('/verifyuser',rateLimiterMiddleware,registerController.verifyUser);

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { MdEvent, MdPayment, MdPerson, MdInfo } from 'react-icons/md';
 import axios from 'axios';
+import Loader from '../../components/common/Loader';
 
 const Bookings = () => {
   const [bookings, setBookings] = useState([]);
@@ -49,8 +50,23 @@ const Bookings = () => {
   };
 
   if (loading) {
-    return <div className="text-center mt-5">Loading booking details...</div>;
-  }
+    return (
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#f0f4f8',
+        zIndex: 9999
+      }}>
+        <Loader />
+      </div>
+    );
+  };
 
   if (error) {
     return <div className="text-center mt-5 text-danger">{error}</div>;

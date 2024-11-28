@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -13,8 +13,10 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import TextField from '@mui/material/TextField';
+import Loader from '../../components/common/Loader';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
+
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: '#112D4E',
     color: theme.palette.common.white,
@@ -49,11 +51,38 @@ const rows = [
 ];
 
 export default function CustomizedTable() {
+  
   const [open, setOpen] = useState(false);
   const [reason, setReason] = useState('');
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadingTimeout = setTimeout(() => setIsLoading(false), 3000);
+    return () => clearTimeout(loadingTimeout);
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#f0f4f8',
+        zIndex: 9999
+      }}>
+        <Loader />
+      </div>
+    );
+  };
 
   const handleSend = () => {
     console.log("Refund reason:", reason);

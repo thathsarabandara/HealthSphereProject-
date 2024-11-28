@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FaClinicMedical } from 'react-icons/fa'; // Ensure react-icons is installed
 import { useParams } from 'react-router-dom';
+import Loader from '../../components/common/Loader';
 
 function DoctorPatientProfile() {
   const { id } = useParams();
@@ -46,7 +47,25 @@ function DoctorPatientProfile() {
     return { years, months, days };
   };
 
-  if (loading) return <div>Loading...</div>;
+
+  if (loading) {
+    return (
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#f0f4f8',
+        zIndex: 9999
+      }}>
+        <Loader />
+      </div>
+    );
+  };
   if (error) return <div>Error: {error.message}</div>;
   if (!patientData) return <div>No patient data available</div>;
 

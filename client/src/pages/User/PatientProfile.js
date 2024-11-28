@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import '../../styles/user/PatientProfile.css';
 import emptyImage from '../../assets/images/emptyProfile.png';
 import axios from 'axios'; // Import axios to make HTTP requests
+import Loader from '../../components/common/Loader';
 let pp;
 
 function PatientProfile() {
@@ -52,10 +53,24 @@ function PatientProfile() {
     });
   };
 
-  
   if (loading) {
-    return <div>Loading...</div>;
-  }
+    return (
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#f0f4f8',
+        zIndex: 9999
+      }}>
+        <Loader />
+      </div>
+    );
+  };
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];

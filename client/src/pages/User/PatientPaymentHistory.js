@@ -1,6 +1,32 @@
-import React from 'react';
+import React ,{useEffect, useState }from 'react';
+import Loader from '../../components/common/Loader';
 
 function App() {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadingTimeout = setTimeout(() => setIsLoading(false), 3000);
+    return () => clearTimeout(loadingTimeout);
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#f0f4f8',
+        zIndex: 9999
+      }}>
+        <Loader />
+      </div>
+    );
+  };
   const data = [
     { patientId: 'P001', firstName: 'John', phoneNumber: '123654789', date: '2022.09.19', time: '18:00:00', receiptId: 'R001', description: 'Doctor Reservations' },
     { patientId: 'P002', firstName: 'Jane', phoneNumber: '987654321', date: '2022.09.20', time: '19:00:00', receiptId: 'R002', description: 'Dental Checkup' },

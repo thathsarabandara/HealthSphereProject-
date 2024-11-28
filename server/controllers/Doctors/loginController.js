@@ -80,7 +80,7 @@ exports.logout = async (req, res) => {
         );
 
         // Clear the token cookie from the client's browser
-        res.clearCookie('token', {
+        res.clearCookie('doctoken', {
             httpOnly: true, // Ensure secure cookie handling
             secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
             sameSite: 'strict', // Prevent CSRF

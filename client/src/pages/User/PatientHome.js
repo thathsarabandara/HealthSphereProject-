@@ -68,10 +68,10 @@ function PatientHome() {
   const [medicalOffer, setOffers] = useState([]);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const loadingTimeout = setTimeout(() => setIsLoading(false), 3000);
-    return () => clearTimeout(loadingTimeout);
-  }, []);
+  // useEffect(() => {
+  //   const loadingTimeout = setTimeout(() => setIsLoading(false), 3000);
+  //   return () => clearTimeout(loadingTimeout);
+  // }, []);
 
   useEffect(() => {
     const fetchData = async () => {

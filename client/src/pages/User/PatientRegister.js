@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState ,useEffect } from 'react';
 import signup from '../../assets/images/Rectangle 84.svg';
 import '../../styles/temp.css';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Loader from '../../components/common/Loader';
 
 function App() {
   const [username, setUsername] = useState('');
@@ -12,6 +13,31 @@ function App() {
   const [errorMessage, setErrorMessage] = useState('');
   const [success, setSuccess] = useState('');
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadingTimeout = setTimeout(() => setIsLoading(false), 3000);
+    return () => clearTimeout(loadingTimeout);
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#f0f4f8',
+        zIndex: 9999
+      }}>
+        <Loader />
+      </div>
+    );
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();

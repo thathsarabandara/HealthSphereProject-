@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Loader from '../../components/common/Loader';
 
 function Cart() {
   const [cartItems, setCartItems] = useState([]);
@@ -24,7 +25,24 @@ function Cart() {
     fetchCartData();
   }, []);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) {
+    return (
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#f0f4f8',
+        zIndex: 9999
+      }}>
+        <Loader />
+      </div>
+    );
+  };
   if (error) return <div>{error}</div>;
 
   const subTotal = cartItems.reduce((total, item) => total + Number(item.totalPrice || 0), 0);
