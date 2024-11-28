@@ -1,7 +1,15 @@
-import React from 'react'
+import React, { useState } from 'react';
 import Rectangle57 from '../../assets/images/Rectangle 57.svg'
 
 function Packages() {
+  const [showPopup, setShowPopup] = useState(false);
+
+  const handleAddToCart = () => {
+    setShowPopup(true);
+    setTimeout(() => {
+      setShowPopup(false);
+    }, 3000); // Popup will disappear after 3 seconds
+  };
   return (
     <div>
       <section className='section1 '>
@@ -50,13 +58,36 @@ function Packages() {
                     <div style={{ textAlign: 'center', color: 'black', fontSize: 18, fontFamily: 'Sans Serif Collection' }}>Rs. 2500</div>
                   </div>
                   <div className='col'>
-                    <button style={{ backgroundColor: '#413C3C', color: 'white', fontSize: 14, padding: '5px 10px', borderRadius: '5px', width: '100%' }}>
+                    <button style={{ backgroundColor: '#413C3C', color: 'white', fontSize: 14, padding: '5px 10px', borderRadius: '5px', width: '100%' }} onClick={handleAddToCart}>
                       + Add to Cart
                     </button>
                   </div>
                 </div>
               </div>
             </div>
+
+
+            {/* Popup Message */}
+            {showPopup && (
+              <div style={{position: 'fixed', top: '20%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: '#C8F6D8', padding: '20px',width: '300px', borderRadius: '10px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)', textAlign: 'center', zIndex: 1000,
+              }}>
+                <h3 style={{color: '#2A5D9C', fontSize: '20px', fontFamily: 'Sansation', fontWeight: '700'
+                }}>
+                  🎉 Successfully Added to Cart!
+                </h3>
+                <p style={{color: '#504E4E', fontSize: '14px', fontFamily: 'Sans Serif Collection'
+                }}>
+                  Your Essential Health Checkup is now in the cart. Ready to proceed?
+                </p>
+                <button 
+                  style={{backgroundColor: '#2A5D9C', color: 'white', padding: '8px 16px', fontSize: '14px', borderRadius: '5px', marginTop: '10px',cursor: 'pointer'
+                  }}
+                  onClick={() => alert('Navigating to cart...')} // Replace with navigation logic
+                >
+                  Check it out!
+                </button>
+              </div> 
+            )}
             
             {/* Advanced Wellness Package */}
             <div className='col-12 col-md-4 mb-4 mt-4'>
@@ -73,7 +104,7 @@ function Packages() {
                     <div style={{ textAlign: 'center', color: 'black', fontSize: 18, fontFamily: 'Sans Serif Collection' }}>Rs. 3500</div>
                   </div>
                   <div className='col'>
-                    <button style={{ backgroundColor: '#413C3C', color: 'white', fontSize: 14, padding: '5px 10px', borderRadius: '5px', width: '100%' }}>
+                    <button style={{ backgroundColor: '#413C3C', color: 'white', fontSize: 14, padding: '5px 10px', borderRadius: '5px', width: '100%' }} onClick={handleAddToCart}>
                       + Add to Cart
                     </button>
                   </div>
@@ -96,7 +127,7 @@ function Packages() {
                     <div style={{ textAlign: 'center', color: 'black', fontSize: 18, fontFamily: 'Sans Serif Collection' }}>Rs. 5000</div>
                   </div>
                   <div className='col'>
-                    <button style={{ backgroundColor: '#413C3C', color: 'white', fontSize: 14, padding: '5px 10px', borderRadius: '5px', width: '100%' }}>
+                    <button style={{ backgroundColor: '#413C3C', color: 'white', fontSize: 14, padding: '5px 10px', borderRadius: '5px', width: '100%' }} onClick={handleAddToCart}>
                       + Add to Cart
                     </button>
                   </div>
@@ -148,7 +179,7 @@ function Packages() {
                     <div style={{ textAlign: 'center', color: 'black', fontSize: 18, fontFamily: 'Sans Serif Collection' }}>Rs. 3000</div>
                   </div>
                   <div className='col'>
-                    <button style={{ backgroundColor: '#413C3C', color: 'white', fontSize: 14, padding: '5px 10px', borderRadius: '5px', width: '100%' }}>
+                    <button style={{ backgroundColor: '#413C3C', color: 'white', fontSize: 14, padding: '5px 10px', borderRadius: '5px', width: '100%' }} onClick={handleAddToCart}>
                       + Add to Cart
                     </button>
                   </div>
@@ -171,7 +202,7 @@ function Packages() {
                     <div style={{ textAlign: 'center', color: 'black', fontSize: 18, fontFamily: 'Sans Serif Collection' }}>Rs. 4500</div>
                   </div>
                   <div className='col'>
-                    <button style={{ backgroundColor: '#413C3C', color: 'white', fontSize: 14, padding: '5px 10px', borderRadius: '5px', width: '100%' }}>
+                    <button style={{ backgroundColor: '#413C3C', color: 'white', fontSize: 14, padding: '5px 10px', borderRadius: '5px', width: '100%' }} onClick={handleAddToCart}>
                       + Add to Cart
                     </button>
                   </div>
@@ -194,7 +225,7 @@ function Packages() {
                     <div style={{ textAlign: 'center', color: 'black', fontSize: 18, fontFamily: 'Sans Serif Collection' }}>Rs. 7000</div>
                   </div>
                   <div className='col'>
-                    <button style={{ backgroundColor: '#413C3C', color: 'white', fontSize: 14, padding: '5px 10px', borderRadius: '5px', width: '100%' }}>
+                    <button style={{ backgroundColor: '#413C3C', color: 'white', fontSize: 14, padding: '5px 10px', borderRadius: '5px', width: '100%' }} onClick={handleAddToCart}>
                       + Add to Cart
                     </button>
                   </div>
@@ -246,7 +277,7 @@ function Packages() {
                     <div style={{ textAlign: 'center', color: 'black', fontSize: 18, fontFamily: 'Sans Serif Collection' }}>Rs. 7000</div>
                   </div>
                   <div className='col'>
-                    <button style={{ backgroundColor: '#413C3C', color: 'white', fontSize: 14, padding: '5px 10px', borderRadius: '5px', width: '100%' }}>
+                    <button style={{ backgroundColor: '#413C3C', color: 'white', fontSize: 14, padding: '5px 10px', borderRadius: '5px', width: '100%' }} onClick={handleAddToCart}>
                       + Add to Cart
                     </button>
                   </div>
@@ -269,7 +300,7 @@ function Packages() {
                     <div style={{ textAlign: 'center', color: 'black', fontSize: 18, fontFamily: 'Sans Serif Collection' }}>Rs. 9500</div>
                   </div>
                   <div className='col'>
-                    <button style={{ backgroundColor: '#413C3C', color: 'white', fontSize: 14, padding: '5px 10px', borderRadius: '5px', width: '100%' }}>
+                    <button style={{ backgroundColor: '#413C3C', color: 'white', fontSize: 14, padding: '5px 10px', borderRadius: '5px', width: '100%' }} onClick={handleAddToCart}>
                       + Add to Cart
                     </button>
                   </div>
@@ -292,7 +323,7 @@ function Packages() {
                     <div style={{ textAlign: 'center', color: 'black', fontSize: 18, fontFamily: 'Sans Serif Collection' }}>Rs. 15500</div>
                   </div>
                   <div className='col'>
-                    <button style={{ backgroundColor: '#413C3C', color: 'white', fontSize: 14, padding: '5px 10px', borderRadius: '5px', width: '100%' }}>
+                    <button style={{ backgroundColor: '#413C3C', color: 'white', fontSize: 14, padding: '5px 10px', borderRadius: '5px', width: '100%' }} onClick={handleAddToCart}>
                       + Add to Cart
                     </button>
                   </div>

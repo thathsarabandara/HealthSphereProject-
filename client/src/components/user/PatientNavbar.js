@@ -12,6 +12,16 @@ function PatientNavbar() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  const formatUserName = (name) => {
+    if (!name) return 'User';
+    const nameParts = name.split(' ');
+    if (nameParts.length === 1) return nameParts[0];
+    
+    const lastName = nameParts.pop();
+    const initials = nameParts.map((part) => part.charAt(0).toUpperCase()).join('.');
+    return `${initials}. ${lastName}`;
+  };
+
   // Fetch user authentication status and profile data from the backend
   const fetchUserData = async () => {
     try {
@@ -43,22 +53,19 @@ function PatientNavbar() {
   const handleLogout = async () => {
     try {
       const response = await axios.post('http://localhost:5000/logout', null, { withCredentials: true });
-      
       if (response.status === 200) {
         console.log('Logout successful:', response.data.message);
         setIsAuthenticated(false);
         setUser(null);
-        // Redirect to the homepage or login page
-        window.location.href = '/login'; // Adjust as necessary
+        window.location.href = '/login';
       }
     } catch (error) {
       console.error('Logout error:', error.response ? error.response.data : error.message);
-      // Handle error (e.g., show a notification)
     }
   };
 
   if (loading) {
-    return <div>Loading...</div>; // Loading state while data is being fetched
+    return <div>Loading...</div>;
   }
 
   return (
@@ -97,11 +104,11 @@ function PatientNavbar() {
                 <div className='user-section'>
                   <div className='profile-name d-flex flex-column'>
                     <h4 className='hello'>Welcome to the Healthsphere,</h4>
-                    <h5 className='name'>Dear, {user ? user.name : 'User'}</h5> {/* Added check here */}
+                    <h5 className='name'>Dear, {user ? formatUserName(user.name) : 'User'}</h5>
                   </div>
                   <div className='profile-container'>
                       <img
-                        src={user?.profilePicture || emptyImage} // Use optional chaining here
+                        src={user?.profilePicture || emptyImage}
                         alt='Profile'
                         className='profile-photo'
                         onClick={toggleDropdown}
