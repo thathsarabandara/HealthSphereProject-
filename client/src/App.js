@@ -27,19 +27,15 @@ import Error403 from './pages/ErrorPages/Error403';
 import Error404 from './pages/ErrorPages/Error404';
 import DoctorDetails from './pages/User/DoctorDetails';
 import Reservations from './pages/User/Reservations';
-import PatientDashboard from './pages/User/PatientDashboard';
 import DoctorRegister from './pages/doctor/DoctorRegister';
 import DoctorLogin from './pages/doctor/DoctorLogin';
 import DoctorAbout from './pages/doctor/DoctorAbout';
 import DoctorHome from './pages/doctor/DoctorHome';
 import DoctorSchedule from './pages/doctor/DoctorSchedule';
-import DoctorDashboard from './pages/doctor/DoctorDashboard';
-import DoctorDashboard1 from './pages/doctor/DoctorDashboard1';
 import DoctorVideoConsultation from './pages/doctor/DoctorVideoConsultation';
 import DoctorClinic from './pages/doctor/DoctorClinic';
 import DoctorPrescription from './pages/doctor/DoctorPrescription';
 import DoctorFullRegister from './pages/doctor/DoctorFullRegister';
-import Loader from './components/common/Loader';
 import DataAccesDenied from './pages/ErrorPages/DataAccesDenied';
 import Error400 from './pages/ErrorPages/Error400';
 import Error401 from './pages/ErrorPages/Error401';
@@ -53,6 +49,7 @@ import DoctorVerify from './pages/doctor/DoctorVerify';
 import WebBot from './components/Web Assistant/WebBot';
 import MedicalConditions from './pages/User/MedicalConditions';
 import Bookings from './pages/User/Bookings';
+import DoctorPatientProfile from './pages/doctor/DoctorPatientProfile';
 
 
 const getNavbarAndFooter = (path) => {
@@ -120,12 +117,11 @@ function App() {
 
         <Route path="/doctor/login" element={<DoctorLogin />} />
         <Route path="/doctor/register" element={<DoctorRegister/>} />
+        <Route path="/doctor/patientProfile/:id" element={<DoctorPatientProfile/>} />
         <Route path="/doctor/verifyuser" element={<DoctorVerify/>} />
         <Route path="/doctor/about" element={<DoctorAbout/>} />
         <Route path="/doctor/" element={<DoctorHome/>} />
         <Route path="/doctor/schedule" element={<DoctorSchedule/>} />
-        <Route path="/doctor/dashboard" element={<DoctorDashboard/>} />
-        <Route path="/doctor/dashboard1" element={<DoctorDashboard1/>} />
         <Route path="/doctor/videoconsultation" element={<DoctorVideoConsultation/>} />
         <Route path="/doctor/clinic" element={<DoctorClinic/>} />
         <Route path="/doctor/prescription" element={<DoctorPrescription/>} />
