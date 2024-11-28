@@ -5,12 +5,14 @@ import banner from '../../assets/images/banner-img.png';
 import { MdAccountCircle } from "react-icons/md";
 import emptyImage from '../../assets/images/emptyProfile.png';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 function DoctorNavbar() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   // Fetch user authentication status and profile data from the backend
   const fetchUserData = async () => {
@@ -49,8 +51,7 @@ function DoctorNavbar() {
         console.log('Logout successful:', response.data.message);
         setIsAuthenticated(false);
         setUser(null);
-        // Redirect to the homepage or login page
-        window.location.href = '/login'; // Adjust as necessary
+        navigate('/doctor/login');
       }
     } catch (error) {
       console.error('Logout error:', error.response ? error.response.data : error.message);
@@ -71,10 +72,6 @@ function DoctorNavbar() {
     // Clean up event listener on unmount
     return () => window.removeEventListener("userLogin", handleLoginEvent);
   }, []);
-
-  if (loading) {
-    return <div>Loading...</div>; // Loading state while data is being fetched
-  }
 
   return (
     <nav className="navbar navbar-expand-lg">

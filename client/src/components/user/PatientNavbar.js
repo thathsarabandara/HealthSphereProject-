@@ -79,9 +79,7 @@ function PatientNavbar() {
     }
   };
 
-  if (loading) {
-    return <div>Loading...</div>; // Loading state while data is being fetched
-  }
+
 
   return (
     <nav className="navbar navbar-expand-lg">

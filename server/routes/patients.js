@@ -52,7 +52,7 @@ router.put('/heartRates', [rateLimiterMiddleware], conditionsController.deleteHe
 router.get('/aboutus',rateLimiterMiddleware);
 router.get('/userprofile',[authMiddleware ,authorizeRole('patient'), rateLimiterMiddleware],profileController.profileLoad);
 router.put('/userprofile/:id',profilePictureUpload,profileController.saveProfile);
-router.get('/userprescription',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware],prescriptionController.loadPrescription);
+router.get('/userprescription',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware],prescriptionController.loadPrescriptionDetails);
 router.get('/userpayments',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware], paymentController.loadPayment);
 router.get('/cart',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware], cartController.loadCart);
 router.put('/cart/:id',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware], cartController.deleteCartItem);

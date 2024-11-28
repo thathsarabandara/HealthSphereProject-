@@ -1,76 +1,67 @@
-import React, {useState, useEffect} from 'react';
-import { Link } from 'react-router-dom';
-import { styled } from '@mui/material/styles';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell, { tableCellClasses } from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import Button from '@mui/material/Button';
+import React, { useState, useEffect } from 'react';
 import Loader from '../../components/common/Loader';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
-// Styled components for TableCell and TableRow
-{/*const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [&.${tableCellClasses.head}]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [&.${tableCellClasses.body}]: {
-    fontSize: 14,
-  },
-}));*/}
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-    [`&.${tableCellClasses.head}`]: {
-        background: '#112D4E',  
-      
-      color: theme.palette.common.white,
-    },
-    [`&.${tableCellClasses.body}`]: {
-      fontSize: 14,
-    },
-  }));
-  
-
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  '&:nth-of-type(odd)': {
-    backgroundColor: theme.palette.action.hover,borderRadius: '10px',marginBottom: '10px', 
-  },
-  
-  '&:last-child td, &:last-child th': {
-    border: 0,
-    
-  },
-  
-  
-}));
-
-
-// Sample data
-function createData(patientId, firstName, phoneNumber, date, time, status,  profileView, prescriptionId) {
-  return { patientId, firstName, phoneNumber, date, time, status,  profileView, prescriptionId };
-}
-
-const rows = [
-  createData('P001', 'John', '123654789', '2022.09.19', '18:00:00', 'In-Treatment', 'View', 'PR001'),
-  createData('P001', 'John', '123654789', '2022.09.19', '18:00:00','In-Treatment' , 'View', 'PR001'),
-  createData('P001', 'John', '123654789', '2022.09.19', '18:00:00', 'In-Treatment', 'View', 'PR001'),
-  createData('P001', 'John', '123654789', '2022.09.19', '18:00:00', 'In-Treatment', 'View', 'PR001'),
-  createData('P001', 'John', '123654789', '2022.09.19', '18:00:00', 'In-Treatment', 'View', 'PR001'),
-];
-
-// Main function component rendering the table
-export default function CustomizedTable() {
-  const [isLoading, setIsLoading] = useState(true);
+function DoctorClinic() {
+  const [isLoadingUpcoming, setIsLoadingUpcoming] = useState(true);
+  const [isLoadingPast, setIsLoadingPast] = useState(true);
+  const [upcomingSchedules, setUpcomingSchedules] = useState([]);
+  const [pastSchedules, setPastSchedules] = useState([]);
+  const [error, setError] = useState('');
+  const [selectedTab, setSelectedTab] = useState('upcoming'); // For tab control
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const loadingTimeout = setTimeout(() => setIsLoading(false), 3000);
-    return () => clearTimeout(loadingTimeout);
+    const fetchUpcomingSchedules = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/doctor/clinic', { withCredentials: true });
+        if (Array.isArray(response.data)) {
+          setUpcomingSchedules(response.data);
+        } else {
+          setError('Unexpected data format received');
+        }
+      } catch (error) {
+        setError('Error fetching upcoming schedules. Please try again.');
+        console.error('Error fetching upcoming schedules:', error);
+      } finally {
+        setIsLoadingUpcoming(false);
+      }
+    };
+
+    const fetchPastSchedules = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/doctor/pastclinic', { withCredentials: true });
+        if (Array.isArray(response.data)) {
+          setPastSchedules(response.data);
+        } else {
+          setError('Unexpected data format received');
+        }
+      } catch (error) {
+        setError('Error fetching past schedules. Please try again.');
+        console.error('Error fetching past schedules:', error);
+      } finally {
+        setIsLoadingPast(false);
+      }
+    };
+
+    fetchUpcomingSchedules();
+    fetchPastSchedules();
   }, []);
 
-  if (isLoading) {
+  const handlePatientProfile = (patientId) => {
+    navigate(`/doctor/patientprofile/${patientId}`);
+  };
+
+  const handlePrescription = (patient_id, reservation_id) => {
+    navigate(`/doctor/clinic/${reservation_id}/prescription/${patient_id}`);
+  };
+
+  const handelviewPrescription = (patient_id, reservation_id) => {
+    navigate(`/doctor/clinic/${reservation_id}/viewprescription/${patient_id}`);
+  };
+
+  if (isLoadingUpcoming || isLoadingPast) {
     return (
       <div style={{
         position: 'fixed',
@@ -87,93 +78,126 @@ export default function CustomizedTable() {
         <Loader />
       </div>
     );
-  };
-  return (
-    <div className="container mt-5 mb-5">
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 700 }} aria-label="customized table">
-          <TableHead >
-            <TableRow >
-              <StyledTableCell style={{fontWeight: 'bold'}}>Patient Id</StyledTableCell>
-              <StyledTableCell style={{fontWeight: 'bold'}}>First Name</StyledTableCell>
-              <StyledTableCell style={{fontWeight: 'bold'}}>Phone Number</StyledTableCell>
-              <StyledTableCell style={{fontWeight: 'bold'}}>Date</StyledTableCell>
-              <StyledTableCell style={{fontWeight: 'bold'}}>Time</StyledTableCell>
-              <StyledTableCell style={{fontWeight: 'bold'}}>Status</StyledTableCell>
-              <StyledTableCell style={{fontWeight: 'bold'}}>Profile View</StyledTableCell>
-              <StyledTableCell style={{fontWeight: 'bold'}}>Prescription Id</StyledTableCell>
-              <StyledTableCell style={{fontWeight: 'bold'}}>Add Prescription</StyledTableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows.map((row, index) => (
-              <StyledTableRow key={index} >
-                <StyledTableCell >{row.patientId}</StyledTableCell>
-                <StyledTableCell>{row.firstName}</StyledTableCell>
-                <StyledTableCell>{row.phoneNumber}</StyledTableCell>
-                <StyledTableCell>{row.date}</StyledTableCell>
-                <StyledTableCell>{row.time}</StyledTableCell>
-                <StyledTableCell>{row.status}</StyledTableCell>
-                
-                {/*<StyledTableCell>
-                    <button className='btn w-100' style={{ height: 'auto', background: '#C8D8F6', borderRadius: 14, fontSize: 'calc(12px + 0.7vw)', fontFamily: 'Sansation', fontWeight: '700', color: 'black' }}>
-                    {row.profileView}
-                    </button>
-                </StyledTableCell>*/}
-                <StyledTableCell>
-                    
-                    <button
-                        style={{
-                        
-                        display: 'inline-block',
-                        outline: 'none',
-                        cursor: 'pointer',
-                        fontWeight: 500,
-                        border: '1px solid transparent',
-                        borderRadius: '5px',
-                        height: '36px',
-                        lineHeight: '34px',
-                        fontSize: '14px',
-                        color: 'black',
-                        backgroundColor: '#C8D8F6',
-                        
-                        transition: 'background-color 0.2s ease-in-out, opacity 0.2s ease-in-out',
-                        padding: '0 18px',
-                        }}
-                    >
-                        View
-                    </button>
-                </StyledTableCell>
+  }
 
-                <StyledTableCell>{row.prescriptionId}</StyledTableCell>
-                <StyledTableCell>
-                    
-                    <button
-                        style={{
-                          display: 'inline-block',
-                          outline: 'none',
-                          cursor: 'pointer',
-                          fontWeight: 500,
-                          border: '1px solid transparent',
-                          borderRadius: '5px',
-                          height: '36px',
-                          lineHeight: '34px',
-                          fontSize: '14px',
-                          color: 'white',
-                          backgroundColor: '#2A5D9C',
-                          
-                          transition: 'background-color 0.2s ease-in-out, opacity 0.2s ease-in-out',
-                          padding: '0 18px',
-                        }}
-                    >
-                       <Link to='/doctor/prescription' style={{ textDecoration: 'none', color: 'inherit' }}>Add</Link> 
-                    </button>
-                </StyledTableCell>
-              </StyledTableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+  const renderScheduleTable = (schedules) => {
+    return (
+      schedules.length > 0 ? (
+        schedules.map((schedule, index) => (
+          <div key={index} className="table-responsive mt-3" style={{ maxHeight: '400px', overflowY: 'auto' }}>
+            <table className="table table-bordered">
+              <thead className="text-white" style={{ backgroundColor: '#012A5C' }}>
+                <tr>
+                  <th style={{ width: '25%', textAlign: 'center', verticalAlign: 'middle' }}>Clinic Details</th>
+                  <th style={{ width: '75%', textAlign: 'center', verticalAlign: 'middle' }}>Patient Details</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td rowSpan={schedule.patients?.length + 1 || 1}>
+                    <div><strong>Schedule Date:</strong> {schedule.schedule_date}</div>
+                    <div><strong>Schedule Time:</strong> {schedule.schedule_time}</div>
+                    <div><strong>Platform:</strong> Physical / Online</div>
+                    <div><strong>No of Appointments:</strong> {schedule.number_of_reservations}</div>
+                  </td>
+                  <td>
+                    <table className="table table-bordered">
+                      <thead>
+                        <tr>
+                          <th style={{ textAlign: 'center', verticalAlign: 'middle' }}>Appointment No</th>
+                          <th style={{ textAlign: 'center', verticalAlign: 'middle' }}>Patient Name</th>
+                          <th style={{ textAlign: 'center', verticalAlign: 'middle' }}>Profile</th>
+                          <th style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                            {selectedTab === 'upcoming' ? 'Add Prescription' : 'View Prescription'}
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {schedule.patients?.length > 0 ? (
+                          schedule.patients.map((patient, patientIndex) => (
+                            <tr key={patientIndex}>
+                              <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>{patient.id}</td>
+                              <td>{patient.first_name + ' ' + patient.last_name}</td>
+                              <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                                <button
+                                  className="btn btn-sm"
+                                  style={{ background: '#C8D8F6' }}
+                                  onClick={() => handlePatientProfile(patient.patient_id)}
+                                >
+                                  View
+                                </button>
+                              </td>
+                              <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                                {selectedTab === 'upcoming' ? (
+                                  <button
+                                    className="btn btn-sm"
+                                    style={{ background: '#C8D8F6' }}
+                                    onClick={() => handlePrescription(patient.patient_id, patient.id)}
+                                  >
+                                    Add
+                                  </button>
+                                ) : (
+                                  <button
+                                    className="btn btn-sm"
+                                    style={{ background: '#C8D8F6' }}
+                                    onClick={() => handelviewPrescription(patient.patient_id, patient.id)}
+                                  >
+                                    View
+                                  </button>
+                                )}
+                              </td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan="3">No appointments available for this schedule</td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        ))
+      ) : (
+        <p>No schedules available</p>
+      )
+    );
+  };
+  
+
+  return (
+    <div className="container">
+      <h3 className="mt-5">Doctor Clinic Schedules</h3>
+
+      <div className="mt-3">
+        <label htmlFor="scheduleTab" className="mr-3">Select Schedule Type:</label>
+        <select
+          id="scheduleTab"
+          value={selectedTab}
+          onChange={(e) => setSelectedTab(e.target.value)}
+          className="form-control w-auto"
+        >
+          <option value="upcoming">Upcoming Clinics</option>
+          <option value="past">Past Clinics</option>
+        </select>
+      </div>
+
+      {selectedTab === 'upcoming' ? (
+        <div>
+          <h4 className="mt-5">Upcoming Clinics</h4>
+          {renderScheduleTable(upcomingSchedules, true)}
+        </div>
+      ) : (
+        <div>
+          <h4 className="mt-5">Past Clinics</h4>
+          {renderScheduleTable(pastSchedules, false)}
+        </div>
+      )}
     </div>
   );
 }
+
+export default DoctorClinic;
