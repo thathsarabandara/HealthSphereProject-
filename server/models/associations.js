@@ -5,6 +5,11 @@ const { Permission } = require('./auth/Permission');
 const { GroupPermission } = require('./auth/GroupPermission');
 const { Token } = require('./auth/Token');
 const { Patient } = require('./healthcare/Patient');
+const { PatientAllergy } = require('./healthcare/PatientAllergy');
+const { PatientBloodSugar } = require('./healthcare/PatientBloodSugar');
+const { PatientBMI } = require('./healthcare/PatientBMI');
+const { PatientCondition } = require('./healthcare/PatientCondition');
+const { PatientHeartRate } = require('./healthcare/PatientHeartRate');
 const { Doctor } = require('./healthcare/Doctor');
 const { Specialization } = require('./healthcare/Specialization');
 const { ScheduleCancel } = require('./healthcare/ScheduleCancel');
@@ -22,10 +27,17 @@ const { AuditLog } = require('./security/AuditLog');
 const { FailedLoginAttempt } = require('./security/FailedLoginAttempt');
 const { PasswordResetRequest } = require('./security/PasswordResetRequest');
 const { TwoFactorAuth } = require('./security/TwoFactorAuth');
-const { Session } = require('./security/Session');
 const { SecurityQuestion } = require('./security/SecurityQuestion');
 const { RateLimiting } = require('./security/RateLimiting');
 const { UserPassword } = require('./auth/UserPassword');
+const { BillingDetails } = require('./transactions/BillingDetails');
+const CardDetails = require('./transactions/CardDetails');
+const { BankReceipt } = require('./transactions/BankReciept');
+const { CardBillings } = require('./transactions/CardBilings');
+const { BankBillings } = require('./transactions/BankBillings');
+const { UserOffer } = require('./ecommerce/UserOffer');
+const { Offer } = require('./ecommerce/Offer');
+const { UserBlackList } = require('./security/UserBlackList');
 
 // Define auth relationships
 User.belongsToMany(Group, { through: UserGroup, foreignKey: 'user_id' });
@@ -44,6 +56,12 @@ Doctor.belongsTo(User, { foreignKey: 'user_id' });
 Doctor.belongsTo(Specialization, { foreignKey: 'specialization_id' });
 Admin.belongsTo(User, { foreignKey: 'User_id' });
 
+PatientAllergy.belongsTo(Patient, {foreignKey: 'patient_id'});
+PatientBloodSugar.belongsTo(Patient, {foreignKey: 'patient_id'});
+PatientBMI.belongsTo(Patient, {foreignKey: 'patient_id'});
+PatientCondition.belongsTo(Patient, {foreignKey: 'patient_id'});
+PatientHeartRate.belongsTo(Patient, {foreignKey: 'patient_id'});
+
 Schedule.belongsTo(Doctor, { foreignKey: 'doctor_id' });
 ScheduleCancel.belongsTo(Schedule, { foreignKey: 'schedule_id' });
 
@@ -60,20 +78,29 @@ Review.belongsTo(Patient, { foreignKey: 'patient_id' });
 Review.belongsTo(Doctor, { foreignKey: 'doctor_id' });
 
 Cart.belongsTo(Patient, { foreignKey: 'patient_id' });
+CartItem.hasMany(Cart, { foreignKey: 'cart_item_id' });
 Cart.belongsTo(CartItem, { foreignKey: 'cart_item_id' });
+Cart.belongsTo(CartItem, { foreignKey: 'unit_price' });
+UserOffer.belongsTo(User, {foreignKey: 'user_id'});
+UserOffer.belongsTo(Offer, { foreignKey: 'offer_id'});
 
 Notification.belongsTo(User, { foreignKey: 'user_id' });
-Payment.belongsTo(User, {foreignKey:  'user_id'})
+Payment.belongsTo(User, {foreignKey:  'user_id'});
+Payment.belongsTo(BillingDetails, {foreignKey:  'billingDetails_id'});
+CardBillings.belongsTo(CardDetails,{foreignKey: 'cardDetails_id:'});
+CardBillings.belongsTo(BillingDetails,{foreignKey: 'billingDetails_id'});
+BankBillings.belongsTo(BillingDetails,{foreignKey: 'billingDetails_id'});
+BankBillings.belongsTo(BankReceipt, {foreignKey: 'bankReceipt_id'});
 
 // Define security relationships 
 AuditLog.belongsTo(User, { foreignKey: 'user_id' });
 FailedLoginAttempt.belongsTo(User, { foreignKey: 'user_id' });
 RateLimiting.belongsTo(UserGroup, { foreignKey: 'user_group_id' });
-
+UserBlackList.belongsTo(User, {foreignKey: 'user_id'});
 PasswordResetRequest.belongsTo(User, { foreignKey: 'user_id' });
 TwoFactorAuth.belongsTo(User, { foreignKey: 'user_id' });
-Session.belongsTo(User, { foreignKey: 'user_id' });
 SecurityQuestion.belongsTo(User, { foreignKey: 'user_id' });
+
 
 module.exports = { 
   User,
@@ -96,6 +123,5 @@ module.exports = {
   RateLimiting,
   PasswordResetRequest,
   TwoFactorAuth,
-  Session,
   SecurityQuestion
 };

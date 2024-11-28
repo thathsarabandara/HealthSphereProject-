@@ -27,19 +27,15 @@ import Error403 from './pages/ErrorPages/Error403';
 import Error404 from './pages/ErrorPages/Error404';
 import DoctorDetails from './pages/User/DoctorDetails';
 import Reservations from './pages/User/Reservations';
-import PatientDashboard from './pages/User/PatientDashboard';
 import DoctorRegister from './pages/doctor/DoctorRegister';
 import DoctorLogin from './pages/doctor/DoctorLogin';
 import DoctorAbout from './pages/doctor/DoctorAbout';
 import DoctorHome from './pages/doctor/DoctorHome';
 import DoctorSchedule from './pages/doctor/DoctorSchedule';
-import DoctorDashboard from './pages/doctor/DoctorDashboard';
-import DoctorDashboard1 from './pages/doctor/DoctorDashboard1';
 import DoctorVideoConsultation from './pages/doctor/DoctorVideoConsultation';
 import DoctorClinic from './pages/doctor/DoctorClinic';
 import DoctorPrescription from './pages/doctor/DoctorPrescription';
-import DoctorProfile from './pages/doctor/DoctorProfile';
-import Loader from './components/common/Loader';
+import DoctorFullRegister from './pages/doctor/DoctorFullRegister';
 import DataAccesDenied from './pages/ErrorPages/DataAccesDenied';
 import Error400 from './pages/ErrorPages/Error400';
 import Error401 from './pages/ErrorPages/Error401';
@@ -48,6 +44,12 @@ import Error429 from './pages/ErrorPages/Error429';
 import Error500 from './pages/ErrorPages/Error500';
 import Error503 from './pages/ErrorPages/Error503';
 import Maintenance from './pages/ErrorPages/Maintenance';
+import DoctorsProfile from './pages/User/DoctorsProfile';
+import DoctorVerify from './pages/doctor/DoctorVerify';
+import WebBot from './components/Web Assistant/WebBot';
+import MedicalConditions from './pages/User/MedicalConditions';
+import Bookings from './pages/User/Bookings';
+import DoctorPatientProfile from './pages/doctor/DoctorPatientProfile';
 
 
 const getNavbarAndFooter = (path) => {
@@ -82,10 +84,13 @@ function App() {
         <Route path="/" element={<PatientHome />} />
         <Route path="/finddoctors" element={<PatientDoctors />} />
         <Route path="/finddoctors/:category" element={<DoctorDetails />} />
+        <Route path="/finddoctors/:category/reservation/:scheduleid" element={<Reservations/>} />
+        <Route path="/profileDoctor/:id" element={<DoctorsProfile />} />
         <Route path="/packages" element={<PatientPackages />} />
         <Route path="/laboratory" element={<PatientLaboratory />} />
         <Route path="/pharmacy" element={<PatientPharmacy />} />
         <Route path="/about" element={<PatientAbout/>} />
+        <Route path="/medicalcondions" element={<MedicalConditions/>} />
         <Route path="/login" element={<PatientLogin />} />
         <Route path="/register" element={<PatientRegister />} />
         <Route path="/resetpassword" element={<PatientPasswordReset />} />
@@ -95,10 +100,9 @@ function App() {
         <Route path="/paymenthistory" element={<PatientPaymentHistory/>} />
         <Route path="/prescriptionhistory" element={<PatientPrescriptionHistory/>} />
         <Route path="/cart" element={<Cart/>} />
-        <Route path="/payment" element={<Payment/>} />
+        <Route path="/bookings" element={<Bookings/>} />
+        <Route path="/checkout" element={<Payment/>} />
         <Route path="/refund" element={<Refund/>} />
-        <Route path="/reservations" element={<Reservations/>} />
-        <Route path="/dashboard" element={<PatientDashboard/>} />
 
         <Route path="/error/accessdenied" element={<DataAccesDenied/>} />
         <Route path="/error/400" element={<Error400/>} />
@@ -113,20 +117,19 @@ function App() {
 
         <Route path="/doctor/login" element={<DoctorLogin />} />
         <Route path="/doctor/register" element={<DoctorRegister/>} />
+        <Route path="/doctor/patientProfile/:id" element={<DoctorPatientProfile/>} />
+        <Route path="/doctor/verifyuser" element={<DoctorVerify/>} />
         <Route path="/doctor/about" element={<DoctorAbout/>} />
-        <Route path="/doctor/home" element={<DoctorHome/>} />
+        <Route path="/doctor/" element={<DoctorHome/>} />
         <Route path="/doctor/schedule" element={<DoctorSchedule/>} />
-        <Route path="/doctor/dashboard" element={<DoctorDashboard/>} />
-        <Route path="/doctor/dashboard1" element={<DoctorDashboard1/>} />
         <Route path="/doctor/videoconsultation" element={<DoctorVideoConsultation/>} />
         <Route path="/doctor/clinic" element={<DoctorClinic/>} />
         <Route path="/doctor/prescription" element={<DoctorPrescription/>} />
-        <Route path="/doctor/profile" element={<DoctorProfile/>} />
+        <Route path="/doctor/fullregister/:id" element={<DoctorFullRegister/>} />
 
-        <Route path="/error403" element={<Error403/>} />
-        <Route path="/error404" element={<Error404/>} />
         {/* Add more routes as necessary */}
       </Routes>
+      <WebBot/>
       <FooterComponent />
     </div>
   );

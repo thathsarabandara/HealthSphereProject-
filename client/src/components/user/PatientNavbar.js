@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import '../../styles/Navbar.css';
 import banner from '../../assets/images/banner-img.png';
-import { MdAccountCircle, MdShoppingCart } from "react-icons/md"; // Import cart icon
+import { MdAccountCircle, MdEvent, MdShoppingCart } from "react-icons/md"; // Import cart icon
 import emptyImage from '../../assets/images/emptyProfile.png';
 import axios from 'axios';
 
@@ -16,10 +16,20 @@ function PatientNavbar() {
   const fetchUserData = async () => {
     try {
       const response = await axios.get('http://localhost:5000/', { withCredentials: true });
+      
       if (response.status === 200) {
         setIsAuthenticated(true);
         sessionStorage.setItem('isAuthenticated', 'true');
-        setUser(response.data.data);
+  
+        const fetchedUser = response.data.data;
+  
+        // Check if the profile picture exists and update its URL
+        if (fetchedUser.profile_picture) {
+          fetchedUser.profile_picture = `http://localhost:5000/uploads/storage/patient/${fetchedUser.id}/profilepictures/${fetchedUser.profile_picture}`;
+        }
+  
+        // Now update the user state with the correct profile picture URL
+        setUser(fetchedUser);
       } else {
         setIsAuthenticated(false);
         sessionStorage.removeItem('isAuthenticated');
@@ -34,6 +44,7 @@ function PatientNavbar() {
       setLoading(false);
     }
   };
+  
 
   useEffect(() => {
     // Fetch user data on mount
@@ -108,6 +119,11 @@ function PatientNavbar() {
                 <MdShoppingCart className="cart-icon" />
               </Link>
             </li>
+            <li className='nav-item'>
+              <Link to="/bookings" className="nav-link active">
+                <MdEvent className="booking-icon" />
+              </Link>
+            </li>
           </ul>
 
           <div className='header'>
@@ -115,11 +131,11 @@ function PatientNavbar() {
               <div className='user-section'>
                  <div className='profile-name d-flex flex-column'>
                     <h4 className='hello'>Welcome to the Healthsphere,</h4>
-                    <h5 className='name'>Dear, {user ? user.name : 'User'}</h5> {/* Added check here */}
+                    <h5 className='name'>{user ? user.name : 'User'}</h5> {/* Added check here */}
                   </div>
                 <div className='profile-container'>
                   <img
-                    src={user?.profilePicture || emptyImage}
+                    src={user?.profile_picture || emptyImage}
                     alt='Profile'
                     className='profile-photo'
                     onClick={toggleDropdown}
@@ -127,8 +143,9 @@ function PatientNavbar() {
                   {showDropdown && (
                     <div className='profile-dropdown'>
                       <Link to='/userprofile' className='dropdown-item'>Profile</Link>
-                      <Link to='/user_prescription' className='dropdown-item'>Prescriptions</Link>
-                      <Link to='/user_payments' className='dropdown-item'>Payments</Link>
+                      <Link to='/medicalcondions' className='dropdown-item'>Conditions</Link>
+                      <Link to='/prescriptionhistory' className='dropdown-item'>Prescriptions</Link>
+                      <Link to='/paymenthistory' className='dropdown-item'>Payments</Link>
                       <Link to="#" className='dropdown-item' onClick={handleLogout}>Logout</Link>
                     </div>
                   )}

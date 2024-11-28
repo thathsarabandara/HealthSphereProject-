@@ -40,6 +40,10 @@ const Patient = sequelize.define('Patient', {
         type: DataTypes.STRING,
         allowNull: true,
     },
+    profilePictureLocation: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
     created_at: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,
