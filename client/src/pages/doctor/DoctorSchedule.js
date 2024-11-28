@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { FaCalendarAlt, FaClock } from 'react-icons/fa';
+import { FaCalendarAlt, FaClock, FaLeaf } from 'react-icons/fa';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import Loader from '../../components/common/Loader';
 
 function ScheduleRequest() {
   const [schedules, setSchedules] = useState([]);
@@ -10,12 +11,8 @@ function ScheduleRequest() {
   const [comment, setComment] = useState('');
   const [fees, setFees] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
-
-  // Function to handle navigation to the patient profile
-  const handlePatientProfile = (patientId) => {
-    navigate(`/doctor/patientprofile/${patientId}`);
-  };
 
   useEffect(() => {
     const fetchSchedules = async () => {
@@ -29,11 +26,19 @@ function ScheduleRequest() {
       } catch (error) {
         setError('Error fetching schedules. Please try again.');
         console.error('Error fetching schedules:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    fetchSchedules();
-  }, []);
+    if (isLoading) {
+      fetchSchedules();
+    }
+  }, [isLoading]);
+
+  const handlePatientProfile = (patientId) => {
+    navigate(`/doctor/patientprofile/${patientId}`);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -61,6 +66,27 @@ function ScheduleRequest() {
     }
   };
 
+  if (isLoading) {
+    return (
+      <div
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#f0f4f8',
+          zIndex: 9999,
+        }}
+      >
+        <Loader />
+      </div>
+    );
+  }
+
   return (
     <div className="container my-5">
       <h3 className="mb-4">Request for Schedule</h3>
@@ -73,14 +99,18 @@ function ScheduleRequest() {
             <label className="form-label">Date</label>
             <div className="input-group">
               <input type="date" className="form-control" value={date} onChange={(e) => setDate(e.target.value)} />
-              <span className="input-group-text"><FaCalendarAlt /></span>
+              <span className="input-group-text">
+                <FaCalendarAlt />
+              </span>
             </div>
           </div>
           <div className="col-md-4">
             <label className="form-label">Time</label>
             <div className="input-group">
               <input type="time" className="form-control" value={time} onChange={(e) => setTime(e.target.value)} />
-              <span className="input-group-text"><FaClock /></span>
+              <span className="input-group-text">
+                <FaClock />
+              </span>
             </div>
           </div>
           <div className="col-md-4">
@@ -91,9 +121,17 @@ function ScheduleRequest() {
 
         <div className="mb-3">
           <label className="form-label">Comment</label>
-          <textarea className="form-control" rows="3" value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Enter your comments here" />
+          <textarea
+            className="form-control"
+            rows="3"
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            placeholder="Enter your comments here"
+          />
         </div>
-        <button type="submit" className="btn btn-success">Request</button>
+        <button type="submit" className="btn btn-success">
+          Request
+        </button>
       </form>
 
       <h3 className="mt-5">Upcoming Schedules</h3>
@@ -111,10 +149,18 @@ function ScheduleRequest() {
               <tbody>
                 <tr>
                   <td rowSpan={schedule.patients?.length + 1 || 1}>
-                    <div><strong>Schedule Date:</strong> {schedule.schedule_date}</div>
-                    <div><strong>Schedule Time:</strong> {schedule.schedule_time}</div>
-                    <div><strong>Platform:</strong> Physical / Online</div>
-                    <div><strong>No of Appointments:</strong> {schedule.number_of_reservations}</div>
+                    <div>
+                      <strong>Schedule Date:</strong> {schedule.schedule_date}
+                    </div>
+                    <div>
+                      <strong>Schedule Time:</strong> {schedule.schedule_time}
+                    </div>
+                    <div>
+                      <strong>Platform:</strong> Physical / Online
+                    </div>
+                    <div>
+                      <strong>No of Appointments:</strong> {schedule.number_of_reservations}
+                    </div>
                     <button className="btn btn-danger btn-sm mt-2">Cancel schedule</button>
                   </td>
                   <td>
@@ -133,15 +179,20 @@ function ScheduleRequest() {
                               <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>{patient.id}</td>
                               <td>{patient.first_name + ' ' + patient.last_name}</td>
                               <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                                <button 
-                                  className="btn btn-sm" 
-                                  style={{ background: '#C8D8F6' }} 
-                                  onClick={() => handlePatientProfile(patient.patient_id)}>View</button>
+                                <button
+                                  className="btn btn-sm"
+                                  style={{ background: '#C8D8F6' }}
+                                  onClick={() => handlePatientProfile(patient.patient_id)}
+                                >
+                                  View
+                                </button>
                               </td>
                             </tr>
                           ))
                         ) : (
-                          <tr><td colSpan="3">No appointments available for this schedule</td></tr>
+                          <tr>
+                            <td colSpan="3">No appointments available for this schedule</td>
+                          </tr>
                         )}
                       </tbody>
                     </table>

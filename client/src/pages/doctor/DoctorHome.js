@@ -22,6 +22,7 @@ import Img9 from '../../assets/images/img-1 (9).svg'
 import { Line, Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, ArcElement, Tooltip, Legend  } from 'chart.js';
 import { FaStar, FaUser, FaPhone, FaCheckCircle, FaTimesCircle, FaHourglassHalf, FaSpinner } from 'react-icons/fa';
+import Loader from '../../components/common/Loader';
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, ArcElement, Tooltip, Legend);
 
 
@@ -30,6 +31,7 @@ function DoctorHome() {
 const [isAuthenticated, setIsAuthenticated] = useState(false);
 const [user, setUser] = useState(null);
 const [loading, setLoading] = useState(true);
+
 
 const fetchUserData = async () => {
     try {
@@ -110,6 +112,25 @@ const genderOptions = {
     },
   },
 };
+
+  if (loading) {
+    return (
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#f0f4f8',
+        zIndex: 9999
+      }}>
+        <Loader />
+      </div>
+    );
+  };
 
   return (
     <div>

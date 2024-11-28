@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import Loader from '../../components/common/Loader';
 
 function DoctorsProfile() {
   const { id } = useParams(); // Get doctor ID from params
@@ -23,7 +24,26 @@ function DoctorsProfile() {
     fetchData();
   }, [id]);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) {
+    return (
+      <div
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#f0f4f8',
+          zIndex: 9999,
+        }}
+      >
+        <Loader />
+      </div>
+    );
+  }
   if (error) return <p>{error}</p>;
 
   const { profile, schedule, reviews } = data || {};

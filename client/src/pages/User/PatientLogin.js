@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect } from 'react';
 import { triggerLoginEvent } from './authEvents'; // Make sure to adjust the import path
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import '../../styles/temp.css';
 import { Link } from 'react-router-dom';
 import signin from '../../assets/images/Rectangle 84 (1).svg'
+import Loader from '../../components/common/Loader';
 
 function Login() {
     const [email, setEmail] = useState('');
@@ -12,6 +13,31 @@ function Login() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadingTimeout = setTimeout(() => setIsLoading(false), 3000);
+    return () => clearTimeout(loadingTimeout);
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#f0f4f8',
+        zIndex: 9999
+      }}>
+        <Loader />
+      </div>
+    );
+  };
 
   const handleSubmit = async (e) => {
         e.preventDefault();
@@ -95,7 +121,7 @@ function Login() {
                   Remember me
                 </label>
               </div>
-              <a href="!#">Forgot password?</a>
+              <a href="/resetpasswordRequest">Forgot password?</a>
             </div>
 
             <div className="text-center text-md-start mt-4 pt-2">

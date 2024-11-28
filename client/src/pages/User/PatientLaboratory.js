@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect, useState} from 'react'
 import Rectangle82 from '../../assets/images/Rectangle 82.svg'
 import rectangle90 from '../../assets/images/Rectangle 90.svg'
 import rectangle91 from '../../assets/images/Rectangle 90 (1).svg'
@@ -6,9 +6,35 @@ import rectangle92 from '../../assets/images/Rectangle 90 (2).svg'
 import rectangle93 from '../../assets/images/Rectangle 90 (3).svg'
 import rectangle94 from '../../assets/images/Rectangle 90 (4).svg'
 import rectangle95 from '../../assets/images/Rectangle 90 (5).svg'
+import Loader from '../../components/common/Loader'
 
 
 function Laboratory() {
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+      const loadingTimeout = setTimeout(() => setIsLoading(false), 3000);
+      return () => clearTimeout(loadingTimeout);
+    }, []);
+  
+    if (isLoading) {
+      return (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#f0f4f8',
+          zIndex: 9999
+        }}>
+          <Loader />
+        </div>
+      );
+    };
   return (
     <div>
       <section className="section1">
