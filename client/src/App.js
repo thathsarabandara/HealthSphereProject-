@@ -50,6 +50,8 @@ import WebBot from './components/Web Assistant/WebBot';
 import MedicalConditions from './pages/User/MedicalConditions';
 import Bookings from './pages/User/Bookings';
 import DoctorPatientProfile from './pages/doctor/DoctorPatientProfile';
+import PrescriptionView from './pages/doctor/PrescriptionView';
+import PatientPrescriptionView from './pages/User/PatientPrescriptionView';
 
 
 const getNavbarAndFooter = (path) => {
@@ -99,6 +101,7 @@ function App() {
         <Route path="/userprofile" element={<PatientProfile />} />
         <Route path="/paymenthistory" element={<PatientPaymentHistory/>} />
         <Route path="/prescriptionhistory" element={<PatientPrescriptionHistory/>} />
+        <Route path="/prescriptionhistory/:patientid/viewprescription/:reservationid" element={<PatientPrescriptionView/>} />
         <Route path="/cart" element={<Cart/>} />
         <Route path="/bookings" element={<Bookings/>} />
         <Route path="/checkout" element={<Payment/>} />
@@ -124,7 +127,8 @@ function App() {
         <Route path="/doctor/schedule" element={<DoctorSchedule/>} />
         <Route path="/doctor/videoconsultation" element={<DoctorVideoConsultation/>} />
         <Route path="/doctor/clinic" element={<DoctorClinic/>} />
-        <Route path="/doctor/prescription" element={<DoctorPrescription/>} />
+        <Route path="/doctor/clinic/:reservationid/prescription/:patientid" element={<DoctorPrescription/>} />
+        <Route path="/doctor/clinic/:reservationid/viewprescription/:patientid" element={<PrescriptionView/>} />
         <Route path="/doctor/fullregister/:id" element={<DoctorFullRegister/>} />
 
         {/* Add more routes as necessary */}

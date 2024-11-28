@@ -8,6 +8,12 @@ function DoctorsProfile() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [newReview, setNewReview] = useState({
+    rating: 0,
+    comment: '',
+  });
+  const [reviewError, setReviewError] = useState(null);
+  const [reviewSuccess, setReviewSuccess] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -23,6 +29,29 @@ function DoctorsProfile() {
 
     fetchData();
   }, [id]);
+
+  const handleAddReview = async () => {
+    if (!newReview.rating || !newReview.comment) {
+      setReviewError('Please provide both a rating and a comment.');
+      return;
+    }
+    try {
+      setReviewError(null);
+      const response = await axios.post(
+        `http://localhost:5000/doctorprofile/${id}/addreview`,
+        newReview,
+        { withCredentials: true }
+      );
+      setReviewSuccess('Review added successfully!');
+      setNewReview({ rating: 0, comment: '' }); // Reset the form
+      setData((prevData) => ({
+        ...prevData,
+        reviews: [...prevData.reviews, response.data], // Update reviews dynamically
+      }));
+    } catch (err) {
+      setReviewError('Failed to add review. Please try again later.');
+    }
+  };
 
   if (loading) {
     return (
@@ -49,7 +78,8 @@ function DoctorsProfile() {
   const { profile, schedule, reviews } = data || {};
 
   return (
-    <div className="row">
+    <div className='container mt-5 mb-5'>
+      <div className="row">
       {/* Profile Section */}
       <div className="col-lg-3 col-md-12 mb-4">
         <div className="card h-100 shadow-sm">
@@ -104,7 +134,7 @@ function DoctorsProfile() {
       </div>
 
       {/* Review Section */}
-      <div className="col-lg-3 col-md-12 mb-4">
+      <div className="col-lg-6 col-md-12 mb-4">
         <div className="card h-100 shadow-sm">
           <div className="card-body">
             <h5 className="card-title">Reviews</h5>
@@ -129,6 +159,50 @@ function DoctorsProfile() {
           </div>
         </div>
       </div>
+
+      {/* Add Review Section */}
+      <div className="col-lg-6 col-md-12 mb-4">
+        <div className="card h-100 shadow-sm">
+          <div className="card-body">
+            <h5 className="card-title">Add a Review</h5>
+            {reviewError && <p className="text-danger">{reviewError}</p>}
+            {reviewSuccess && <p className="text-success">{reviewSuccess}</p>}
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleAddReview();
+              }}
+            >
+              <div className="mb-3">
+                <label htmlFor="rating" className="form-label">Rating</label>
+                <select
+                  id="rating"
+                  className="form-control"
+                  value={newReview.rating}
+                  onChange={(e) => setNewReview({ ...newReview, rating: Number(e.target.value) })}
+                >
+                  <option value={0}>Select Rating</option>
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <option key={star} value={star}>{star} Star{star > 1 && 's'}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="mb-3">
+                <label htmlFor="comment" className="form-label">Comment</label>
+                <textarea
+                  id="comment"
+                  className="form-control"
+                  rows="3"
+                  value={newReview.comment}
+                  onChange={(e) => setNewReview({ ...newReview, comment: e.target.value })}
+                ></textarea>
+              </div>
+              <button type="submit" className="btn btn-primary">Submit Review</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
     </div>
   );
 }
