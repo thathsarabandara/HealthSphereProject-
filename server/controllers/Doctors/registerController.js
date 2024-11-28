@@ -153,6 +153,7 @@ exports.resendOTP = async (req,res) => {
 }
 
 exports.saveProfileDetails = async (req, res) => {
+    console.log('hi');
     try {
         const token = req.cookies['fullregister'];
         // Validate token existence
@@ -244,6 +245,7 @@ exports.saveProfileDetails = async (req, res) => {
             hospital_clinic_affiliation,
             medical_school_university,
             profile_description,
+            status:'pending',
             national_id_passport: national_id_passport.path, // Must exist at this point
             medical_license_document: medical_license_document.path, // Must exist at this point
             professional_certifications: profile_picture.path, // Must exist at this point

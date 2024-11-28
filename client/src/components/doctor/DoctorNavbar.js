@@ -15,10 +15,11 @@ function DoctorNavbar() {
   // Fetch user authentication status and profile data from the backend
   const fetchUserData = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/doctor', { withCredentials: true });
+      const response = await axios.get('http://localhost:5000/doctor/', { withCredentials: true });
       if (response.status === 200) {
         setIsAuthenticated(true);
         setUser(response.data.data);
+        console.log('hi');
       } else {
         setIsAuthenticated(false);
         setUser(null);
@@ -42,12 +43,13 @@ function DoctorNavbar() {
 
   const handleLogout = async () => {
     try {
-      const response = await axios.post('http://localhost:5000/logout', null, { withCredentials: true });
+      const response = await axios.post('http://localhost:5000/doctor/logout', null, { withCredentials: true });
       
       if (response.status === 200) {
         console.log('Logout successful:', response.data.message);
         setIsAuthenticated(false);
         setUser(null);
+        console.log('hi');
         // Redirect to the homepage or login page
         window.location.href = '/login'; // Adjust as necessary
       }
@@ -73,10 +75,7 @@ function DoctorNavbar() {
         <div className="collapse navbar-collapse" id="navbarSupportedContent">
           <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
             <li className="nav-item">
-              <Link to="/doctor/home" className='nav-link active'>Home</Link>
-            </li>
-            <li className="nav-item">
-              <Link to="/doctor/about" className='nav-link active'>About Us</Link>
+              <Link to="/doctor/" className='nav-link active'>Home</Link>
             </li>
             <li className='nav-item'>
               <Link to="/doctor/schedule" className='nav-link active'>Schedule</Link>
@@ -86,6 +85,9 @@ function DoctorNavbar() {
             </li>
             <li className='nav-item'>
               <Link to="/doctor/clinic" className='nav-link active'>Clinic</Link>
+            </li>
+            <li className="nav-item">
+              <Link to="/doctor/about" className='nav-link active'>About Us</Link>
             </li>
           </ul>
 

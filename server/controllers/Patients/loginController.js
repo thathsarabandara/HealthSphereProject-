@@ -1,6 +1,6 @@
 const { findByEmail, findUserById,} = require('../../models/auth/User'); 
 const { comparePassword } = require('../../utils/hashpassword');
-const { createToken } = require('../../models/auth/Token');
+const { createToken, updateExpiredat, Token } = require('../../models/auth/Token');
 const tokenutils = require('../../utils/tokenUtils');
 const { sendUnusualLogin, sendPasswordResetEmails, sendPasswordChange } = require('../../services/emailServices');
 const { createUserPassword, findPassword, passwordDeactivate } = require('../../models/auth/UserPassword');
@@ -60,11 +60,18 @@ exports.logout = async (req, res) => {
     }
 
     try {
-        // Optional: Update the token's status in the database if applicable
-        await updateExpiredat(new Date(), token); // Set expiration date to now or mark it as invalid
-        
-        // Clear the token cookie from the response
-        res.clearCookie('token'); // Ensure this matches your cookie settings
+        // Invalidate the token in the database by setting its expiration to the current date
+        await Token.update(
+            { expires_at: new Date() }, // Use `new Date()` to ensure proper format
+            { where: { token } }
+        );
+
+        // Clear the token cookie from the client's browser
+        res.clearCookie('token', {
+            httpOnly: true, // Ensure secure cookie handling
+            secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+            sameSite: 'strict', // Prevent CSRF
+        });
 
         return res.status(200).json({ message: 'Logged out successfully.' });
     } catch (err) {
@@ -72,6 +79,7 @@ exports.logout = async (req, res) => {
         return res.status(500).json({ message: 'Internal server error.' });
     }
 };
+
 
 exports.resetPasswordRequest = async (req, res) => {
     const email = req.body.email;

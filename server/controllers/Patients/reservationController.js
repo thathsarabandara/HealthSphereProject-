@@ -201,6 +201,21 @@ exports.loadReservations = async (req, res) => {
         // Fetch doctors
         const doctors = await findDoctorsByIds(doctorIds);
 
+        // Extract specialization IDs
+        const specializationIds = [...new Set(doctors.map((doctor) => doctor.specialization_id))];
+
+        // Fetch specializations
+        const specializations = await Specialization.findAll({
+            where: { id: specializationIds },
+            attributes: ['id', 'name'],
+        });
+
+        // Map specializations for easy lookup
+        const specializationMap = specializations.reduce((map, specialization) => {
+            map[specialization.id] = specialization.name;
+            return map;
+        }, {});
+
         // Merge data manually
         const formattedReservations = reservations.map((reservation) => {
             const schedule = schedules.find((sch) => sch.id === reservation.schedule_id);
@@ -213,14 +228,15 @@ exports.loadReservations = async (req, res) => {
                 schedule_time: schedule?.schedule_time || 'N/A',
                 doctor_details: doctor
                     ? {
-                          name: doctor.first_name+' '+doctor.last_name,
+                          id: doctor.id,
+                          name: doctor.first_name + ' ' + doctor.last_name,
                           description: doctor.bio,
-                          specializations: doctor.specialization_id,
+                          specialization: specializationMap[doctor.specialization_id] || 'N/A',
                       }
                     : 'N/A',
             };
         });
-console.log(formattedReservations)
+
         res.status(200).json({
             message: 'Reservations loaded successfully',
             reservations: formattedReservations,
@@ -229,4 +245,48 @@ console.log(formattedReservations)
         console.error('Error loading reservations:', error);
         res.status(500).json({ message: 'Server error', error: error.message });
     }
+};
+
+exports.cancelReservation = async (req, res) => {
+  try {
+    const { id } = req.params; // Extract reservation ID from params
+    const token = req.cookies['token']; // Extract the token from cookies
+
+    if (!token) {
+      return res.status(401).json({ error: 'Unauthorized access. Token is missing.' });
+    }
+
+    // Find the user associated with the token
+    const tokenRecord = await Token.findOne({
+      where: { token }
+    });
+
+    if (!tokenRecord) {
+      return res.status(401).json({ error: 'Unauthorized access. Invalid token.' });
+    }
+
+    // Validate that the reservation belongs to the user
+    const isValidReservation = await Reservation.findOne({
+      where: {
+        user_id: tokenRecord.user_id,
+        id: id,
+        status: { [Op.ne]: 'canceled'} // Ensure it's not already canceled
+      }
+    });
+
+    if (!isValidReservation) {
+      return res.status(404).json({ error: 'Reservation not found or already canceled.' });
+    }
+
+    // Update the reservation status to 'canceled'
+    await Reservation.update(
+      { status: 'canceled' },
+      { where: { id: id } }
+    );
+
+    return res.status(200).json({ message: 'Reservation canceled successfully.' });
+  } catch (error) {
+    console.error('Error canceling reservation:', error);
+    return res.status(500).json({ error: 'An error occurred while canceling the reservation.' });
+  }
 };

@@ -4,7 +4,7 @@ import { MdEvent, MdPayment, MdPerson, MdInfo } from 'react-icons/md';
 import axios from 'axios';
 
 const Bookings = () => {
-  const [bookings, setBookings] = useState([]); // Initialize as an empty array
+  const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -14,7 +14,7 @@ const Bookings = () => {
         setLoading(true);
         const response = await axios.get('http://localhost:5000/reservations/all', { withCredentials: true });
         console.log('API Response:', response.data); // Debug API response
-        setBookings(response.data.reservations || []); // Adjust based on response structure
+        setBookings(response.data.reservations || []);
       } catch (err) {
         console.error('API Error:', err);
         setError('Failed to load booking details. Please try again later.');
@@ -26,6 +26,28 @@ const Bookings = () => {
     fetchBookingData();
   }, []);
 
+  const handleCheckout = async (reservationId) => {
+    console.log(`Initiating checkout for reservation: ${reservationId}`);
+    // Implement actual checkout functionality here.
+  };
+
+  const handleCancel = async (reservationId) => {
+    try {
+      const confirmCancel = window.confirm('Are you sure you want to cancel this booking?');
+      if (!confirmCancel) return;
+
+      const response = await axios.get(`http://localhost:5000/cancelreservation/${reservationId}`, { withCredentials: true });
+      console.log('Cancel Response:', response.data);
+
+      // Update the bookings list after successful cancellation
+      setBookings(bookings.filter((booking) => booking.reservation_id !== reservationId));
+      alert('Booking canceled successfully.');
+    } catch (err) {
+      console.error('Error canceling booking:', err);
+      alert('Failed to cancel the booking. Please try again.');
+    }
+  };
+
   if (loading) {
     return <div className="text-center mt-5">Loading booking details...</div>;
   }
@@ -34,11 +56,7 @@ const Bookings = () => {
     return <div className="text-center mt-5 text-danger">{error}</div>;
   }
 
-  if (!Array.isArray(bookings)) {
-    return <div className="text-center mt-5">Invalid booking data format.</div>;
-  }
-
-  if (bookings.length === 0) {
+  if (!Array.isArray(bookings) || bookings.length === 0) {
     return <div className="text-center mt-5">No bookings found.</div>;
   }
 
@@ -64,12 +82,20 @@ const Bookings = () => {
                 <MdPayment /> <strong>Payment Status:</strong> {booking.reservation_status}
               </p>
               {booking.reservation_status === 'pending' && (
-                <button
-                  className="btn btn-primary btn-lg mt-3"
-                  onClick={() => console.log(`Checkout for ${booking.reservation_id}`)}
-                >
-                  Checkout <MdPayment className="ms-2" />
-                </button>
+                <div className="d-flex gap-2">
+                  <button
+                    className="btn btn-success btn-lg mt-3"
+                    onClick={() => handleCheckout(booking.reservation_id)}
+                  >
+                    Checkout <MdPayment className="ms-2" />
+                  </button>
+                  <button
+                    className="btn btn-danger btn-lg mt-3"
+                    onClick={() => handleCancel(booking.reservation_id)}
+                  >
+                    Cancel <MdPayment className="ms-2" />
+                  </button>
+                </div>
               )}
             </div>
             <hr />
@@ -84,10 +110,10 @@ const Bookings = () => {
                 <strong>Description:</strong> {booking.doctor_details.description}
               </p>
               <p>
-                <strong>Specializations:</strong> {booking.doctor_details.specializations}
+                <strong>Specializations:</strong> {booking.doctor_details.specialization}
               </p>
               <Link
-                to={`/doctor-details/${booking.doctor_details.name}`}
+                to={`/profileDoctor/${booking.doctor_details.id}`}
                 className="btn btn-info btn-lg mt-3"
               >
                 View Full Doctor Profile <MdInfo className="ms-2" />
