@@ -104,7 +104,7 @@ function App() {
         <Route path="/prescriptionhistory/:patientid/viewprescription/:reservationid" element={<PatientPrescriptionView/>} />
         <Route path="/cart" element={<Cart/>} />
         <Route path="/bookings" element={<Bookings/>} />
-        <Route path="/checkout" element={<Payment/>} />
+        <Route path="/checkout/:id" element={<Payment/>} />
         <Route path="/refund" element={<Refund/>} />
 
         <Route path="/error/accessdenied" element={<DataAccesDenied/>} />

@@ -226,6 +226,7 @@ exports.loadReservations = async (req, res) => {
                 reservation_status: reservation.status,
                 schedule_date: schedule?.schedule_date || 'N/A',
                 schedule_time: schedule?.schedule_time || 'N/A',
+                amount: parseFloat(schedule?.fees) + 500 || 'N/A',
                 doctor_details: doctor
                     ? {
                           id: doctor.id,

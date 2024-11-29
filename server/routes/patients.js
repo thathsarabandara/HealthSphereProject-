@@ -19,6 +19,7 @@ const { profilePictureUpload } = require('../middleware/upload/profilePictureUpl
 
 router.get('/', rateLimiterMiddleware ,homeController.authHome );
 router.get('/finddoctor', rateLimiterMiddleware);
+router.get('/bookings/:reservationId/payment/:amount', rateLimiterMiddleware, paymentController.makePaymentId);
 router.post('/finddoctor', rateLimiterMiddleware, searchController.searchDoctors);
 router.get('/finddoctor/:specialization', rateLimiterMiddleware, searchController.loadDoctors);
 router.get('/reservation',rateLimiterMiddleware,reservationController.loadUserData);

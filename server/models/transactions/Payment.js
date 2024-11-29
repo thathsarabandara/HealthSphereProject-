@@ -22,7 +22,7 @@ const Payment = sequelize.define('Payment', {
     },
     payment_method: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
     },
     payment_date: {
         type: DataTypes.DATE,

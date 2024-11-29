@@ -8,6 +8,7 @@ const Bookings = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedStatus, setSelectedStatus] = useState('pending'); // Default filter: 'pending'
 
   useEffect(() => {
     const fetchBookingData = async () => {
@@ -27,9 +28,9 @@ const Bookings = () => {
     fetchBookingData();
   }, []);
 
-  const handleCheckout = async (reservationId) => {
-    console.log(`Initiating checkout for reservation: ${reservationId}`);
-    // Implement actual checkout functionality here.
+  const handleCheckout = async (reservationId,amount) => {
+    const payment_id = await axios.get(`http://localhost:5000/bookings/${reservationId}/payment/${amount}`, { withCredentials: true });
+    
   };
 
   const handleCancel = async (reservationId) => {
@@ -49,6 +50,8 @@ const Bookings = () => {
     }
   };
 
+  const filteredBookings = bookings.filter((booking) => booking.reservation_status === selectedStatus);
+
   if (loading) {
     return (
       <div style={{
@@ -66,78 +69,106 @@ const Bookings = () => {
         <Loader />
       </div>
     );
-  };
+  }
 
   if (error) {
     return <div className="text-center mt-5 text-danger">{error}</div>;
   }
 
-  if (!Array.isArray(bookings) || bookings.length === 0) {
-    return <div className="text-center mt-5">No bookings found.</div>;
-  }
-
   return (
-    <div className="container mt-5">
-      {bookings.map((booking) => (
-        <div key={booking.reservation_id} className="card shadow-lg border-0 rounded mb-4">
-          <div className="card-header bg-primary text-white text-center">
-            <h3>Your Booking Details</h3>
-          </div>
-          <div className="card-body">
-            <div className="booking-info">
-              <h5 className="card-title">
-                <MdPerson /> Appointment with {booking.doctor_details.name}
-              </h5>
-              <p>
-                <MdEvent /> <strong>Schedule Date:</strong> {booking.schedule_date}
-              </p>
-              <p>
-                <MdEvent /> <strong>Schedule Time:</strong> {booking.schedule_time}
-              </p>
-              <p>
-                <MdPayment /> <strong>Payment Status:</strong> {booking.reservation_status}
-              </p>
-              {booking.reservation_status === 'pending' && (
-                <div className="d-flex gap-2">
-                  <button
-                    className="btn btn-success btn-lg mt-3"
-                    onClick={() => handleCheckout(booking.reservation_id)}
-                  >
-                    Checkout <MdPayment className="ms-2" />
-                  </button>
-                  <button
-                    className="btn btn-danger btn-lg mt-3"
-                    onClick={() => handleCancel(booking.reservation_id)}
-                  >
-                    Cancel <MdPayment className="ms-2" />
-                  </button>
+    <div className="container mt-5 d-flex">
+      {/* Sidebar or Navigation for Filtering */}
+      <div className="list-group me-3" style={{ width: '200px' }}>
+        <button
+          className={`list-group-item list-group-item-action ${selectedStatus === 'pending' ? 'active' : ''}`}
+          onClick={() => setSelectedStatus('pending')}
+        >
+          Pending
+        </button>
+        <button
+          className={`list-group-item list-group-item-action ${selectedStatus === 'available' ? 'active' : ''}`}
+          onClick={() => setSelectedStatus('available')}
+        >
+          Available
+        </button>
+        <button
+          className={`list-group-item list-group-item-action ${selectedStatus === 'completed' ? 'active' : ''}`}
+          onClick={() => setSelectedStatus('completed')}
+        >
+          Completed
+        </button>
+      </div>
+
+      {/* Main Content Area */}
+      <div className="flex-grow-1">
+        {filteredBookings.length === 0 ? (
+          <div className="text-center mt-5">No bookings found for {selectedStatus} status.</div>
+        ) : (
+          filteredBookings.map((booking) => (
+            <div key={booking.reservation_id} className="card shadow-lg border-0 rounded mb-4">
+              <div className="card-header bg-primary text-white text-center">
+                <h3>Your Booking Details</h3>
+              </div>
+              <div className="card-body">
+                <div className="booking-info">
+                  <h5 className="card-title">
+                    <MdPerson /> Appointment with {booking.doctor_details.name}
+                  </h5>
+                  <p>
+                    <MdEvent /> <strong>Schedule Date:</strong> {booking.schedule_date}
+                  </p>
+                  <p>
+                    <MdEvent /> <strong>Schedule Time:</strong> {booking.schedule_time}
+                  </p>
+                  <p>
+                    <MdEvent /> <strong>Amount:</strong> {booking.amount}
+                  </p>
+                  <p>
+                    <MdPayment /> <strong>Payment Status:</strong> {booking.reservation_status}
+                  </p>
+                  {booking.reservation_status === 'pending' && (
+                    <div className="d-flex flex-column flex-sm-row gap-2">
+                      <button
+                        className="btn btn-success btn-lg mt-3"
+                        onClick={() => handleCheckout(booking.reservation_id)}
+                      >
+                        Checkout <MdPayment className="ms-2" />
+                      </button>
+                      <button
+                        className="btn btn-danger btn-lg mt-3"
+                        onClick={() => handleCancel(booking.reservation_id)}
+                      >
+                        Cancel <MdPayment className="ms-2" />
+                      </button>
+                    </div>
+                  )}
                 </div>
-              )}
+                <hr />
+                <div className="doctor-info">
+                  <h5 className="card-title">
+                    <MdInfo /> Doctor Details
+                  </h5>
+                  <p>
+                    <strong>Name:</strong> {booking.doctor_details.name}
+                  </p>
+                  <p>
+                    <strong>Description:</strong> {booking.doctor_details.description}
+                  </p>
+                  <p>
+                    <strong>Specializations:</strong> {booking.doctor_details.specialization}
+                  </p>
+                  <Link
+                    to={`/profileDoctor/${booking.doctor_details.id}`}
+                    className="btn btn-info btn-lg mt-3"
+                  >
+                    View Full Doctor Profile <MdInfo className="ms-2" />
+                  </Link>
+                </div>
+              </div>
             </div>
-            <hr />
-            <div className="doctor-info">
-              <h5 className="card-title">
-                <MdInfo /> Doctor Details
-              </h5>
-              <p>
-                <strong>Name:</strong> {booking.doctor_details.name}
-              </p>
-              <p>
-                <strong>Description:</strong> {booking.doctor_details.description}
-              </p>
-              <p>
-                <strong>Specializations:</strong> {booking.doctor_details.specialization}
-              </p>
-              <Link
-                to={`/profileDoctor/${booking.doctor_details.id}`}
-                className="btn btn-info btn-lg mt-3"
-              >
-                View Full Doctor Profile <MdInfo className="ms-2" />
-              </Link>
-            </div>
-          </div>
-        </div>
-      ))}
+          ))
+        )}
+      </div>
     </div>
   );
 };
