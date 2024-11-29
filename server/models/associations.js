@@ -31,10 +31,8 @@ const { SecurityQuestion } = require('./security/SecurityQuestion');
 const { RateLimiting } = require('./security/RateLimiting');
 const { UserPassword } = require('./auth/UserPassword');
 const { BillingDetails } = require('./transactions/BillingDetails');
-const CardDetails = require('./transactions/CardDetails');
+const {CardDetails} = require('./transactions/CardDetails');
 const { BankReceipt } = require('./transactions/BankReciept');
-const { CardBillings } = require('./transactions/CardBilings');
-const { BankBillings } = require('./transactions/BankBillings');
 const { UserOffer } = require('./ecommerce/UserOffer');
 const { Offer } = require('./ecommerce/Offer');
 const { UserBlackList } = require('./security/UserBlackList');
@@ -85,14 +83,11 @@ UserOffer.belongsTo(User, {foreignKey: 'user_id'});
 UserOffer.belongsTo(Offer, { foreignKey: 'offer_id'});
 
 Notification.belongsTo(User, { foreignKey: 'user_id' });
-Payment.belongsTo(User, {foreignKey:  'user_id'});
-Payment.belongsTo(BillingDetails, {foreignKey:  'billingDetails_id'});
-CardBillings.belongsTo(CardDetails,{foreignKey: 'cardDetails_id:'});
-CardBillings.belongsTo(BillingDetails,{foreignKey: 'billingDetails_id'});
-BankBillings.belongsTo(BillingDetails,{foreignKey: 'billingDetails_id'});
-BankBillings.belongsTo(BankReceipt, {foreignKey: 'bankReceipt_id'});
+Payment.belongsTo(Patient, { foreignKey: 'patient_id' });
+BillingDetails.belongsTo(Payment, { foreignKey: 'payment_id' });
+CardDetails.belongsTo(Payment, { foreignKey: 'payment_id' });
+BankReceipt.belongsTo(Payment, { foreignKey: 'payment_id' });
 
-// Define security relationships 
 AuditLog.belongsTo(User, { foreignKey: 'user_id' });
 FailedLoginAttempt.belongsTo(User, { foreignKey: 'user_id' });
 RateLimiting.belongsTo(UserGroup, { foreignKey: 'user_group_id' });

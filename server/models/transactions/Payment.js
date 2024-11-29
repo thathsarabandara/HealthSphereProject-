@@ -1,7 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/db');
-const { User } = require('../auth/User');
-const { BillingDetails } = require('./BillingDetails');
+const { Patient } = require('../healthcare/Patient');
 
 const Payment = sequelize.define('Payment', {
     id: {
@@ -9,10 +8,10 @@ const Payment = sequelize.define('Payment', {
         autoIncrement: true,
         primaryKey: true,
     },
-    user_id: {
+    patient_id: {
         type: DataTypes.INTEGER,
         references: {
-            model: User,
+            model: Patient,
             key: 'id',
         },
         allowNull: false,
@@ -27,22 +26,15 @@ const Payment = sequelize.define('Payment', {
     },
     payment_date: {
         type: DataTypes.DATE,
-        allowNull: false,
+        allowNull: true,
     },
     payment_status: {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    billingDetails_ID: {
-        type: DataTypes.INTEGER,
-        references: {
-            model: BillingDetails,
-            key: 'id',
-        },
-        allowNull: false,
-    },
     receipt_number: {
         type: DataTypes.STRING,
+        allowNull:true,
     },
     created_at: {
         type: DataTypes.DATE,

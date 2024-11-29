@@ -1,5 +1,6 @@
 const sequelize = require('../../config/db');
 const { DataTypes } = require('sequelize');
+const { Payment } = require('./Payment');
 
 const BankReceipt = sequelize.define('BankReceipt', {
     id: {
@@ -7,6 +8,13 @@ const BankReceipt = sequelize.define('BankReceipt', {
       primaryKey: true,
       autoIncrement: true, 
       allowNull: false,
+    },
+    payment_id:{
+      type: DataTypes.INTEGER,
+      references:{
+        model: Payment,
+        key: 'id',
+      }
     },
     receiptLocation: {
       type: DataTypes.STRING,

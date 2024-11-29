@@ -11,6 +11,7 @@ const searchController =  require('../controllers/Patients/searchController');
 const reservationController =  require('../controllers/Patients/reservationController');
 const conditionsController =  require('../controllers/Patients/conditionController');
 const doctorProfileController =  require('../controllers/Patients/doctorProfileController');
+const reviewController =  require('../controllers/Patients/reviewController');
 const authMiddleware = require('../middleware/auth/authenticateJWT');
 const {authorizeRole} = require('../middleware/auth/authorizeRole');
 const {rateLimiterMiddleware} = require('../middleware/rateLimit/rateLimiter');
@@ -22,6 +23,7 @@ router.post('/finddoctor', rateLimiterMiddleware, searchController.searchDoctors
 router.get('/finddoctor/:specialization', rateLimiterMiddleware, searchController.loadDoctors);
 router.get('/reservation',rateLimiterMiddleware,reservationController.loadUserData);
 router.get('/doctorprofile/:doctorid',rateLimiterMiddleware,doctorProfileController.loadDoctorProfile);
+router.post('/doctorprofile/:doctorid/addreview',rateLimiterMiddleware,reviewController.addReview);
 router.post('/reservation/:id',rateLimiterMiddleware,reservationController.saveReservation);
 router.get('/cancelreservation/:id',rateLimiterMiddleware,reservationController.cancelReservation);
 router.get('/reservations/all',rateLimiterMiddleware,reservationController.loadReservations);

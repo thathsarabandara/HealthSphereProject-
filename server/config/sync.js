@@ -8,7 +8,6 @@ require('../models/auth/User');
 require('../models/auth/UserPassword');
 require('../models/auth/UserGroup');
 
-
 require('../models/content/Notification');
 require('../models/content/Review');
 
@@ -43,8 +42,6 @@ require('../models/transactions/Refund');
 require('../models/transactions/BillingDetails');
 require('../models/transactions/BankReciept');
 require('../models/transactions/CardDetails');
-require('../models/transactions/BankBillings');
-require('../models/transactions/CardBilings');
 
 
 const syncDatabase = async () => {
