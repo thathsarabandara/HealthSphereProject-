@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, NavigationType, useNavigate } from 'react-router-dom';
 import { MdEvent, MdPayment, MdPerson, MdInfo } from 'react-icons/md';
 import axios from 'axios';
 import Loader from '../../components/common/Loader';
@@ -8,7 +8,9 @@ const Bookings = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [paymentid, setPaymentid] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState('pending'); // Default filter: 'pending'
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchBookingData = async () => {
@@ -29,8 +31,9 @@ const Bookings = () => {
   }, []);
 
   const handleCheckout = async (reservationId,amount) => {
-    const payment_id = await axios.get(`http://localhost:5000/bookings/${reservationId}/payment/${amount}`, { withCredentials: true });
-    
+    const response = await axios.get(`http://localhost:5000/bookings/${reservationId}/payment/${amount}`, { withCredentials: true });
+    setPaymentid(response.data.paymentId);
+    navigate(`/checkout/${paymentid}`);
   };
 
   const handleCancel = async (reservationId) => {

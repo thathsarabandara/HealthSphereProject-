@@ -133,7 +133,7 @@ function PatientNavbar() {
                   </div>
                 <div className='profile-container'>
                   <img
-                    src={user?.profile_picture || emptyImage}
+                    src={user?.profile_picture || emptyImage }
                     alt='Profile'
                     className='profile-photo'
                     onClick={toggleDropdown}

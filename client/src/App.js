@@ -52,6 +52,7 @@ import Bookings from './pages/User/Bookings';
 import DoctorPatientProfile from './pages/doctor/DoctorPatientProfile';
 import PrescriptionView from './pages/doctor/PrescriptionView';
 import PatientPrescriptionView from './pages/User/PatientPrescriptionView';
+import SuccessPopup from './components/common/success popup/SuccessPopup';
 
 
 const getNavbarAndFooter = (path) => {

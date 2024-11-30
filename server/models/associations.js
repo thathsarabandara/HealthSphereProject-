@@ -36,6 +36,8 @@ const { BankReceipt } = require('./transactions/BankReciept');
 const { UserOffer } = require('./ecommerce/UserOffer');
 const { Offer } = require('./ecommerce/Offer');
 const { UserBlackList } = require('./security/UserBlackList');
+const { ReservationPayment } = require('./transactions/ReservationPayment');
+const { CartPayments } = require('./transactions/CartPayment');
 
 // Define auth relationships
 User.belongsToMany(Group, { through: UserGroup, foreignKey: 'user_id' });
@@ -65,7 +67,12 @@ ScheduleCancel.belongsTo(Schedule, { foreignKey: 'schedule_id' });
 
 Reservation.belongsTo(Schedule, { foreignKey: 'schedule_id' });
 Reservation.belongsTo(Patient, { foreignKey: 'patient_id' });
-Reservation.belongsTo(Payment, { foreignKey: 'payment_id' });
+
+ReservationPayment.belongsTo(Reservation, { foreignKey: 'reservation_id' });
+ReservationPayment.belongsTo(Payment, { foreignKey: 'payment_id' });
+
+CartPayments.belongsTo(Cart, { foreignKey: 'cart_id' });
+CartPayments.belongsTo(Payment, { foreignKey: 'payment_id' });
 
 Refund.belongsTo(Payment, { foreignKey: 'payment_id' });
 
