@@ -8,13 +8,11 @@ const { Patient } = require("../../models/healthcare/Patient");
 
 // Save a schedule
 exports.saveSchedules = async (req, res) => {
-    console.log('hi');
   const { date, time, comment, fees } = req.body;
 
   try {
     const token = req.cookies['doctoken'];
 
-console.log(token);
     // Validate the token
     const validToken = await Token.findOne({
         where: {

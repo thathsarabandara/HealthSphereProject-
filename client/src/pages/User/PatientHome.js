@@ -20,6 +20,7 @@ import Img7 from '../../assets/images/img-1 (7).svg';
 import Img8 from '../../assets/images/img-1 (8).svg';
 import Img9 from '../../assets/images/img-1 (9).svg';
 import Loader from '../../components/common/Loader';
+import emptyImage from '../../assets/images/emptyProfile.png';
 import { Bar, Line } from 'react-chartjs-2';
 import { FaClinicMedical, FaGift, FaHeartbeat, FaBalanceScale } from 'react-icons/fa';
 import {
@@ -51,7 +52,7 @@ function PatientHome() {
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setAuthenticated] = useState(false);
   const [error, setError] = useState(null);
-  const [profilePicture, setProfilePicture] = useState('../../assets/images/profileImg.png');
+  const [profilePicture, setProfilePicture] = useState(null);
   const [patientId, setPatientId] = useState(null);
   const [useremail, setEmail] = useState(null);
   const [patientFirstName, setPatientFirstName] = useState('----');
@@ -79,7 +80,7 @@ function PatientHome() {
         const response = await axios.get('http://localhost:5000/', { withCredentials: true });
         if (response.status === 200) {
           setAuthenticated(true);
-          const profile = `http://localhost:5000/uploads/storage/patient/${response.data.data.id}/profilepictures/${response.data.data.profile_picture}`;
+          const profile = `http://localhost:5000/uploads/storage/patient/${response.data.data.id}/profilepictures/${response.data.data?.profile_picture}`;
           const data =response.data.data
           setPatientId(data.id);
           setEmail(data.email);
@@ -235,7 +236,7 @@ function PatientHome() {
           <div className="card h-100 shadow-sm">
             <div className="card-body text-center">
               <img
-                src={profilePicture}
+                src={profilePicture || emptyImage }
                 alt="profile"
                 className="rounded-circle mb-3"
                 style={{ width: '150px', height: '150px' }}

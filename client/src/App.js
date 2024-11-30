@@ -52,6 +52,7 @@ import Bookings from './pages/User/Bookings';
 import DoctorPatientProfile from './pages/doctor/DoctorPatientProfile';
 import PrescriptionView from './pages/doctor/PrescriptionView';
 import PatientPrescriptionView from './pages/User/PatientPrescriptionView';
+import SuccessPopup from './components/common/success popup/SuccessPopup';
 
 
 const getNavbarAndFooter = (path) => {
@@ -104,7 +105,7 @@ function App() {
         <Route path="/prescriptionhistory/:patientid/viewprescription/:reservationid" element={<PatientPrescriptionView/>} />
         <Route path="/cart" element={<Cart/>} />
         <Route path="/bookings" element={<Bookings/>} />
-        <Route path="/checkout" element={<Payment/>} />
+        <Route path="/checkout/:id" element={<Payment/>} />
         <Route path="/refund" element={<Refund/>} />
 
         <Route path="/error/accessdenied" element={<DataAccesDenied/>} />

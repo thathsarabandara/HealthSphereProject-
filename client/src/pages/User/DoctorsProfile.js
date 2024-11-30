@@ -77,6 +77,33 @@ function DoctorsProfile() {
 
   const { profile, schedule, reviews } = data || {};
 
+  function calculateAge(dateOfBirth) {
+    const dob = new Date(dateOfBirth); // Convert to Date object
+    const today = new Date(); // Current date
+  
+    // Calculate differences
+    let years = today.getFullYear() - dob.getFullYear();
+    let months = today.getMonth() - dob.getMonth();
+    let days = today.getDate() - dob.getDate();
+  
+    // Adjust if days are negative
+    if (days < 0) {
+      months--; // Borrow a month
+      const previousMonth = new Date(today.getFullYear(), today.getMonth(), 0); // Last day of previous month
+      days += previousMonth.getDate();
+    }
+  
+    // Adjust if months are negative
+    if (months < 0) {
+      years--; // Borrow a year
+      months += 12;
+    }
+  
+    return { years, months, days };
+  }
+  
+  const age = calculateAge(profile.dateOfBirth);
+
   return (
     <div className='container mt-5 mb-5'>
       <div className="row">
@@ -85,17 +112,17 @@ function DoctorsProfile() {
         <div className="card h-100 shadow-sm">
           <div className="card-body text-center">
             <img
-              src={profile?.profilePicture || '/default-profile.png'}
+              src={`http://localhost:5000/uploads/storage/doctor/${profile?.userid}/profiledocuments/${profile?.profilePicture}` || '/default-profile.png'}
               alt="profile"
               className="rounded-circle mb-3"
               style={{ width: '150px', height: '150px' }}
             />
             <h5 className="mb-1">{profile?.id} - {profile?.firstName} {profile?.lastName}</h5>
             <small className="text-muted">
-              {profile?.gender} - Age {profile?.age} Years
+              {profile?.gender} - Age {age.years} Years 
             </small>
             <div style={{ textAlign: 'left', marginTop: '1rem' }}>
-              <p><strong>Email:</strong> {profile?.email} |<br /> {profile?.phoneNumber}</p>
+              <p><strong>Email:</strong> {profile?.contact}</p>
               <p><strong>Bio:</strong> {profile?.bio}</p>
               <p><strong>Experience:</strong> {profile?.experience} Years</p>
               <p><strong>Specialization:</strong> {profile?.specialization}</p>

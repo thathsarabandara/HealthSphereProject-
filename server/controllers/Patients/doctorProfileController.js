@@ -12,7 +12,7 @@ exports.loadDoctorProfile = async (req, res) => {
       // Fetch doctor details, including specialization name
       const doctor = await Doctor.findOne({
           where: { id: doctorid },
-          attributes: ['id', 'first_name', 'last_name', 'bio',  'specialization_id', 'profile_picture'],
+          attributes: ['id', 'first_name', 'last_name', 'bio', 'years_of_experience' , 'date_of_birth', 'gender' , 'phone_number',  'specialization_id', 'profile_picture','user_id'],
       });
 
       if (!doctor) {
@@ -60,10 +60,14 @@ exports.loadDoctorProfile = async (req, res) => {
       const response = {
           profile: {
               id: doctor.id,
+              userid: doctor.user_id,
               firstName: doctor.first_name,
               lastName: doctor.last_name,
+              contact: doctor.phone_number,
+              dateOfBirth: doctor.date_of_birth,
+              gender: doctor.gender,
               bio: doctor.bio,
-              experience: doctor.experience,
+              experience: doctor.years_of_experience,
               specialization: specialization?.name || 'Unknown',
               profilePicture: doctor.profile_picture,
           },
@@ -74,7 +78,6 @@ exports.loadDoctorProfile = async (req, res) => {
           })),
           reviews,
       };
-      
       // Send the combined data as response
       res.status(200).json(response);
   } catch (error) {

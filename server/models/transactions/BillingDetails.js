@@ -1,8 +1,7 @@
 // models/BillingDetails.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/db');
-const CardDetails = require('./CardDetails');
-const { BankReceipt } = require('./BankReciept');
+const { Payment } = require('./Payment');
 
 const BillingDetails = sequelize.define('BillingDetails', {
     id: {
@@ -10,6 +9,13 @@ const BillingDetails = sequelize.define('BillingDetails', {
       primaryKey: true,
       autoIncrement: true, // Auto-incrementing primary key
       allowNull: false,
+    },
+    payment_id:{
+      type: DataTypes.INTEGER,
+      references:{
+        model: Payment,
+        key: 'id',
+      }
     },
     fullName: {
       type: DataTypes.STRING,

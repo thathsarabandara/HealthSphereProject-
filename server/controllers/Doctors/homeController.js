@@ -3,6 +3,7 @@ const { findUserById } = require("../../models/auth/User");
 
 const { Offer } = require("../../models/ecommerce/Offer");
 const { Doctor } = require("../../models/healthcare/Doctor");
+const { Specialization } = require("../../models/healthcare/Specialization");
 
 exports.findUserByToken = async (token) => {
     try {
@@ -53,16 +54,21 @@ exports.authHome = async (req, res) => {
         }
 
         const doctordata = await Doctor.findOne({
-            where: { user_id: user.id }
+            where: { user_id: user.id , status: 'approved'}
         });
 
         if (!doctordata) {
             return res.status(404).json({ message: 'Patient data not found' });
         } 
         
+        const specialization = await Specialization.findOne({where:{
+            id:doctordata.specialization_id
+        }
+        });
         return res.status(200).json({
             message: 'User authenticated successfully',
             data: {
+                userid: user.id,
                 name: user.username,
                 email: user.email,
                 id: doctordata.id,
@@ -72,6 +78,12 @@ exports.authHome = async (req, res) => {
                 gender: doctordata.gender,
                 phone_number: doctordata.phone_number,
                 address: doctordata.address,
+                medical_license_number:doctordata.medical_license_number,
+                specialization: specialization.name,
+                experience: doctordata.years_of_experience,
+                hospital: doctordata.hospital_clinic_affiliation,
+                medicalSchool: doctordata.medical_school_university,
+                profileImg:doctordata.profile_picture,
             }
         });
         

@@ -97,7 +97,7 @@ function DoctorFullRegister() {
     .then((response) => {
       console.log('Registration request submitted successfully:', response);
       alert('Registration request submitted successfully!');
-      navigate('doctor/login'); // Navigate to another page after submission
+      navigate('/doctor/login'); // Navigate to another page after submission
     })
     .catch((err) => {
       console.log(formData)
