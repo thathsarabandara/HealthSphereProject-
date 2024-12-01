@@ -49,10 +49,12 @@ const [currentDateTime, setCurrentDateTime] = useState(new Date());
       } else {
         setIsAuthenticated(false);
         setProfileData(null);
+        setLoading(false);
       }
     } catch (error) {
       console.error('Error fetching user data:', error);
       setIsAuthenticated(false);
+      setLoading(false)
       setProfileData(null);
     }
   };

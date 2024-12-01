@@ -16,6 +16,7 @@ const authMiddleware = require('../middleware/auth/authenticateJWT');
 const {authorizeRole} = require('../middleware/auth/authorizeRole');
 const {rateLimiterMiddleware} = require('../middleware/rateLimit/rateLimiter');
 const { profilePictureUpload } = require('../middleware/upload/profilePictureUpload');
+const { bankReciptUpload } = require('../middleware/upload/banksReciptUpload');
 
 router.get('/', rateLimiterMiddleware ,homeController.authHome );
 router.get('/finddoctor', rateLimiterMiddleware);
@@ -59,7 +60,9 @@ router.get('/userprescription',[authMiddleware , authorizeRole('patient'),rateLi
 router.get('/userpayments',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware], paymentController.loadPayment);
 router.get('/cart',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware], cartController.loadCart);
 router.put('/cart/:id',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware], cartController.deleteCartItem);
-router.get('/checkout',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware],paymentController.loadCheckout);
+router.post('/checkout/amount/:amount',rateLimiterMiddleware,paymentController.makeCheckout);
+router.get('/checkout/:id',rateLimiterMiddleware,paymentController.loadCheckout);
+router.post('/checkout/pay/:id',[bankReciptUpload , rateLimiterMiddleware],paymentController.makePayment);
 router.get('/refund',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware],paymentController.loadRefund);
 router.get('/refund/request',[authMiddleware , authorizeRole('patient'),rateLimiterMiddleware]);
 router.post('/resetpassword',rateLimiterMiddleware,loginController.resetPassword);

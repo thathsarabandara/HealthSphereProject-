@@ -25,6 +25,7 @@ app.use(cors(corsOptions,ipapiCorsOptions)); // Use CORS middleware
 
 // Body Parser Middleware
 app.use(bodyParser.json());
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Routes

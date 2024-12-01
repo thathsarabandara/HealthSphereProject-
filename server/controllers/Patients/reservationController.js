@@ -74,7 +74,9 @@ exports.saveReservation = async (req, res) => {
             return res.status(401).json({ message: 'Invalid or expired token' });
         }
 
-        const user_id = tokenRecord.user_id;
+        const patient = await Patient.findOne({where:{
+            user_id: tokenRecord.user_id
+        }})
 
         // Extract data from request body
         const {
@@ -111,8 +113,7 @@ exports.saveReservation = async (req, res) => {
         // Create a new reservation
         const newReservation = await Reservation.create({
             schedule_id,
-            user_id,
-            payment_id: null, // Assuming payment is not yet linked
+            patient_id: patient.id,
             reservation_name,
             reservation_address,
             reservation_phonenumber,
@@ -150,9 +151,9 @@ const findSchedulesByIds = async (scheduleIds) => {
     });
 };
 
-const findReservationsByUserId = async (userId) => {
+const findReservationsByUserId = async (patientID) => {
     return await Reservation.findAll({
-        where: { user_id: userId },
+        where: { patient_id: patientID },
         attributes: ['id', 'status', 'schedule_id', 'reservation_date', 'reservation_time'], // Only fetch required fields
     });
 };
@@ -180,43 +181,37 @@ exports.loadReservations = async (req, res) => {
             return res.status(401).json({ message: 'Invalid or expired token' });
         }
 
-        const userId = tokenRecord.user_id;
+        const patient = await Patient.findOne({where:{
+            user_id: tokenRecord.user_id
+        }})
 
         // Fetch reservations
-        const reservations = await findReservationsByUserId(userId);
+        const reservations = await findReservationsByUserId(patient.id);
 
         if (reservations.length === 0) {
             return res.status(404).json({ message: 'No reservations found' });
         }
 
-        // Extract schedule IDs
         const scheduleIds = reservations.map((reservation) => reservation.schedule_id);
 
-        // Fetch schedules
         const schedules = await findSchedulesByIds(scheduleIds);
 
-        // Extract doctor IDs
         const doctorIds = schedules.map((schedule) => schedule.doctor_id);
 
-        // Fetch doctors
         const doctors = await findDoctorsByIds(doctorIds);
 
-        // Extract specialization IDs
         const specializationIds = [...new Set(doctors.map((doctor) => doctor.specialization_id))];
 
-        // Fetch specializations
         const specializations = await Specialization.findAll({
             where: { id: specializationIds },
             attributes: ['id', 'name'],
         });
 
-        // Map specializations for easy lookup
         const specializationMap = specializations.reduce((map, specialization) => {
             map[specialization.id] = specialization.name;
             return map;
         }, {});
 
-        // Merge data manually
         const formattedReservations = reservations.map((reservation) => {
             const schedule = schedules.find((sch) => sch.id === reservation.schedule_id);
             const doctor = doctors.find((doc) => doc.id === schedule?.doctor_id);
@@ -250,14 +245,13 @@ exports.loadReservations = async (req, res) => {
 
 exports.cancelReservation = async (req, res) => {
   try {
-    const { id } = req.params; // Extract reservation ID from params
-    const token = req.cookies['token']; // Extract the token from cookies
+    const { id } = req.params; 
+    const token = req.cookies['token']; 
 
     if (!token) {
       return res.status(401).json({ error: 'Unauthorized access. Token is missing.' });
     }
 
-    // Find the user associated with the token
     const tokenRecord = await Token.findOne({
       where: { token }
     });
@@ -266,12 +260,11 @@ exports.cancelReservation = async (req, res) => {
       return res.status(401).json({ error: 'Unauthorized access. Invalid token.' });
     }
 
-    // Validate that the reservation belongs to the user
     const isValidReservation = await Reservation.findOne({
       where: {
         user_id: tokenRecord.user_id,
         id: id,
-        status: { [Op.ne]: 'canceled'} // Ensure it's not already canceled
+        status: { [Op.ne]: 'canceled'} 
       }
     });
 
@@ -279,7 +272,6 @@ exports.cancelReservation = async (req, res) => {
       return res.status(404).json({ error: 'Reservation not found or already canceled.' });
     }
 
-    // Update the reservation status to 'canceled'
     await Reservation.update(
       { status: 'canceled' },
       { where: { id: id } }

@@ -6,7 +6,7 @@ exports.addReview = async (req, res) => {
     const token = req.cookies['token'];
     const { doctorid } = req.params;
     const { rating, comment } = req.body;
-    console.log(token, doctorid, rating, comment)
+
     try {
         const isValidToken = await Token.findOne({ where: { token } });
         
@@ -21,7 +21,7 @@ exports.addReview = async (req, res) => {
         }
 
         const newReview = await Review.create({
-            patient_id: patient.id, // Ensure you're using the correct field for patient id
+            patient_id: patient.id, 
             doctor_id: doctorid,
             rating,
             comment,
