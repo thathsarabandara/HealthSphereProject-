@@ -1,51 +1,20 @@
-const { Token } = require("../../models/auth/Token");
 const { Cart } = require("../../models/ecommerce/Cart");
-const { Patient } = require("../../models/healthcare/Patient");
 const { Reservation } = require("../../models/healthcare/Reservation");
 const { BankReceipt } = require("../../models/transactions/BankReciept");
 const { BillingDetails } = require("../../models/transactions/BillingDetails");
 const { CardDetails } = require("../../models/transactions/CardDetails");
 const { CartPayments } = require("../../models/transactions/CartPayment");
 const { Payment } = require("../../models/transactions/Payment");
-const { Op, where } = require("sequelize");
 
 exports.makePaymentId = async (req, res) => {
     try {
         const { reservationId, amount } = req.params;
-        const token = req.cookies['token'];
-
-        // Check if token is present
-        if (!token) {
-            return res.status(401).json({ message: 'Authentication token is missing' });
-        }
-
-        // Validate the token
-        const tokenRecord = await Token.findOne({
-            where: {
-                token,
-                expires_at: { [Op.gt]: new Date() } // Check token validity
-            }
-        });
-
-        if (!tokenRecord) {
-            return res.status(401).json({ message: 'Invalid or expired token' });
-        }
-
-        // Retrieve the patient associated with the token
-        const patient = await Patient.findOne({
-            where: { user_id: tokenRecord.user_id }
-        });
-
-        if (!patient) {
-            return res.status(404).json({ message: 'Patient not found' });
-        }
-
         // Generate a unique receipt number
-        const receiptNumber = `${Date.now()}-${amount}-${patient.id}`;
+        const receiptNumber = `${Date.now()}-${amount}-${req.patientID}`;
 
         // Create a new payment record
         const newPayment = await Payment.create({
-            patient_id: patient.id,
+            patient_id: req.patientID,
             amount,
             payment_method: null,
             payment_date: new Date(), // Current timestamp
@@ -76,40 +45,11 @@ exports.loadCheckout = async (req, res) => {
     const { id } = req.params;
 
     try {
-        // Retrieve the token from cookies
-        const token = req.cookies['token'];
-
-        // Validate the presence of the token
-        if (!token) {
-            return res.status(401).json({ message: 'Authentication token is missing' });
-        }
-
-        // Find the token in the database and ensure it is not expired
-        const tokenRecord = await Token.findOne({
-            where: {
-                token,
-                expires_at: { [Op.gt]: new Date() }, // Token must be valid
-            },
-        });
-
-        if (!tokenRecord) {
-            return res.status(401).json({ message: 'Invalid or expired token' });
-        }
-
-        // Find the patient associated with the token's user ID
-        const patient = await Patient.findOne({
-            where: { user_id: tokenRecord.user_id },
-        });
-
-        if (!patient) {
-            return res.status(404).json({ message: 'Patient not found' });
-        }
-
         // Find the payment record associated with the patient and the specified payment ID
         const payment = await Payment.findOne({
             where: {
                 id,
-                patient_id: patient.id,
+                patient_id: req.patientID,
                 payment_status: 'pending', // Ensure the payment is pending
             },
         });
@@ -130,34 +70,6 @@ exports.loadCheckout = async (req, res) => {
 exports.makeCheckout = async (req, res) => {
     try {
         const { amount } = req.params;
-        const token = req.cookies['token'];
-
-        // Check if token is present
-        if (!token) {
-            return res.status(401).json({ message: 'Authentication token is missing' });
-        }
-
-        // Validate the token
-        const tokenRecord = await Token.findOne({
-            where: {
-                token,
-                expires_at: { [Op.gt]: new Date() } // Check token validity
-            }
-        });
-
-        if (!tokenRecord) {
-            return res.status(401).json({ message: 'Invalid or expired token' });
-        }
-
-        // Retrieve the patient associated with the token
-        const patient = await Patient.findOne({
-            where: { user_id: tokenRecord.user_id }
-        });
-
-        if (!patient) {
-            return res.status(404).json({ message: 'Patient not found' });
-        }
-
         // Validate required parameters
         if (!amount) {
             return res.status(400).json({ error: "Patient ID and amount are required." });
@@ -165,7 +77,7 @@ exports.makeCheckout = async (req, res) => {
 
         // Create a new payment
         const payment = await Payment.create({
-            patient_id: patient.id,
+            patient_id: req.patientID,
             amount: parseFloat(amount),
             payment_method: null,
             payment_date: new Date(),
@@ -175,7 +87,7 @@ exports.makeCheckout = async (req, res) => {
         // Fetch pending cart items for the patient
         const cartItems = await Cart.findAll({
             where: {
-                patient_id: patient.id,
+                patient_id: req.patientID,
                 status: 'pending',
             },
             attributes: ['id'], // Include only necessary attributes
@@ -210,40 +122,14 @@ exports.makePayment = async (req, res) => {
     const { id } = req.params;
     const bankReceipt = req.bankrecipt;
     const { fullName, address, phoneNumber, email, paymentMethod, cardNumber, cardHolder, expiryDate, csv } = req.body;
+    let patient; 
+    let payment; 
 
-    const token = req.cookies['token'];
-    
-
-    let patient; // Declare patient in the broader scope
-    let payment; // Declare payment to access it later in the catch block
     try {
-        // Step 1: Validate token
-        if (!token) {
-            return res.status(401).json({ message: 'Authentication token is missing' });
-        }
-
-        const tokenRecord = await Token.findOne({
-            where: {
-                token,
-                expires_at: { [Op.gt]: new Date() }, // Ensure token is valid
-            },
-        });
-
-        if (!tokenRecord) {
-            return res.status(401).json({ message: 'Invalid or expired token' });
-        }
-
-        // Step 2: Retrieve associated patient
-        patient = await Patient.findOne({ where: { user_id: tokenRecord.user_id } });
-        if (!patient) {
-            return res.status(404).json({ message: 'Patient not found' });
-        }
-
-        // Step 3: Retrieve payment details
         payment = await Payment.findOne({
             where: {
                 id,
-                patient_id: patient.id,
+                patient_id: req.patientID,
                 payment_status: 'pending',
             },
         });
@@ -252,7 +138,6 @@ exports.makePayment = async (req, res) => {
             return res.status(404).json({ message: 'Payment not found or already completed' });
         }
 
-        // Step 4: Save billing details
         const billing = await BillingDetails.create({
             fullName: fullName,
             address: address,
@@ -261,7 +146,7 @@ exports.makePayment = async (req, res) => {
             payment: id,
         });
 
-        // Step 5: Process payment method
+        
         if (paymentMethod === 'Online Payment') {
             await CardDetails.create({
                 payment_id: payment.id,
@@ -270,7 +155,6 @@ exports.makePayment = async (req, res) => {
                 validDate: expiryDate,
                 csv,
             });
-            console.log('Processing card payment:', { cardNumber, cardHolder, expiryDate, csv });
         } else if (paymentMethod === 'Bank Deposit' && bankReceipt) {
             await BankReceipt.create({
                 payment_id: payment.id,
@@ -280,7 +164,6 @@ exports.makePayment = async (req, res) => {
             return res.status(400).json({ message: 'Invalid payment method or missing receipt' });
         }
 
-        // Step 6: Update payment and cart statuses
         await payment.update({ payment_status: 'completed', payment_method: paymentMethod });
         await CartPayments.update(
             { status: 'completed' },
@@ -288,14 +171,14 @@ exports.makePayment = async (req, res) => {
         );
         await Cart.update(
             { status: 'completed' },
-            { where: { patient_id: patient.id, status: 'pending' } }
+            { where: { patient_id: req.patientID, status: 'pending' } }
         );
 
         return res.status(200).json({ message: 'Payment successful', paymentId: payment.id });
     } catch (error) {
         console.error('Error processing payment:', error);
 
-        // Rollback in case of errors
+        
         if (payment) { // Use the payment object from try block
             await payment.update({ payment_status: 'failed' }); // Update the payment status to 'failed'
         }

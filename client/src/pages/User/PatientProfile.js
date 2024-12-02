@@ -281,7 +281,7 @@ function PatientProfile() {
                       className="form-control"
                       id="gender"
                       name="date_of_birth"
-                      value={profileData.date_of_birth}
+                      value={profileData?.date_of_birth.split('T')[0]}
                       onChange={handleInputChange}
 
                     />

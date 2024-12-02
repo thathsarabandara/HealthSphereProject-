@@ -1,5 +1,3 @@
-const { Token } = require("../../models/auth/Token");
-const { Patient } = require("../../models/healthcare/Patient");
 const { Prescription } = require("../../models/healthcare/Prescription");
 const { Reservation } = require("../../models/healthcare/Reservation");
 const { Schedule } = require("../../models/healthcare/Schedule");
@@ -7,26 +5,10 @@ const { Doctor } = require("../../models/healthcare/Doctor");
 
 exports.loadPrescriptionDetails = async (req, res) => {
     try {
-        const token = req.cookies['token'];
-
-        // Validate Token
-        const isValidToken = await Token.findOne({ where: { token } });
-        if (!isValidToken) {
-            return res.status(401).json({ message: 'Unauthorized access' }); // Added `return` to prevent further execution.
-        }
-
-        // Fetch Patient Details
-        const patient = await Patient.findOne({
-            where: { user_id: isValidToken.user_id } // Corrected property name from `userId` to `user_id`.
-        });
-
-        if (!patient) {
-            return res.status(404).json({ message: 'Patient not found' });
-        }
-
         // Fetch Prescriptions
+        console.log(req.patientID)
         const prescriptions = await Prescription.findAll({
-            where: { patient_id: patient.id }, // Corrected property from `ID` to `id`.
+            where: { patient_id: req.patientID }, // Corrected property from `ID` to `id`.
             attributes: ['id', 'reservation_id', 'details', 'special_comments', 'prescription_photo', 'created_at']
         });
 
@@ -55,7 +37,7 @@ exports.loadPrescriptionDetails = async (req, res) => {
                     });
 
                     results.push({
-                        patient_id: patient.id,
+                        patient_id: req.patientID,
                         reservation_id: reservation.id,
                         date: schedule.schedule_date,
                         time: schedule.schedule_time,

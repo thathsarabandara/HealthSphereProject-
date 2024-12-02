@@ -11,6 +11,7 @@ const sync = require('./config/sync');
 const {ipapiCorsOptions ,corsOptions} = require('./middleware/cors/corsMiddleware');
 const auditLogMiddleware = require('./middleware/logging/auditLogMiddleware');
 const path = require('path');
+const { rateLimiterMiddleware } = require('./middleware/rateLimit/rateLimiter');
 
 // portNumber for the server
 const PORT = process.env.PORT || 5000;
@@ -21,6 +22,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(helmet()); // Security middleware
 app.use(cookieParser()); // Cookie parser middleware
 app.use(auditLogMiddleware);
+app.use(rateLimiterMiddleware);
 app.use(cors(corsOptions,ipapiCorsOptions)); // Use CORS middleware
 
 // Body Parser Middleware

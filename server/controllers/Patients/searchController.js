@@ -1,41 +1,8 @@
-const { findUserID, Token } = require("../../models/auth/Token");
-const { findUserById } = require("../../models/auth/User");
 const { Doctor } = require("../../models/healthcare/Doctor");
 const { Schedule } = require("../../models/healthcare/Schedule");
 const { Specialization } = require("../../models/healthcare/Specialization");
 const { Op } = require('sequelize');
 const moment = require('moment'); 
-
-exports.findUserByToken = async (token) => {
-    try {
-        if (!token) {
-            throw { status: 401, message: 'User token not found' };
-        }
-
-        const isValidToken = await findUserID(token);
-
-        if (!isValidToken) {
-            throw { status: 401, message: 'Token expired or not a valid token' };
-        }
-
-        const user = await findUserById(isValidToken.user_id);
-
-        if (!user) {
-            throw { status: 401, message: 'User not found' };
-        }
-
-        if (!user.isVerified) {
-            throw { status: 401, message: 'User is not verified!' };
-        }
-
-        // Return user information if authentication and verification are successful
-        return user;
-
-    } catch (error) {
-        // Pass error to the calling function
-        throw error.status ? error : { status: 500, message: 'An internal error occurred' };
-    }
-};
 
 exports.loadDoctors = async (req, res) => {
     try {

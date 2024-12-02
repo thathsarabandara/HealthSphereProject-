@@ -7,7 +7,6 @@ function Cart() {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [paymentId, setPaymentId] = useState(null);
   const [couponDiscount, setCouponDiscount] = useState(0); // Assuming coupon discount is Rs. 500.00
   const navigate = useNavigate();
 
@@ -66,14 +65,15 @@ function Cart() {
 
   const handleCheckout = async () => {
     try {
+      console.log('hi');
       const totalAmount = subTotal - discountAmount;
+      console.log(totalAmount)
       const response = await axios.post(
         `http://localhost:5000/checkout/amount/${totalAmount}`,
         {},
         { withCredentials: true }
       );
-      setPaymentId(response.data.id);
-      navigate(`/checkout/${response.data.id}`);
+      navigate(`/checkout/${response.data.paymentId}`);
     } catch (error) {
       console.error('Failed to proceed with checkout:', error);
     }
