@@ -3,25 +3,12 @@ const { Review } = require("../../models/content/Review");
 const { Patient } = require("../../models/healthcare/Patient");
 
 exports.addReview = async (req, res) => {
-    const token = req.cookies['token'];
     const { doctorid } = req.params;
     const { rating, comment } = req.body;
-    console.log(token, doctorid, rating, comment)
+    
     try {
-        const isValidToken = await Token.findOne({ where: { token } });
-        
-        if (!isValidToken) {
-            return res.status(401).json({ message: 'Invalid token.' });
-        }
-
-        const patient = await Patient.findOne({ where: { user_id: isValidToken.user_id } });
-
-        if (!patient) {
-            return res.status(404).json({ message: 'Patient not found.' });
-        }
-
         const newReview = await Review.create({
-            patient_id: patient.id, // Ensure you're using the correct field for patient id
+            patient_id: req.patientID, 
             doctor_id: doctorid,
             rating,
             comment,

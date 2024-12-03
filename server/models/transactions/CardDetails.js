@@ -29,10 +29,10 @@ const CardDetails = sequelize.define('CardDetails', {
       allowNull: false,
     },
     validDate: {
-      type: DataTypes.DATE,
+      type: DataTypes.STRING,
       allowNull: false,
     },
-    validDate: {
+    csv: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },

@@ -27,10 +27,6 @@ const CartPayments = sequelize.define('CarPayment', {
             key: 'id',
         },
     },
-    price: {
-        type: DataTypes.DECIMAL(10, 2),
-        allowNull: false,
-    },
     status: {
         type: DataTypes.STRING,
         allowNull: false,

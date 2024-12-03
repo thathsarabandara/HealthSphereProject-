@@ -1,46 +1,13 @@
-const { findUserID, Token } = require("../../models/auth/Token");
-const { findUserById } = require("../../models/auth/User");
+const { User } = require("../../models/auth/User");
 const { Patient } = require("../../models/healthcare/Patient");
-
-exports.findUserByToken = async (token) => {
-    try {
-        if (!token) {
-            throw { status: 401, message: 'User token not found' };
-        }
-
-        const isValidToken = await findUserID(token);
-
-        if (!isValidToken) {
-            throw { status: 401, message: 'Token expired or not a valid token' };
-        }
-
-        const user = await findUserById(isValidToken.user_id);
-
-        if (!user) {
-            throw { status: 401, message: 'User not found' };
-        }
-
-        if (!user.isVerified) {
-            throw { status: 401, message: 'User is not verified!' };
-        }
-
-        // Return user information if authentication and verification are successful
-        return user;
-
-    } catch (error) {
-        // Pass error to the calling function
-        throw error.status ? error : { status: 500, message: 'An internal error occurred' };
-    }
-};
 
 exports.profileLoad = async (req, res) => {
     try {
-        const token = req.cookies['token'];
-
-        const user = await this.findUserByToken(token);
-
+        const user = await User.findOne({where:{
+            id: req.userID
+        }})
         const patientData = await Patient.findOne({where:
-            {user_id: user.id}
+            {user_id: req.userID}
         })
         if(!patientData){
             return res.status(404).json({message: 'Patient Datat not found'})
@@ -49,7 +16,6 @@ exports.profileLoad = async (req, res) => {
         return res.status(200).json({
             message: 'User authenticated successfully',
             data: {
-                name: user.username,
                 id: patientData.id,
                 email: user.email,
                 first_name: patientData.first_name,
