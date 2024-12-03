@@ -25,15 +25,15 @@ const Bookings = () => {
       } finally {
         setLoading(false);
       }
-    };
+    };   
 
     fetchBookingData();
   }, []);
 
-  const handleCheckout = async (reservationId,amount) => {
-    const response = await axios.get(`http://localhost:5000/bookings/${reservationId}/payment/${amount}`, { withCredentials: true });
-    setPaymentid(response.data.paymentId);
-    navigate(`/checkout/${paymentid}`);
+  const handleCheckout = async (reservationId) => {
+    const response = await axios.get(`http://localhost:5000/bookings/${reservationId}/payment`, { withCredentials: true });
+    console.log(response.data.paymentId)
+    navigate(`/checkouts/${response.data.paymentId}`);
   };
 
   const handleCancel = async (reservationId) => {
