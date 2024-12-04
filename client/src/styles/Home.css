@@ -24,6 +24,8 @@ span{
     font-size: 55px;
     font-weight: 400;
     font-family: 'Anton', sans-serif;
+    background-color: transparent;  /* Removes the white background */
+    border: none;  
     
 }
 .section1 h6{

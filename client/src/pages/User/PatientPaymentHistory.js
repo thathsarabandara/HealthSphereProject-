@@ -1,103 +1,192 @@
-import React ,{useEffect, useState }from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { styled } from '@mui/material/styles';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell, { tableCellClasses } from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import TextField from '@mui/material/TextField';
 import Loader from '../../components/common/Loader';
 
-function App() {
-  const [isLoading, setIsLoading] = useState(true);
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: '#112D4E',
+    color: theme.palette.common.white,
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+  },
+}));
 
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  '&:nth-of-type(odd)': {
+    backgroundColor: theme.palette.action.hover,
+  },
+  '&:last-child td, &:last-child th': {
+    border: 0,
+  },
+}));
+
+export default function CustomizedTable() {
+  const [data, setData] = useState([]); // State for table data
+  const [isLoading, setIsLoading] = useState(true); // Loading state
+  const [open, setOpen] = useState(false); // Dialog state
+  const [reason, setReason] = useState(''); // Refund reason
+  const [selectedRow, setSelectedRow] = useState(null); // Selected row
+
+  // Fetch data from API
   useEffect(() => {
-    const loadingTimeout = setTimeout(() => setIsLoading(false), 3000);
-    return () => clearTimeout(loadingTimeout);
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/userpayments', {withCredentials: true}); // Replace with your API endpoint
+        setData(response.data);
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        setIsLoading(false);
+      }
+    };
+    fetchData();
   }, []);
+
+  const handleOpen = (row) => {
+    setSelectedRow(row);
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setReason('');
+  };
+
+  const handleSend = async () => {
+    if (!reason.trim()) {
+      alert('Reason cannot be empty!');
+      return;
+    }
+
+    try {
+      const response = await axios.post('http://localhost:5000/refund/request', {
+        paymentID: selectedRow.paymentID,
+        reservationID: selectedRow.reservationID,
+        reason,
+      },{withCredentials: true});
+      console.log('Refund request sent successfully:', response.data);
+      setOpen(false);
+      setReason('');
+    } catch (error) {
+      console.error('Error sending refund request:', error);
+    }
+  };
 
   if (isLoading) {
     return (
-      <div style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100vw',
-        height: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#f0f4f8',
-        zIndex: 9999
-      }}>
+      <div
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#f0f4f8',
+          zIndex: 9999,
+        }}
+      >
         <Loader />
       </div>
     );
-  };
-  const data = [
-    { patientId: 'P001', firstName: 'John', phoneNumber: '123654789', date: '2022.09.19', time: '18:00:00', receiptId: 'R001', description: 'Doctor Reservations' },
-    { patientId: 'P002', firstName: 'Jane', phoneNumber: '987654321', date: '2022.09.20', time: '19:00:00', receiptId: 'R002', description: 'Dental Checkup' },
-    { patientId: 'P001', firstName: 'John', phoneNumber: '123654789', date: '2022.09.19', time: '18:00:00', receiptId: 'R001', description: 'Doctor Reservations' },
-    { patientId: 'P002', firstName: 'Jane', phoneNumber: '987654321', date: '2022.09.20', time: '19:00:00', receiptId: 'R002', description: 'Dental Checkup' },
-  ];
+  }
 
   return (
-    <div className='container'>
-      <div className="table-responsive" style={{ margin: '50px', fontFamily: 'Arial, sans-serif' }}>
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
-            <thead>
-              <tr style={{ background: '#112D4E', color: 'white' }}>
-                <th style={{ padding: '10px', textAlign: 'left', width: '12%' }}>Patient ID</th>
-                <th style={{ padding: '10px', textAlign: 'left', width: '12%' }}>First Name</th>
-                <th style={{ padding: '10px', textAlign: 'left', width: '15%' }}>Phone Number</th>
-                <th style={{ padding: '10px', textAlign: 'left', width: '12%' }}>Date</th>
-                <th style={{ padding: '10px', textAlign: 'left', width: '12%' }}>Time</th>
-                <th style={{ padding: '10px', textAlign: 'left', width: '12%' }}>Receipt ID</th>
-                <th style={{ padding: '10px', textAlign: 'left', width: '20%' }}>Receipt Description</th>
-                <th style={{ padding: '10px', textAlign: 'left', width: '15%' }}>Payment Receipt</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.map((row, index) => (
-                <tr
-                  key={index}
-                  style={{
-                    background: index % 2 === 0 ? '#ECE6E6' : '#f4f4f4',
-                    boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
-                    borderRadius: '8px',
-                    marginBottom: '15px',
-                  }}
-                >
-                  <td style={{ padding: '10px', borderTopLeftRadius: 8, borderBottomLeftRadius: 8 }}>{row.patientId}</td>
-                  <td style={{ padding: '10px' }}>{row.firstName}</td>
-                  <td style={{ padding: '10px' }}>{row.phoneNumber}</td>
-                  <td style={{ padding: '10px' }}>{row.date}</td>
-                  <td style={{ padding: '10px' }}>{row.time}</td>
-                  <td style={{ padding: '10px' }}>{row.receiptId}</td>
-                  <td style={{ padding: '10px' }}>{row.description}</td>
-                  <td style={{ padding: '10px', borderTopRightRadius: 8, borderBottomRightRadius: 8 }}>
+    <div className="container mt-5 mb-5">
+      <TableContainer component={Paper}>
+        <Table sx={{ minWidth: 700 }} aria-label="customized table">
+          <TableHead>
+            <TableRow>
+              <StyledTableCell>Payment Id</StyledTableCell>
+              <StyledTableCell>Amount </StyledTableCell>
+              <StyledTableCell>Date</StyledTableCell>
+              <StyledTableCell>Time</StyledTableCell>
+              <StyledTableCell>Reservation Id</StyledTableCell>
+              <StyledTableCell>Doctor Name</StyledTableCell>
+              <StyledTableCell>Payment Descriptions</StyledTableCell>
+              <StyledTableCell>Refund</StyledTableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {data.map((row, index) => (
+              <StyledTableRow key={index}>
+                <StyledTableCell>{row.paymentID}</StyledTableCell>
+                <StyledTableCell>{row.amount}</StyledTableCell>
+                <StyledTableCell>{row.datetime.split('T')[0]}</StyledTableCell>
+                <StyledTableCell>{row.datetime.split('T')[1].split('.000Z')[0]}</StyledTableCell>
+                <StyledTableCell>{row.reservationID}</StyledTableCell>
+                <StyledTableCell>{row.doctorName}</StyledTableCell>
+                <StyledTableCell>Doctor Payment</StyledTableCell>
+                <StyledTableCell>
+                  {row.isEligibleForRefund ?(
                     <button
-                      style={{
-                        display: 'inline-block',
-                        outline: 'none',
-                        cursor: 'pointer',
-                        fontWeight: 500,
-                        border: '1px solid transparent',
-                        borderRadius: '5px',
-                        height: '36px',
-                        lineHeight: '34px',
-                        fontSize: '14px',
-                        color: '#ffffff',
-                        backgroundColor: '#2A5D9C',
-                        transition: 'background-color 0.2s ease-in-out, opacity 0.2s ease-in-out',
-                        padding: '0 18px',
-                      }}
-                    >
-                      View
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+                    onClick={() => handleOpen(row)}
+                    style={{
+                      backgroundColor: '#27AE60',
+                      color: 'white',
+                      fontWeight: 500,
+                      border: 'none',
+                      borderRadius: '14px',
+                      padding: '6px 16px',
+                      cursor: 'pointer',
+                    }}
+                  >
+                      Request
+                  </button>
+                  ):(
+                    <p>Not Eligible for Refund</p>
+                  )}
+                  
+                </StyledTableCell>
+              </StyledTableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+
+      {/* Refund Request Dialog */}
+      <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
+        <DialogTitle style={{ fontWeight: 'bold', fontSize: '24px' }}>Refund Request</DialogTitle>
+        <DialogContent style={{ padding: '20px 30px' }}>
+          <TextField
+            label="Reason:"
+            multiline
+            rows={6}
+            variant="outlined"
+            fullWidth
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            style={{ marginTop: '20px', fontSize: '16px' }}
+          />
+        </DialogContent>
+        <DialogActions style={{ padding: '10px 30px' }}>
+          <button
+            className="btn2 btn-outline text-white"
+            style={{ textDecoration: 'none', color: 'inherit' }}
+            onClick={handleSend}
+          >
+            Send
+          </button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }
-
-export default App;

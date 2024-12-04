@@ -5,6 +5,7 @@ const registerController =  require('../controllers/Patients/registerController'
 const cartController =  require('../controllers/Patients/cartController');
 const homeController =  require('../controllers/Patients/homeController');
 const paymentController =  require('../controllers/Patients/paymentController');
+const refundController =  require('../controllers/Patients/refundController');
 const prescriptionController =  require('../controllers/Patients/prescriptionController');
 const profileController =  require('../controllers/Patients/profileController');
 const searchController =  require('../controllers/Patients/searchController');
@@ -51,7 +52,7 @@ router.post('/heartRates',patientAuthMiddleware, conditionsController.createHear
 router.put('/heartRates',patientAuthMiddleware, conditionsController.deleteHeartRate);
  
 router.get('/userprofile', patientAuthMiddleware,profileController.profileLoad);
-router.put('/userprofile/:id',[profilePictureUpload,patientAuthMiddleware],profileController.saveProfile);
+router.put('/userprofile/:id',[profilePictureUpload],profileController.saveProfile);
 router.get('/userprescription',patientAuthMiddleware,prescriptionController.loadPrescriptionDetails);
 router.get('/userpayments',patientAuthMiddleware, paymentController.loadPayment);
 router.get('/cart',patientAuthMiddleware, cartController.loadCart);
@@ -60,8 +61,8 @@ router.post('/checkout/amount/:amount',patientAuthMiddleware,paymentController.m
 router.get('/checkout/:id',patientAuthMiddleware,paymentController.loadCheckout);
 router.post('/checkout/pay/:id',[bankReciptUpload , patientAuthMiddleware],paymentController.makePayment);
 router.post('/checkouts/pay/:id',[bankReciptUpload , patientAuthMiddleware],paymentController.makePayments);
-router.get('/refund',patientAuthMiddleware,paymentController.loadRefund);
-router.get('/refund/request',patientAuthMiddleware);
+router.get('/refund',patientAuthMiddleware,refundController.loadRefunds);
+router.post('/refund/request',patientAuthMiddleware, refundController.makeRefunds);
 router.post('/resetpassword',loginController.resetPassword);
 router.get('/resetpassword/validate',loginController.validateToken);
 router.post('/resetpasswordRequest', loginController.resetPasswordRequest);

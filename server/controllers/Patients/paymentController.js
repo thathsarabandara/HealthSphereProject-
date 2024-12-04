@@ -1,4 +1,5 @@
 const { Cart } = require("../../models/ecommerce/Cart");
+const { Doctor } = require("../../models/healthcare/Doctor");
 const { Reservation } = require("../../models/healthcare/Reservation");
 const { Schedule } = require("../../models/healthcare/Schedule");
 const { BankReceipt } = require("../../models/transactions/BankReciept");
@@ -297,10 +298,84 @@ exports.makePayments = async (req, res) => {
 
 
 
-exports.loadPayment = (req, res) =>{
+exports.loadPayment = async (req, res) => {
+    try {
+      // Fetch all payments for the patient
+      const payments = await Payment.findAll({
+        where: {
+          patient_id: req.patientID,
+          payment_status: 'completed',
+        },
+      });
+  
+      if (!payments.length) {
+        return res.status(404).json({ message: 'No payments found for the patient.' });
+      }
+  
+      // Use Promise.all to fetch related data for all payments concurrently
+      const paymentDetails = await Promise.all(
+        payments.map(async (payment) => {
+          const reservationPayment = await ReservationPayment.findOne({
+            where: {
+              payment_id: payment.id,
+            },
+          });
+  
+          if (!reservationPayment) {
+            return null;
+          }
+  
+          const reservation = await Reservation.findOne({
+            where: {
+              id: reservationPayment.reservation_id,
+            },
+          });
+  
+          if (!reservation) {
+            return null;
+          }
+  
+          const schedule = await Schedule.findOne({
+            where: {
+              id: reservation.schedule_id,
+            },
+          });
+  
+          if (!schedule) {
+            return null;
+          }
+  
+          const doctor = await Doctor.findOne({
+            where: {
+              id: schedule.doctor_id,
+            },
+          });
+          
+          if (!doctor) {
+            return null;
+          }
+  
+          // Calculate refund eligibility
+          const currentDate = new Date();
+          const scheduleDate = new Date(schedule.schedule_date); // Assuming `schedule.date` is a valid date field
+          const isEligibleForRefund = currentDate < scheduleDate;
+  
+          return {
+            paymentID: payment.id,
+            amount: payment.amount,
+            datetime: payment.payment_date, 
+            reservationID: reservation.id,
+            doctorName: `${doctor.first_name} ${doctor.last_name}`,
+            isEligibleForRefund,
+          };
+        })
+      );
+      const filteredPaymentDetails = paymentDetails.filter((details) => details !== null);      
+      return res.status(200).json(filteredPaymentDetails);
+    } catch (error) {
+      console.error('Error loading payments:', error);
+      return res.status(500).json({ message: 'An error occurred while loading payments.' });
+    }
+  };
+  
 
-}
-
-exports.loadRefund = (req, res) =>{
-     
-}
