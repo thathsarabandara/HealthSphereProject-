@@ -53,6 +53,7 @@ import DoctorPatientProfile from './pages/doctor/DoctorPatientProfile';
 import PrescriptionView from './pages/doctor/PrescriptionView';
 import PatientPrescriptionView from './pages/User/PatientPrescriptionView';
 import SuccessPopup from './components/common/success popup/SuccessPopup';
+import Checkout from './pages/User/Checkout';
 
 
 const getNavbarAndFooter = (path) => {
@@ -106,6 +107,7 @@ function App() {
         <Route path="/cart" element={<Cart/>} />
         <Route path="/bookings" element={<Bookings/>} />
         <Route path="/checkout/:id" element={<Payment/>} />
+        <Route path="/checkouts/:id" element={<Checkout/>} />
         <Route path="/refund" element={<Refund/>} />
 
         <Route path="/error/accessdenied" element={<DataAccesDenied/>} />

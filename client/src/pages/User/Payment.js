@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../../styles/user/Payment.css';
 import Loader from '../../components/common/Loader';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 function Payment() {
   const { id }= useParams();
   const [paymentMethod, setPaymentMethod] = useState('Online Payment');
   const [isLoading, setIsLoading] = useState(true);
   const [checkoutAmount, setCheckoutAmount] = useState(null);
+  const navigate = useNavigate();
 
   const [billingDetails, setBillingDetails] = useState({
     fullName: '',
@@ -93,7 +94,7 @@ function Payment() {
         });
 
       alert('Payment Successful!');
-      console.log(response.data);
+      navigate('/')
     } catch (error) {
       console.error('Error submitting payment:', error);
       alert('Payment failed. Please try again.');

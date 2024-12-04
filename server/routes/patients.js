@@ -19,7 +19,7 @@ const { bankReciptUpload } = require('../middleware/upload/banksReciptUpload');
 router.get('/' ,patientAuthMiddleware, homeController.authHome );
 router.post('/finddoctor', searchController.searchDoctors);
 router.get('/finddoctor/:specialization',searchController.loadDoctors);
-router.get('/bookings/:reservationId/payment/:amount', patientAuthMiddleware, paymentController.makePaymentId);
+router.get('/bookings/:reservationId/payment', patientAuthMiddleware, paymentController.makePaymentId);
 router.get('/reservation',patientAuthMiddleware,reservationController.loadUserData);
 router.get('/doctorprofile/:doctorid',patientAuthMiddleware,doctorProfileController.loadDoctorProfile);
 router.post('/doctorprofile/:doctorid/addreview',patientAuthMiddleware,reviewController.addReview);
@@ -49,7 +49,7 @@ router.put('/conditions',patientAuthMiddleware, conditionsController.deleteCondi
 router.get('/heartRates',patientAuthMiddleware, conditionsController.getHeartRates);
 router.post('/heartRates',patientAuthMiddleware, conditionsController.createHeartRate);
 router.put('/heartRates',patientAuthMiddleware, conditionsController.deleteHeartRate);
-
+ 
 router.get('/userprofile', patientAuthMiddleware,profileController.profileLoad);
 router.put('/userprofile/:id',[profilePictureUpload,patientAuthMiddleware],profileController.saveProfile);
 router.get('/userprescription',patientAuthMiddleware,prescriptionController.loadPrescriptionDetails);
@@ -59,6 +59,7 @@ router.put('/cart/:id',patientAuthMiddleware, cartController.deleteCartItem);
 router.post('/checkout/amount/:amount',patientAuthMiddleware,paymentController.makeCheckout);
 router.get('/checkout/:id',patientAuthMiddleware,paymentController.loadCheckout);
 router.post('/checkout/pay/:id',[bankReciptUpload , patientAuthMiddleware],paymentController.makePayment);
+router.post('/checkouts/pay/:id',[bankReciptUpload , patientAuthMiddleware],paymentController.makePayments);
 router.get('/refund',patientAuthMiddleware,paymentController.loadRefund);
 router.get('/refund/request',patientAuthMiddleware);
 router.post('/resetpassword',loginController.resetPassword);
