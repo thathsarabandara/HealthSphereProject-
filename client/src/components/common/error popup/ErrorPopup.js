@@ -2,7 +2,7 @@ import React from "react";
 import './ErrorPopup.css';
 
 const ErrorPopup = ({ 
-    show, 
+    show,  
     onClose, 
     title = "Error!", 
     message = "An error occurred.", 

@@ -7,7 +7,7 @@ const SuccessPopup = ({
     title = "Success!", 
     message = "Successfully Updated", 
     button = "Okay"
-}) => {
+}) => {  
     return (
         <div className={`modal fade ${show ? "show d-block" : ""}`} id="statusSuccessModal" tabindex="-1" role="dialog" data-bs-backdrop="static" data-bs-keyboard="false"> 
 			<div class="modal-dialog modal-dialog-centered modal-sm" role="document"> 

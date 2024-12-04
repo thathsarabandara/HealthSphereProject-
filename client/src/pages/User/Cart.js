@@ -2,12 +2,18 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Loader from '../../components/common/Loader';
 import { useNavigate } from 'react-router-dom';
+import ErrorPopup from '../../components/common/error popup/ErrorPopup';
+import SuccessPopup from '../../components/common/success popup/SuccessPopup';
 
 function Cart() {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [couponDiscount, setCouponDiscount] = useState(0); // Assuming coupon discount is Rs. 500.00
+  const [errorVisible, setErrorVisible] = useState(false);
+  const [successVisible, setSuccessVisible] = useState(false);
+  const handleErrorClose = () => setErrorVisible(false);
+  const handleSuccessClose = () => setSuccessVisible(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -58,8 +64,10 @@ function Cart() {
     try {
       await axios.post(`http://localhost:5000/cart/${id}`, {}, { withCredentials: true });
       setCartItems((prevItems) => prevItems.filter((item) => item.id !== id)); // Remove item from state
+      setSuccessVisible(true);
     } catch (error) {
       console.error('Failed to delete item:', error);
+      setErrorVisible(true)
     }
   };
 
@@ -81,6 +89,8 @@ function Cart() {
 
   return (
     <div style={{ backgroundColor: '#D8E8FA', minHeight: '100vh', padding: '20px' }}>
+      <ErrorPopup show={errorVisible} onClose={handleErrorClose} title="Something Went Wrong!" message="Item Removing failed" button='Okay' />
+      <SuccessPopup show={successVisible} onClose={handleSuccessClose} title="Updated SuccessFully " message="Item Removed " button='Okay' />
       <div className="container">
         <div className="row">
           {/* Cart Items Section */}

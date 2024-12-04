@@ -2,11 +2,11 @@ const { Prescription } = require("../../models/healthcare/Prescription");
 const { Reservation } = require("../../models/healthcare/Reservation");
 const { Schedule } = require("../../models/healthcare/Schedule");
 const { Doctor } = require("../../models/healthcare/Doctor");
+const { Patient } = require("../../models/healthcare/Patient");
 
 exports.loadPrescriptionDetails = async (req, res) => {
     try {
         // Fetch Prescriptions
-        console.log(req.patientID)
         const prescriptions = await Prescription.findAll({
             where: { patient_id: req.patientID }, // Corrected property from `ID` to `id`.
             attributes: ['id', 'reservation_id', 'details', 'special_comments', 'prescription_photo', 'created_at']
@@ -58,3 +58,47 @@ exports.loadPrescriptionDetails = async (req, res) => {
         res.status(500).json({ message: 'Server error', error: error.message }); // Corrected `error.msg` to `error.message`.
     }
 };
+
+exports.loadPrescription = async (req, res) => {
+    const { reservationid } = req.params;
+    try {
+      // Retrieve the prescription based on the reservation ID and patient ID
+      const prescription = await Prescription.findOne({
+        where: {
+          reservation_id: reservationid,
+          patient_id: req.patientID,
+        },
+      });
+  
+      // If prescription doesn't exist, return an error
+      if (!prescription) {
+        return res.status(404).json({ message: 'Prescription not found' });
+      }
+  
+      // Retrieve the patient based on the patient ID
+      const patient = await Patient.findOne({
+        where: {
+          id: req.patientID,
+        },
+      });
+  
+      // If patient doesn't exist, return an error
+      if (!patient) {
+        return res.status(404).json({ message: 'Patient not found' });
+      }
+  
+      // Respond with the prescription details
+      return res.status(200).json({
+        patient_name: patient.first_name + ' ' + patient.last_name,
+        date_issued: prescription.created_at,
+        details: prescription.details,
+        special_comments: prescription.special_comments,
+        prescription_photo: prescription.prescription_photo,
+      });
+    } catch (error) {
+      // Return a server error if there's an issue
+      console.error('Error loading prescription:', error);
+      return res.status(500).json({ message: 'Server error' });
+    }
+  };
+  

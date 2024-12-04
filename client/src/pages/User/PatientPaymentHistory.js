@@ -14,6 +14,8 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import TextField from '@mui/material/TextField';
 import Loader from '../../components/common/Loader';
+import ErrorPopup from '../../components/common/error popup/ErrorPopup';
+import SuccessPopup from '../../components/common/success popup/SuccessPopup';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -42,6 +44,10 @@ export default function CustomizedTable() {
   const [open, setOpen] = useState(false); // Dialog state
   const [reason, setReason] = useState(''); // Refund reason
   const [selectedRow, setSelectedRow] = useState(null); // Selected row
+  const [errorVisible, setErrorVisible] = useState(false);
+  const [successVisible, setSuccessVisible] = useState(false);
+  const handleErrorClose = () => setErrorVisible(false);
+  const handleSuccessClose = () => setSuccessVisible(false);
 
   // Fetch data from API
   useEffect(() => {
@@ -83,8 +89,10 @@ export default function CustomizedTable() {
       console.log('Refund request sent successfully:', response.data);
       setOpen(false);
       setReason('');
+      setSuccessVisible(true)
     } catch (error) {
       console.error('Error sending refund request:', error);
+      setErrorVisible(true);
     }
   };
 
@@ -111,6 +119,8 @@ export default function CustomizedTable() {
 
   return (
     <div className="container mt-5 mb-5">
+      <ErrorPopup show={errorVisible} onClose={handleErrorClose} title="Something Went Wrong!" message="Refund Request Failed!" button='Okay' />
+      <SuccessPopup show={successVisible} onClose={handleSuccessClose} title="Updated Success Fully " message="Refund Request Sent Successfully!" button='Okay' />
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 700 }} aria-label="customized table">
           <TableHead>

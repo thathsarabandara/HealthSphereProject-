@@ -54,6 +54,7 @@ router.put('/heartRates',patientAuthMiddleware, conditionsController.deleteHeart
 router.get('/userprofile', patientAuthMiddleware,profileController.profileLoad);
 router.put('/userprofile/:id',[profilePictureUpload],profileController.saveProfile);
 router.get('/userprescription',patientAuthMiddleware,prescriptionController.loadPrescriptionDetails);
+router.get('/prescription/:reservationid',patientAuthMiddleware,prescriptionController.loadPrescription);
 router.get('/userpayments',patientAuthMiddleware, paymentController.loadPayment);
 router.get('/cart',patientAuthMiddleware, cartController.loadCart);
 router.put('/cart/:id',patientAuthMiddleware, cartController.deleteCartItem);

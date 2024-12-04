@@ -70,7 +70,6 @@ exports.loadRefunds = async (req, res) => {
 
 exports.makeRefunds = async (req, res) => {
     try {
-      console.log('hi')
       // Destructure paymentID and reason from the request body
       const { paymentID, reason } = req.body;
   
