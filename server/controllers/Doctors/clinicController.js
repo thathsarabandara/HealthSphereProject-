@@ -8,33 +8,9 @@ const { Prescription } = require("../../models/healthcare/Prescription");
 
 exports.loadClinics = async (req, res) => {
     try {
-      const token = req.cookies['doctoken'];
-  
-      // Validate the token
-      const validToken = await Token.findOne({
-        where: {
-          token,
-        //   expires_at: {
-        //     [Op.gt]: Date.now(), // Check if the token expiration time is greater than the current time
-        //   },
-        },
-      });
-
-      if (!validToken) {
-        return res.status(401).json({ message: 'Invalid or expired token' });
-      }
-  
-      // Fetch the doctor associated with the token
-      const doctor = await Doctor.findOne({
-        where: {
-          user_id: validToken.user_id,
-        },
-      });
-
-      if (!doctor) {
-        return res.status(404).json({ message: 'Doctor not found' });
-      }
-  
+      const doctor = await Doctor.findOne({where:{
+        id: req.doctorID
+      }})
       // Fetch schedules for the doctor for today's date
       const schedules = await Schedule.findAll({
         where: {
@@ -58,10 +34,10 @@ exports.loadClinics = async (req, res) => {
       });
 
       // Fetch the patients associated with the reservations
-      const userIds = reservations.map((reservation) => reservation.user_id);
+      const userIds = reservations.map((reservation) => reservation.patient_id);
       const patients = await Patient.findAll({
         where: {
-          user_id: {
+          id: {
             [Op.in]: userIds,
           },
         },
@@ -69,8 +45,8 @@ exports.loadClinics = async (req, res) => {
 
       // Create an object to group patients by reservation
       const patientMap = patients.reduce((map, patient) => {
-        map[patient.User_id] = patient;
-        return map;S
+        map[patient.id] = patient;
+        return map;
       }, {});
 
       // Attach patients to reservations and create the structure we want to return
@@ -86,7 +62,7 @@ exports.loadClinics = async (req, res) => {
         // Create a list of patients for the schedule
         const patientDetails = scheduleReservations.map((reservation) => {
 
-          const patient = patientMap[reservation.user_id];
+          const patient = patientMap[reservation.patient_id];
           
           return {
             id: reservation.id,
@@ -115,26 +91,10 @@ exports.loadClinics = async (req, res) => {
   
   exports.loadPastClinics = async (req, res) =>{
     try {
-        const token = req.cookies['doctoken'];
-    
-        // Validate the token
-        const validToken = await Token.findOne({
-          where: {
-            token,
-          //   expires_at: {
-          //     [Op.gt]: Date.now(), // Check if the token expiration time is greater than the current time
-          //   },
-          },
-        });
-  
-        if (!validToken) {
-          return res.status(401).json({ message: 'Invalid or expired token' });
-        }
-    
         // Fetch the doctor associated with the token
         const doctor = await Doctor.findOne({
           where: {
-            user_id: validToken.user_id,
+            user_id: req.userID,
           },
         });
   
@@ -165,10 +125,10 @@ exports.loadClinics = async (req, res) => {
         });
   
         // Fetch the patients associated with the reservations
-        const userIds = reservations.map((reservation) => reservation.user_id);
+        const userIds = reservations.map((reservation) => reservation.patient_id);
         const patients = await Patient.findAll({
           where: {
-            user_id: {
+            id: {
               [Op.in]: userIds,
             },
           },
@@ -176,7 +136,7 @@ exports.loadClinics = async (req, res) => {
   
         // Create an object to group patients by reservation
         const patientMap = patients.reduce((map, patient) => {
-          map[patient.User_id] = patient;
+          map[patient.id] = patient;
           return map;
         }, {});
   
@@ -193,7 +153,7 @@ exports.loadClinics = async (req, res) => {
           // Create a list of patients for the schedule
           const patientDetails = scheduleReservations.map((reservation) => {
   
-            const patient = patientMap[reservation.user_id];
+            const patient = patientMap[reservation.patient_id];
             
             return {
               id: reservation.id,

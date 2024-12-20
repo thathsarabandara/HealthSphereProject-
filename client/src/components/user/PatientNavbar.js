@@ -144,6 +144,7 @@ function PatientNavbar() {
                       <Link to='/medicalcondions' className='dropdown-item'>Conditions</Link>
                       <Link to='/prescriptionhistory' className='dropdown-item'>Prescriptions</Link>
                       <Link to='/paymenthistory' className='dropdown-item'>Payments</Link>
+                      <Link to='/refund' className='dropdown-item'>Refund</Link>
                       <Link to="#" className='dropdown-item' onClick={handleLogout}>Logout</Link>
                     </div>
                   )}

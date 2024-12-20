@@ -13,11 +13,11 @@ const clinicController =  require('../controllers/Doctors/clinicController');
 
 
 router.get('/', homeController.authHome);
-router.get('/schedule',scheduleController.loadSchedules);
-router.post('/schedule',scheduleController.saveSchedules);
-router.get('/patientprofile/:id',patientProfileController.loadPatientProfile);
+router.get('/schedule',doctorAuthMiddleware, scheduleController.loadSchedules);
+router.post('/schedule',doctorAuthMiddleware ,scheduleController.saveSchedules);
+router.get('/patientprofile/:id',doctorAuthMiddleware ,patientProfileController.loadPatientProfile);
 router.get('/videoconsultation',doctorAuthMiddleware);
-router.get('/clinic', clinicController.loadClinics);
+router.get('/clinic',doctorAuthMiddleware, clinicController.loadClinics);
 router.get('/pastclinic',doctorAuthMiddleware, clinicController.loadPastClinics);
 router.get('/prescription/:reservationid/:patientid',doctorAuthMiddleware, clinicController.loadPrescription);
 router.post('/clinic/:reservationid/prescription/:patientid',[prescriptionUpload,doctorAuthMiddleware], clinicController.savePrescription);
@@ -25,11 +25,11 @@ router.post('/resetpassword',doctorAuthMiddleware,loginController.resetPassword)
 router.get('/resetpassword/validate',doctorAuthMiddleware,loginController.validateToken);
 router.post('/resetpasswordRequest',doctorAuthMiddleware, loginController.resetPasswordRequest);
 router.post('/logout',doctorAuthMiddleware, loginController.logout);
-router.post('/login',doctorAuthMiddleware,loginController.login);
-router.post('/register',doctorAuthMiddleware,registerController.register);
-router.post('/verifyuser',doctorAuthMiddleware,registerController.verifyUser);
-router.get('/resendotp',doctorAuthMiddleware, registerController.resendOTP);
-router.post('/fullregister/:id',[ doctorFileHandleMiddleware, doctorAuthMiddleware],registerController.saveProfileDetails);
+router.post('/login',loginController.login);
+router.post('/register',registerController.register);
+router.post('/verifyuser',registerController.verifyUser);
+router.get('/resendotp', registerController.resendOTP);
+router.post('/fullregister/:id',[ doctorFileHandleMiddleware, ],registerController.saveProfileDetails);
 
 
 module.exports = router;

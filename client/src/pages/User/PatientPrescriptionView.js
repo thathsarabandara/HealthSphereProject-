@@ -12,7 +12,7 @@ function PatientPrescriptionView() {
   useEffect(() => {
     const fetchPrescription = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/doctor/prescription/${reservationid}/${patientid}`, { withCredentials: true });
+        const response = await axios.get(`http://localhost:5000/prescription/${reservationid}`, { withCredentials: true });
         if (response.data) {
           setPrescription(response.data);
           console.log(reservationid);
@@ -24,7 +24,7 @@ function PatientPrescriptionView() {
         setError('Error fetching prescription. Please try again.');
         console.error('Error fetching prescription:', error);
       } finally {
-        setIsLoading(false);
+        setIsLoading(false); 
       }
     };
 

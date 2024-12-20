@@ -50,7 +50,7 @@ exports.loadDoctorProfile = async (req, res) => {
                   comment: review.comment,
                   createdAt: review.created_at,
                   userid: user?.id || null,
-                  patientName: user ? `${User.first_name} ${user.last_name}` : 'Unknown',
+                  patientName: user ? `${user.first_name} ${user.last_name}` : 'Unknown',
                   patientProfilePicture: user?.profilePictureLocation || null,
               };
           })

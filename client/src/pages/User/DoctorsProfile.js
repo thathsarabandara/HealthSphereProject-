@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import Loader from '../../components/common/Loader';
+import ErrorPopup from '../../components/common/error popup/ErrorPopup';
+import SuccessPopup from '../../components/common/success popup/SuccessPopup';
 
 function DoctorsProfile() {
   const { id } = useParams(); // Get doctor ID from params
@@ -14,6 +16,10 @@ function DoctorsProfile() {
   });
   const [reviewError, setReviewError] = useState(null);
   const [reviewSuccess, setReviewSuccess] = useState(null);
+  const [errorVisible, setErrorVisible] = useState(false);
+  const [successVisible, setSuccessVisible] = useState(false);
+  const handleErrorClose = () => setErrorVisible(false);
+  const handleSuccessClose = () => setSuccessVisible(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -42,14 +48,14 @@ function DoctorsProfile() {
         newReview,
         { withCredentials: true }
       );
-      setReviewSuccess('Review added successfully!');
+      setSuccessVisible(true)
       setNewReview({ rating: 0, comment: '' }); // Reset the form
       setData((prevData) => ({
         ...prevData,
         reviews: [...prevData.reviews, response.data], // Update reviews dynamically
       }));
     } catch (err) {
-      setReviewError('Failed to add review. Please try again later.');
+      setErrorVisible(true)
     }
   };
 
@@ -106,6 +112,8 @@ function DoctorsProfile() {
 
   return (
     <div className='container mt-5 mb-5'>
+      <ErrorPopup show={errorVisible} onClose={handleErrorClose} title="Something Went Wrong!" message="Failed to add review. Please try again later." button='Okay' />
+      <SuccessPopup show={successVisible} onClose={handleSuccessClose} title="Updated Success Fully " message="Review added successfully!" button='Okay' />
       <div className="row">
       {/* Profile Section */}
       <div className="col-lg-3 col-md-12 mb-4">
