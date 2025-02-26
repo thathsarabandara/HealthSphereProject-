@@ -67,6 +67,7 @@ function PatientHome() {
   const [conditions, setConditions] = useState([]);
   const [medicalOffer, setOffers] = useState([]);
   const navigate = useNavigate();
+  
 
   useEffect(() => {
     const loadingTimeout = setTimeout(() => setIsLoading(false), 3000);

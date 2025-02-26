@@ -71,8 +71,8 @@ function AdminPanel() {
             { to: '/admin/doctorsandstaffManagement', label: 'Doctors and Staff Management', icon: <FaUserMd /> },
             { to: '/admin/appointmentmanagement', label: 'Appointment Management', icon: <FaClipboardList /> },
             { to: '/admin/patientmanagement', label: 'Patient Management', icon: <FaUsers /> },
-            { to: '/admin/billingmanagement', label: 'Billing & Financial Management', icon: <FaFileInvoiceDollar /> },
-            { to: '/admin/inventorymanagement', label: 'Inventory & Resources Management', icon: <FaWarehouse /> },
+            { to: '/admin/billingandfinancial', label: 'Billing & Financial Management', icon: <FaFileInvoiceDollar /> },
+            { to: '/admin/inventoryandresource', label: 'Inventory & Resources Management', icon: <FaWarehouse /> },
             { to: '/admin/icu', label: 'Intensive Care Unit', icon: <FaProcedures /> },
           ].map((item, index) => (
             <li key={index}>
