@@ -223,25 +223,6 @@ function AdminDashboard() {
               </div>
             </div>
 
-            {/* Revenue Section */}
-            <div
-              style={{
-                backgroundColor: "#FFFFFF",
-                borderRadius: "10px",
-                padding: "20px",
-                boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-                marginBottom: "20px",
-              }}
-            >
-              <h5>Revenue</h5>
-              <ul style={{ listStyleType: "none", padding: 0 }}>
-                <li>OPD: $5000</li>
-                <li>Canceling: $1000</li>
-                <li>Surgery: $20000</li>
-                <li>X-ray/MRI: $7000</li>
-                <li>Total: $33000</li>
-              </ul>
-            </div>
           </div>
         </div>
 
@@ -268,7 +249,7 @@ function AdminDashboard() {
                 events={events}
                 startAccessor="start"
                 endAccessor="end"
-                style={{ height: 400 }}
+                style={{ height: 250 }}
                 views={{ month: true }}
                 components={{
                   toolbar: () => null,
@@ -298,9 +279,7 @@ function AdminDashboard() {
                     padding: "10px 20px",
                     backgroundColor: "#7B61FF",
                     color: "white",
-                    border: "none",
-                    borderRadius: "5px",
-                    cursor: "pointer",
+                    border: "none", borderRadius: "5px",cursor: "pointer",
                   }}
                 >
                   Add New
@@ -358,19 +337,7 @@ function AdminDashboard() {
                   }}
                   placeholder="Type a message..."
                 />
-                <button
-                  onClick={handleSendMessage}
-                  style={{
-                    backgroundColor: "#7B61FF",
-                    color: "white",
-                    padding: "10px 20px",
-                    border: "none",
-                    borderRadius: "5px",
-                    marginLeft: "10px",
-                  }}
-                >
-                  Send
-                </button>
+                <button onClick={handleSendMessage} style={{backgroundColor: "#7B61FF",color: "white",padding: "10px 20px",border: "none",borderRadius: "5px",marginLeft: "10px",}}> Send</button>
               </div>
             </div>
           </div>

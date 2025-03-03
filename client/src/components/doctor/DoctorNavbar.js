@@ -11,6 +11,7 @@ function DoctorNavbar() {
   const [user, setUser] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const [loading, setLoading] = useState(true);
+  
 
   // Fetch user authentication status and profile data from the backend
   const fetchUserData = async () => {

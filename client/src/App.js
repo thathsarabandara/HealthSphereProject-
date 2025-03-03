@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import PatientNavbar from './components/user/PatientNavbar';
 import DoctorNavbar from './components/doctor/DoctorNavbar';
-import AdminNavbar from './components/admin/AdminPanel'; 
+//import AdminNavbar from './components/admin/AdminPanel'; 
 import PatientHome from './pages/User/PatientHome';
 import PatientDoctors from './pages/User/PatientDoctors';
 import PatientLaboratory from './pages/User/PatientLaboratory';
@@ -51,9 +51,9 @@ import MedicalConditions from './pages/User/MedicalConditions';
 import Bookings from './pages/User/Bookings';
 import DoctorPatientProfile from './pages/doctor/DoctorPatientProfile';
 import DoctorDashboard from './pages/doctor/DoctorDashboard';
-import AdminDashboard from './pages/admin/AdminDashboard';
-import DoctorAndStaffManagement from './pages/admin/DoctorsAndStaffManagement';
-import AppointmentManagement from './pages/admin/AppointmentManagement';
+//import AdminDashboard from './pages/admin/AdminDashboard';
+//import DoctorAndStaffManagement from './pages/admin/DoctorsAndStaffManagement';
+//import AppointmentManagement from './pages/admin/AppointmentManagement';
 import AdminPanel from './components/admin/AdminPanel';
 
 
