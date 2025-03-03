@@ -1,13 +1,12 @@
-import React,{ useState, useEffect } from "react";
-import { Button, Table, Container, Row, Col } from "react-bootstrap";
+import React, { useState, useEffect } from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from "recharts";
 
 const refundRequests = [
-  { id: "D001", name: "Nathasha", receipt: "Receipt", amount: "Rs. 2000.00", date: "2024/10/04", time: "11:00 P.M." },
-  { id: "D001", name: "Nathasha", receipt: "Receipt", amount: "Rs. 2000.00", date: "2024/10/04", time: "11:00 P.M." },
-  { id: "D001", name: "Nathasha", receipt: "Receipt", amount: "Rs. 2000.00", date: "2024/10/04", time: "11:00 P.M." },
-  { id: "D001", name: "Nathasha", receipt: "Receipt", amount: "Rs. 2000.00", date: "2024/10/04", time: "11:00 P.M." },
-  { id: "D001", name: "Nathasha", receipt: "Receipt", amount: "Rs. 2000.00", date: "2024/10/04", time: "11:00 P.M." },
+  { id: "D001", name: "Nathasha", receipt: "RC001", amount: "Rs. 2000.00", date: "2024/10/04", time: "11:00 P.M." },
+  { id: "D002", name: "Alex", receipt: "RC002", amount: "Rs. 1500.00", date: "2024/10/05", time: "02:30 P.M." },
+  { id: "D003", name: "Sophia", receipt: "RC003", amount: "Rs. 2500.00", date: "2024/10/06", time: "09:15 A.M." },
+  { id: "D004", name: "John", receipt: "RC004", amount: "Rs. 1800.00", date: "2024/10/07", time: "05:45 P.M." },
 ];
 
 const revenueData = [
@@ -20,69 +19,69 @@ const revenueData = [
 ];
 
 function BillingAndFinancialManagement() {
-
-
   const [dateTime, setDateTime] = useState(new Date().toLocaleString());
-  
-    useEffect(() => {
-      const interval = setInterval(() => {
-        setDateTime(new Date().toLocaleString());
-      }, 1000); // Update every second
-  
-      return () => clearInterval(interval); // Cleanup on component unmount
-    }, []);
+  const [showModal, setShowModal] = useState(false);
+  const [rejectReason, setRejectReason] = useState("");
+  const [selectedRequest, setSelectedRequest] = useState(null);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setDateTime(new Date().toLocaleString());
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
-    const headerStyle = {
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: '20px',
-    };
-  
+  const handleRejectClick = (request) => {
+    setSelectedRequest(request);
+    setShowModal(true);
+  };
 
+  const handleSendReason = () => {
+    if (!rejectReason.trim()) {
+      alert("Please enter a reason!");
+      return;
+    }
+    alert(`Rejection reason sent for ${selectedRequest.name}: ${rejectReason}`);
+    setShowModal(false);
+    setRejectReason("");
+  };
 
   return (
-
-   
-
-    <Container fluid className="p-3" style={{ backgroundColor: "#f8f9fa" }}>
-      {/* Date and Time Button */}
-      
-      <div style={headerStyle}>
-        <h4>Billing & financial management</h4>
-        <p style={{backgroundColor: "#bacae7", borderRadius: "10px", textAlign: "center", padding: "5px"}}> {dateTime}</p>
+    <div className="container-fluid p-3" style={{ backgroundColor: "#f8f9fa", minHeight: "100vh" }}>
+      {/* Header */}
+      <div className="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
+        <h4 className="text-primary fw-bold">Billing & Financial Management</h4>
+        <p className="bg-light p-2 rounded border text-center">{dateTime}</p>
       </div>
-      
 
-      {/* Revenue Graph */}
-      <Row className="mb-4">
-        <Col>
-          <div className="border p-3 bg-white shadow-sm">
-            <h5 className="text-center">Revenue</h5>
+      {/* Revenue Chart */}
+      <div className="row mb-4">
+        <div className="col-12 col-md-8 mx-auto">
+          <div className="border p-3 bg-white shadow rounded">
+            <h5 className="text-center text-secondary">Revenue Overview</h5>
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={revenueData}>
                 <XAxis dataKey="month" label={{ value: "Months", position: "insideBottom", offset: -5 }} />
                 <YAxis />
                 <Tooltip />
-                <Line type="monotone" dataKey="revenue" stroke="#000" strokeWidth={2} />
-                <ReferenceLine y={972} label="972" stroke="red" strokeDasharray="3 3" />
+                <Line type="monotone" dataKey="revenue" stroke="#007bff" strokeWidth={2} />
+                <ReferenceLine y={700} label="Target" stroke="red" strokeDasharray="3 3" />
               </LineChart>
             </ResponsiveContainer>
           </div>
-        </Col>
-      </Row>
+        </div>
+      </div>
 
-      {/* Refund Requests */}
-      <Row>
-        <Col>
-          <h5>Refund Requests</h5>
+      {/* Refund Requests Table */}
+      <div className="row">
+        <div className="col-12">
+          <h5 className="text-secondary">Refund Requests</h5>
           <div className="table-responsive">
-            <Table striped bordered hover className="text-center">
+            <table className="table table-striped table-bordered text-center shadow">
               <thead className="bg-primary text-white">
                 <tr>
-                  <th>Patient Id</th>
-                  <th>First Name</th>
+                  <th>Patient ID</th>
+                  <th>Name</th>
                   <th>Receipt No</th>
                   <th>Amount</th>
                   <th>Date</th>
@@ -100,24 +99,49 @@ function BillingAndFinancialManagement() {
                     <td>{req.date}</td>
                     <td>{req.time}</td>
                     <td>
-                      <Button variant="success" className="me-2">Accept</Button>
-                      <Button variant="danger">Reject</Button>
+                      <button className="btn btn-success me-2">Accept</button>
+                      <button className="btn btn-danger" onClick={() => handleRejectClick(req)}>Reject</button>
                     </td>
                   </tr>
                 ))}
               </tbody>
-            </Table>
+            </table>
           </div>
-        </Col>
-      </Row>
-    </Container>
+        </div>
+      </div>
+
+      {/* Reject Modal */}
+      {showModal && (
+        <div className="modal fade show d-block" tabIndex="-1" role="dialog">
+          <div className="modal-dialog modal-dialog-centered" role="document">
+            <div className="modal-content">
+              <div className="modal-header bg-danger text-white">
+                <h5 className="modal-title">Reject Request</h5>
+                <button type="button" className="btn-close" onClick={() => setShowModal(false)}></button>
+              </div>
+              <div className="modal-body">
+                <p>Provide a reason for rejecting the request from <strong>{selectedRequest?.name}</strong>:</p>
+                <textarea
+                  className="form-control"
+                  rows="3"
+                  placeholder="Enter reason..."
+                  value={rejectReason}
+                  onChange={(e) => setRejectReason(e.target.value)}
+                />
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
+                <button type="button" className="btn btn-danger" onClick={handleSendReason}>Send</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Backdrop */}
+      {showModal && <div className="modal-backdrop fade show"></div>}
+    </div>
   );
-};
+}
 
 export default BillingAndFinancialManagement;
-
-
-
-
-
-
