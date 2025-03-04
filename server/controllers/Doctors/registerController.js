@@ -153,14 +153,12 @@ exports.resendOTP = async (req,res) => {
 }
 
 exports.saveProfileDetails = async (req, res) => {
-    console.log('hi');
     try {
         const token = req.cookies['fullregister'];
         // Validate token existence
         if (!token) {
             return res.status(400).json({ error: 'Token is missing. Please log in again.' });
         }
-        console.log(token)
 
         // Verify token
         const isValidToken = await Token.findOne({
@@ -240,15 +238,15 @@ exports.saveProfileDetails = async (req, res) => {
             phone_number,
             address,
             medical_license_number,
-            specialization,
+            bio:profile_description,
+            specialization_id:specialization,
             years_of_experience,
-            hospital_clinic_affiliation,
-            medical_school_university,
-            profile_description,
+            hospital_clinic_affiliation:hospital_clinic_affiliation,
+            medical_school_university:medical_school_university,
+            national_id_passport: national_id_passport, 
+            medical_license_document: medical_license_document, 
+            profile_picture: profile_picture, 
             status:'pending',
-            national_id_passport: national_id_passport.path, // Must exist at this point
-            medical_license_document: medical_license_document.path, // Must exist at this point
-            professional_certifications: profile_picture.path, // Must exist at this point
         });
 
         // Return success response

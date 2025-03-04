@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Rectangle56 from '../../assets/images/Rectangle 56.svg'
 import Ellipse1 from '../../assets/images/Ellipse 1.svg'
 import '../../styles/Doctors.css'
 import axios from 'axios';
+import Loader from '../../components/common/Loader';
 
 function PatientDoctors() {
+  const [isLoading, setIsLoading] = useState(true);
   const [doctorData, setDoctorData] = useState([]);
   const [isCardViewVisible, setIsCardViewVisible] = useState(true);
   const [searchCriteria, setSearchCriteria] = useState({
@@ -13,6 +15,11 @@ function PatientDoctors() {
     sessionTime: '',
     date: ''
   });
+
+  useEffect(() => {
+    const loadingTimeout = setTimeout(() => setIsLoading(false), 3000);
+    return () => clearTimeout(loadingTimeout);
+  }, []);
 
   const specializationOptions = [
     { label: 'General Practitioner', value: '1' },
@@ -30,6 +37,7 @@ function PatientDoctors() {
   ];
 
   function handleSearchButton(event) {
+    setIsLoading(true)
     event.preventDefault();
 
     // Prepare the search criteria for the API call
@@ -46,6 +54,7 @@ function PatientDoctors() {
         if (response.data.length === 0) {
           // If no data is returned, show no results found
           setDoctorData([]);
+          setIsLoading(false)
         } else {
           setDoctorData(response.data);
         }
@@ -63,6 +72,25 @@ function PatientDoctors() {
       [name]: value
     });
   }
+
+  if (isLoading) {
+    return (
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#f0f4f8',
+        zIndex: 9999
+      }}>
+        <Loader />
+      </div>
+    );
+  };
 
   return (
     <div>

@@ -1,31 +1,35 @@
 const express = require('express');
 const router = express.Router();
-const authMiddleware = require('../middleware/auth/authenticateJWT');
-const { authorizeRole } = require('../middleware/auth/authorizeRole');
-const { rateLimiterMiddleware } = require('../middleware/rateLimit/rateLimiter');
+const { doctorAuthMiddleware } = require('../middleware/auth/authorizeDoctor');
 const { doctorFileHandleMiddleware } = require('../middleware/upload/doctorFileHandling');
+const { prescriptionUpload } = require('../middleware/upload/prescriptionUpload');
 const loginController =  require('../controllers/Doctors/loginController');
 const registerController =  require('../controllers/Doctors/registerController');
 const homeController =  require('../controllers/Doctors/homeController');
 const scheduleController =  require('../controllers/Doctors/scheduleController');
 const patientProfileController =  require('../controllers/Doctors/patientProfileController');
+const clinicController =  require('../controllers/Doctors/clinicController');
 
 
 
-router.get('/',rateLimiterMiddleware, homeController.authHome);
-router.get('/aboutus',rateLimiterMiddleware,);
-router.get('/schedule',scheduleController.loadSchedules);
-router.post('/schedule',scheduleController.saveSchedules);
-router.get('/patientprofile/:id',patientProfileController.loadPatientProfile);
-router.get('/videoconsultation',[authMiddleware , authorizeRole('doctor'),rateLimiterMiddleware]);
-router.get('/clinic',[authMiddleware , authorizeRole('doctor'),rateLimiterMiddleware]);
-router.get('/clinic/patientprofile',[authMiddleware , authorizeRole('doctor'),rateLimiterMiddleware]);
-router.get('/clinic/prescription',[authMiddleware , authorizeRole('doctor'),rateLimiterMiddleware]);
-router.post('/login',rateLimiterMiddleware,loginController.login);
-router.post('/register',rateLimiterMiddleware,registerController.register);
-router.post('/verifyuser',rateLimiterMiddleware,registerController.verifyUser);
-router.get('/resendotp',rateLimiterMiddleware, registerController.resendOTP);
-router.post('/fullregister/:id',[ doctorFileHandleMiddleware, rateLimiterMiddleware],registerController.saveProfileDetails);
+router.get('/', homeController.authHome);
+router.get('/schedule',doctorAuthMiddleware, scheduleController.loadSchedules);
+router.post('/schedule',doctorAuthMiddleware ,scheduleController.saveSchedules);
+router.get('/patientprofile/:id',doctorAuthMiddleware ,patientProfileController.loadPatientProfile);
+router.get('/videoconsultation',doctorAuthMiddleware);
+router.get('/clinic',doctorAuthMiddleware, clinicController.loadClinics);
+router.get('/pastclinic',doctorAuthMiddleware, clinicController.loadPastClinics);
+router.get('/prescription/:reservationid/:patientid',doctorAuthMiddleware, clinicController.loadPrescription);
+router.post('/clinic/:reservationid/prescription/:patientid',[prescriptionUpload,doctorAuthMiddleware], clinicController.savePrescription);
+router.post('/resetpassword',doctorAuthMiddleware,loginController.resetPassword);
+router.get('/resetpassword/validate',doctorAuthMiddleware,loginController.validateToken);
+router.post('/resetpasswordRequest',doctorAuthMiddleware, loginController.resetPasswordRequest);
+router.post('/logout',doctorAuthMiddleware, loginController.logout);
+router.post('/login',loginController.login);
+router.post('/register',registerController.register);
+router.post('/verifyuser',registerController.verifyUser);
+router.get('/resendotp', registerController.resendOTP);
+router.post('/fullregister/:id',[ doctorFileHandleMiddleware, ],registerController.saveProfileDetails);
 
 
 module.exports = router;

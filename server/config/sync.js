@@ -8,12 +8,11 @@ require('../models/auth/User');
 require('../models/auth/UserPassword');
 require('../models/auth/UserGroup');
 
-
 require('../models/content/Notification');
 require('../models/content/Review');
 
-require('../models/ecommerce/Cart');
 require('../models/ecommerce/CartItem');
+require('../models/ecommerce/Cart');
 require('../models/ecommerce/Offer');
 require('../models/ecommerce/UserOffer');
 
@@ -43,8 +42,8 @@ require('../models/transactions/Refund');
 require('../models/transactions/BillingDetails');
 require('../models/transactions/BankReciept');
 require('../models/transactions/CardDetails');
-require('../models/transactions/BankBillings');
-require('../models/transactions/CardBilings');
+require('../models/transactions/ReservationPayment');
+require('../models/transactions/CartPayment');
 
 
 const syncDatabase = async () => {

@@ -89,9 +89,7 @@ function PatientNavbar() {
     }
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+
 
   return (
     <nav className="navbar navbar-expand-lg">
@@ -145,7 +143,7 @@ function PatientNavbar() {
                   </div>
                 <div className='profile-container'>
                   <img
-                    src={user?.profile_picture || emptyImage}
+                    src={user?.profile_picture || emptyImage }
                     alt='Profile'
                     className='profile-photo'
                     onClick={toggleDropdown}
@@ -156,6 +154,7 @@ function PatientNavbar() {
                       <Link to='/medicalcondions' className='dropdown-item'>Conditions</Link>
                       <Link to='/prescriptionhistory' className='dropdown-item'>Prescriptions</Link>
                       <Link to='/paymenthistory' className='dropdown-item'>Payments</Link>
+                      <Link to='/refund' className='dropdown-item'>Refund</Link>
                       <Link to="#" className='dropdown-item' onClick={handleLogout}>Logout</Link>
                     </div>
                   )}

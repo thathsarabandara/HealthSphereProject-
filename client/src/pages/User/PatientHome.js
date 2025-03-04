@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Home1 from "../../assets/images/Rectangle 9 (3).svg";
-import '../../styles/Home.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import 'typeface-anton';
 import img1 from '../../assets/images/image-1.svg';
@@ -20,6 +19,7 @@ import Img7 from '../../assets/images/img-1 (7).svg';
 import Img8 from '../../assets/images/img-1 (8).svg';
 import Img9 from '../../assets/images/img-1 (9).svg';
 import Loader from '../../components/common/Loader';
+import emptyImage from '../../assets/images/emptyProfile.png';
 import { Bar, Line } from 'react-chartjs-2';
 import { FaClinicMedical, FaGift, FaHeartbeat, FaBalanceScale } from 'react-icons/fa';
 import {
@@ -34,6 +34,7 @@ import {
   Legend
 } from 'chart.js';
 import PatientImg from '../../assets/images/profileImg.png';
+import '../../styles/Home.css';
 
 ChartJS.register(
   CategoryScale,
@@ -51,7 +52,7 @@ function PatientHome() {
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setAuthenticated] = useState(false);
   const [error, setError] = useState(null);
-  const [profilePicture, setProfilePicture] = useState('../../assets/images/profileImg.png');
+  const [profilePicture, setProfilePicture] = useState(null);
   const [patientId, setPatientId] = useState(null);
   const [useremail, setEmail] = useState(null);
   const [patientFirstName, setPatientFirstName] = useState('----');
@@ -65,14 +66,15 @@ function PatientHome() {
   const [bmi, setBmi] = useState([]);
   const [heartRate, setHeartRate] = useState([]);
   const [conditions, setConditions] = useState([]);
+  const [upcommingSchedule, setupcommingSchedule] = useState([]);
   const [medicalOffer, setOffers] = useState([]);
   const navigate = useNavigate();
   
 
-  useEffect(() => {
-    const loadingTimeout = setTimeout(() => setIsLoading(false), 3000);
-    return () => clearTimeout(loadingTimeout);
-  }, []);
+  // useEffect(() => {
+  //   const loadingTimeout = setTimeout(() => setIsLoading(false), 3000);
+  //   return () => clearTimeout(loadingTimeout);
+  // }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -80,7 +82,13 @@ function PatientHome() {
         const response = await axios.get('http://localhost:5000/', { withCredentials: true });
         if (response.status === 200) {
           setAuthenticated(true);
-          const profile = `http://localhost:5000/uploads/storage/patient/${response.data.data.id}/profilepictures/${response.data.data.profile_picture}`;
+          let profile;
+          if(response.data.data.profile_picture){
+             profile = `http://localhost:5000/uploads/storage/patient/${response.data.data.id}/profilepictures/${response.data.data?.profile_picture}`;
+          }else{
+             profile = null
+          }
+          
           const data =response.data.data
           setPatientId(data.id);
           setEmail(data.email);
@@ -97,6 +105,7 @@ function PatientHome() {
           setHeartRate(data.heart_rate);
           setConditions(data.conditions);
           setOffers(data.offer);
+          setupcommingSchedule(data.upcommingSchedule);
         }
       } catch (error) {
         if (error.response) {
@@ -224,7 +233,7 @@ function PatientHome() {
       {/* Header */}
       <div className="d-flex align-items-center justify-content-between border-bottom pb-3 mb-4">
         <div>
-          <h2 className="font-weight-bold mb-0">Hello, {patientFirstName} {patientLastName}👋</h2>
+          <h2 className="font-weight-bold mb-0">Hello, {patientFirstName || 'User'} {patientLastName}👋</h2>
           <p className="mb-0"><b>Welcome to your Healthsphere Dashboard! 🌟📊</b></p>
         </div>
       </div>
@@ -236,21 +245,21 @@ function PatientHome() {
           <div className="card h-100 shadow-sm">
             <div className="card-body text-center">
               <img
-                src={profilePicture}
+                src={profilePicture || emptyImage }
                 alt="profile"
                 className="rounded-circle mb-3"
                 style={{ width: '150px', height: '150px' }}
               />
-              <h5 className="mb-1">{patientId} - {patientFirstName} {patientLastName}</h5>
+              <h5 className="mb-1">{patientId} - {patientFirstName || 'User Name '} {patientLastName}</h5>
               <small className="text-muted">
                 {patientGender} - Age {age.years} Years {age.months} Months  {age.days} Days
                </small>
               <div style={{ textAlign: 'left', marginTop: '1rem' }}>
-                <p><strong>DOB:</strong> {new Date(patientDateOfBirth).toLocaleDateString().split('T')[0]} </p>
-                <p><strong>Address:</strong> {patientAddress}</p>
-                <p><strong>Contacts:</strong> {useremail} |<br /> {patientPhoneNumber}</p>
-                <p><strong>Active Conditions:</strong> {conditions.map(condition => condition.condition_name).join(', ')}</p>
-                <p><strong>Allergies:</strong> {allergies.map(allergie => allergie.allergy_name).join(', ')}</p>
+                <p><strong>DOB:</strong> {new Date(patientDateOfBirth).toLocaleDateString().split('T')[0] ||'No User data found'} </p>
+                <p><strong>Address:</strong> {patientAddress || 'No User data found'}</p>
+                <p><strong>Contacts:</strong> {useremail || 'No User data found'} |<br /> {patientPhoneNumber || 'No User data found'}</p>
+                <p><strong>Active Conditions:</strong> {conditions.map(condition => condition.condition_name).join(', ') || 'No User data found'}</p>
+                <p><strong>Allergies:</strong> {allergies.map(allergie => allergie.allergy_name).join(', ') || 'No User data found'}</p>
               </div>
             </div>
           </div>
@@ -307,9 +316,9 @@ function PatientHome() {
               <div className="card h-100 shadow-sm">
                 <div className="card-body">
                   <h5 className="card-title font-weight-bold"><FaClinicMedical /> Upcoming Clinic Notifications</h5>
-                  <p className="mt-3"><strong>Next Visit:</strong> Aug 15, 2024</p>
-                  <p><strong>Location:</strong> City Health Clinic</p>
-                  <p><strong>Specialist:</strong> Dr. Emma Thompson (Dermatology)</p>
+                  <p className="mt-3"><strong>Next Visit:</strong>{upcommingSchedule?.date || 'No User data found'}</p>
+                  <p><strong>Time:</strong>{upcommingSchedule?.time || 'No User data found'}</p>
+                  <p><strong>Specialist:</strong>{upcommingSchedule?.doctorname || 'No User data found'}</p>
                   <button className="btn btn-block" style={{background: '#2A5D9C', color: 'white'}}>View Details</button>
                 </div>
               </div>
@@ -449,40 +458,6 @@ function PatientHome() {
             </table>
           </div>
         </div>
-        <div className="card mb-4 shadow-sm">
-          <div className="card-header text-white" style={{background: '#2A5D9C', color: 'white'}}>
-                <h4 className="mb-0"><FaClinicMedical /> My Appointments</h4>
-              </div>
-              <div className="card-body">
-                <table className="table table-hover">
-                  <thead>
-                    <tr>
-                      <th>Date</th>
-                      <th>Doctor</th>
-                      <th>Specialty</th>
-                      <th>Status</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                  <tr>
-                    <td>12 Nov 2024</td>
-                    <td>Dr. Smith</td>
-                    <td>Cardiology</td>
-                    <td><span className="badge bg-warning">Upcoming</span></td>
-                    <td><button className="btn btn-outline-primary btn-sm">View Details</button></td>
-                  </tr>
-                  <tr>
-                    <td>8 Nov 2024</td>
-                    <td>Dr. Lee</td>
-                    <td>Dermatology</td>
-                    <td><span className="badge bg-success">Completed</span></td>
-                    <td><button className="btn btn-outline-primary btn-sm">View Details</button></td>
-                 </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
         <div className="newsletter-section my-4">
                 <h3>HealthSphere NewsLetter</h3>
                 <div className="row">
@@ -512,19 +487,20 @@ function PatientHome() {
         <div className="container position-absolute start-50 text-white" style={{ transform: 'translate(-50%, -80%)', marginTop: '-200px' }}>
           <div className="row xs-justify-content-center">
             {/* Upper Text */}
-            <div className="col-12 col-md-8 ms-md-5 text-center text-md-start">
-              <h6 className="text-black mb-3 fs-6 fs-md-5 fs-lg-4" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', padding: '5px' }}>
+            <div className="col-12 col-md-8 ms-md-5 text-center text-md-start" style={{ background: 'transparent' }}>
+              <h6 className="text-black mb-3 fs-6 fs-md-5 fs-lg-4" style={{ backgroundColor: 'transparent', padding: '5px' }}>
                 Unlimited Health Experience with Health Code
               </h6>
             </div>
 
             {/* Main Heading */}
-            <div className="col-12 col-lg-12 col-md-8 ms-md-5 text-center text-md-start">
-              <h1 className="text-black display-5 display-md-4 display-lg-3 mb-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', padding: '5px' }}>
+            <div className="col-12 col-lg-12 col-md-8 ms-md-5 text-center text-md-start" style={{ background: 'transparent' }}>
+              <h1 className="text-black display-5 display-md-4 display-lg-3 mb-3" style={{ backgroundColor: 'transparent', padding: '5px' }}>
                 Get Better Care For Your Health<br />
                 with Health <span className="sphere text-white">Sphere</span>
               </h1>
             </div>
+
 
             {/* Buttons */}
             <div className="col-12 col-md-8 ms-md-5 d-flex flex-column flex-md-row justify-content-md-start justify-content-center gap-3 mb-4">

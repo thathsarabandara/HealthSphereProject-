@@ -1,9 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Rectangle60 from '../../assets/images/Rectangle 60.svg';
 import Rectangle81 from '../../assets/images/Rectangle 81.svg';
+import Loader from '../../components/common/Loader';
 
 function PatientPharmacy() {
   const [selectedFile, setSelectedFile] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadingTimeout = setTimeout(() => setIsLoading(false), 3000);
+    return () => clearTimeout(loadingTimeout);
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#f0f4f8',
+        zIndex: 9999
+      }}>
+        <Loader />
+      </div>
+    );
+  };
 
   const handleFileChange = (event) => {
     setSelectedFile(event.target.files[0]);

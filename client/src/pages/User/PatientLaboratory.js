@@ -6,18 +6,44 @@ import rectangle92 from '../../assets/images/Rectangle 90 (2).svg'
 import rectangle93 from '../../assets/images/Rectangle 90 (3).svg'
 import rectangle94 from '../../assets/images/Rectangle 90 (4).svg'
 import rectangle95 from '../../assets/images/Rectangle 90 (5).svg'
+import Loader from '../../components/common/Loader'
 
 
 function Laboratory() {
-
     const [showPopup, setShowPopup] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
-  const handleAddToCart = () => {
-    setShowPopup(true);
-    setTimeout(() => {
-      setShowPopup(false);
-    }, 3000); // Popup will disappear after 3 seconds
-  };
+    const handleAddToCart = () => {
+      setShowPopup(true);
+      setTimeout(() => {
+        setShowPopup(false);
+      }, 3000); // Popup will disappear after 3 seconds
+    };
+    
+    useEffect(() => {
+      const loadingTimeout = setTimeout(() => setIsLoading(false), 3000);
+      return () => clearTimeout(loadingTimeout);
+    }, []);
+  
+    if (isLoading) {
+      return (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#f0f4f8',
+          zIndex: 9999
+        }}>
+          <Loader />
+        </div>
+      );
+    };
+    
   return (
     <div>
       <section className="section1">

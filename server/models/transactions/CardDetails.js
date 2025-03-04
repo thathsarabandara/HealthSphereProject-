@@ -1,6 +1,7 @@
 // models/CardDetails.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/db');
+const { Payment } = require('./Payment');
 
 const CardDetails = sequelize.define('CardDetails', {
     id: {
@@ -8,6 +9,13 @@ const CardDetails = sequelize.define('CardDetails', {
       primaryKey: true,
       autoIncrement: true, // Auto-incrementing primary key
       allowNull: false,
+    },
+    payment_id:{
+      type: DataTypes.INTEGER,
+      references:{
+        model: Payment,
+        key: 'id',
+      }
     },
     cardNumber: {
       type: DataTypes.STRING,
@@ -21,10 +29,10 @@ const CardDetails = sequelize.define('CardDetails', {
       allowNull: false,
     },
     validDate: {
-      type: DataTypes.DATE,
+      type: DataTypes.STRING,
       allowNull: false,
     },
-    validDate: {
+    csv: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
@@ -41,4 +49,6 @@ const CardDetails = sequelize.define('CardDetails', {
     timestamps: false, // Disable default timestamps
   });
 
-module.exports = CardDetails;
+module.exports = {
+  CardDetails
+};

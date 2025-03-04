@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import '../../styles/user/PatientProfile.css';
 import emptyImage from '../../assets/images/emptyProfile.png';
 import axios from 'axios'; // Import axios to make HTTP requests
+import Loader from '../../components/common/Loader';
+import ErrorPopup from '../../components/common/error popup/ErrorPopup';
+import SuccessPopup from '../../components/common/success popup/SuccessPopup';
 let pp;
 
 function PatientProfile() {
@@ -18,6 +21,10 @@ function PatientProfile() {
   });
 
   const [loading, setLoading] = useState(true);
+  const [errorVisible, setErrorVisible] = useState(false);
+  const [successVisible, setSuccessVisible] = useState(false);
+  const handleErrorClose = () => setErrorVisible(false);
+  const handleSuccessClose = () => setSuccessVisible(false);
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -27,9 +34,11 @@ function PatientProfile() {
           const data = response.data.data;
   
           // Update the profilePicture path if it exists
-          if (data.profilePicture) {
-            pp = `http://localhost:5000/uploads/storage/patient/${data.id}/profilepictures/${data.profilePicture}`;
+          if (data?.profilePicture) {
+            pp = `http://localhost:5000/uploads/storage/patient/${data.id}/profilepictures/${data?.profilePicture}`;
             data.profilePicture = '';
+          }else{
+            pp = emptyImage
           }
           setProfileData(data); 
         }
@@ -52,10 +61,24 @@ function PatientProfile() {
     });
   };
 
-  
   if (loading) {
-    return <div>Loading...</div>;
-  }
+    return (
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#f0f4f8',
+        zIndex: 9999
+      }}>
+        <Loader />
+      </div>
+    );
+  };
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -90,16 +113,18 @@ function PatientProfile() {
 
     axios.put(`http://localhost:5000/userprofile/${profileData.id}`, formData)
          .then(res => {
-          alert('Profile updated successfully!');
+          setSuccessVisible(true);
          })
          .catch(err => {
-          console.error('Error updating profile:', err);
+          setErrorVisible(true)
          });
       }
     }
   
   return (
     <div>
+      <ErrorPopup show={errorVisible} onClose={handleErrorClose} title="Something Went Wrong!" message="Profile Update Failed Try again!" button='Okay' />
+      <SuccessPopup show={successVisible} onClose={handleSuccessClose} title="Updated Success Fully " message="Profile Updated Successfully !" button='Okay' />
     <div className="container mt-5 mb-5">
       <div className="row gutters">
         {/* Profile Picture Section */}
@@ -256,7 +281,7 @@ function PatientProfile() {
                       className="form-control"
                       id="gender"
                       name="date_of_birth"
-                      value={profileData.date_of_birth}
+                      value={profileData?.date_of_birth ? profileData.date_of_birth.split('T')[0] : ''}
                       onChange={handleInputChange}
 
                     />

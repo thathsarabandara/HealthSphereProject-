@@ -1,11 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Loader from '../../components/common/Loader';
+import { useNavigate } from 'react-router-dom';
+import ErrorPopup from '../../components/common/error popup/ErrorPopup';
+import SuccessPopup from '../../components/common/success popup/SuccessPopup';
 
 function Cart() {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [couponDiscount, setCouponDiscount] = useState(0); // Assuming coupon discount is Rs. 500.00
+  const [errorVisible, setErrorVisible] = useState(false);
+  const [successVisible, setSuccessVisible] = useState(false);
+  const handleErrorClose = () => setErrorVisible(false);
+  const handleSuccessClose = () => setSuccessVisible(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCartData = async () => {
@@ -24,7 +33,27 @@ function Cart() {
     fetchCartData();
   }, []);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) {
+    return (
+      <div
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#f0f4f8',
+          zIndex: 9999,
+        }}
+      >
+        <Loader />
+      </div>
+    );
+  }
+
   if (error) return <div>{error}</div>;
 
   const subTotal = cartItems.reduce((total, item) => total + Number(item.totalPrice || 0), 0);
@@ -33,18 +62,37 @@ function Cart() {
   // Delete item function
   const handleDelete = async (id) => {
     try {
-      await axios.put(`http://localhost:5000/cart/${id}`, {}, { withCredentials: true });
-      setCartItems((prevItems) => prevItems.filter(item => item.id !== id)); // Remove item from state
+      await axios.post(`http://localhost:5000/cart/${id}`, {}, { withCredentials: true });
+      setCartItems((prevItems) => prevItems.filter((item) => item.id !== id)); // Remove item from state
+      setSuccessVisible(true);
     } catch (error) {
       console.error('Failed to delete item:', error);
+      setErrorVisible(true)
+    }
+  };
+
+  const handleCheckout = async () => {
+    try {
+      console.log('hi');
+      const totalAmount = subTotal - discountAmount;
+      console.log(totalAmount)
+      const response = await axios.post(
+        `http://localhost:5000/checkout/amount/${totalAmount}`,
+        {},
+        { withCredentials: true }
+      );
+      navigate(`/checkout/${response.data.paymentId}`);
+    } catch (error) {
+      console.error('Failed to proceed with checkout:', error);
     }
   };
 
   return (
     <div style={{ backgroundColor: '#D8E8FA', minHeight: '100vh', padding: '20px' }}>
+      <ErrorPopup show={errorVisible} onClose={handleErrorClose} title="Something Went Wrong!" message="Item Removing failed" button='Okay' />
+      <SuccessPopup show={successVisible} onClose={handleSuccessClose} title="Updated SuccessFully " message="Item Removed " button='Okay' />
       <div className="container">
         <div className="row">
-
           {/* Cart Items Section */}
           <div className="col-lg-8 mb-4">
             <div className="card shadow">
@@ -70,7 +118,7 @@ function Cart() {
                       <div className="col">Rs. {item.unitPrice}</div>
                       <div className="col">Rs. {item.totalPrice}</div>
                       <div className="col">
-                        <button 
+                        <button
                           className="btn btn-danger btn-sm"
                           onClick={() => handleDelete(item.id)}
                         >
@@ -91,27 +139,39 @@ function Cart() {
                 <div className="mb-3">
                   <label>Coupon Code:</label>
                   <div className="input-group">
-                    <input 
-                      type="text" 
-                      className="form-control" 
-                      placeholder="Enter discount amount" 
-                      onChange={(e) => setCouponDiscount(Number(e.target.value) || 0)} 
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="Enter discount amount"
+                      onChange={(e) => setCouponDiscount(Number(e.target.value) || 0)}
                     />
-                    <button className="btn text-white" style={{ backgroundColor: '#2A5D9C' }}>Apply</button>
+                    <button className="btn text-white" style={{ backgroundColor: '#2A5D9C' }}>
+                      Apply
+                    </button>
                   </div>
                 </div>
-                <p>Coupon Amount: <p className="float-end">Rs. {discountAmount.toFixed(2)}</p></p>
+                <p>
+                  Coupon Amount: <p className="float-end">Rs. {discountAmount.toFixed(2)}</p>
+                </p>
                 <hr />
                 <p>Total Summary:</p>
-                <p>Sub Total: <p className="float-end">Rs. {subTotal.toFixed(2)}</p></p>
-                <p>Coupon Discount: <p className="float-end">Rs. {discountAmount.toFixed(2)}</p></p>
+                <p>
+                  Sub Total: <p className="float-end">Rs. {subTotal.toFixed(2)}</p>
+                </p>
+                <p>
+                  Coupon Discount:{' '}
+                  <p className="float-end">Rs. {discountAmount.toFixed(2)}</p>
+                </p>
                 <hr />
-                <p className="fw-bold">Total: <p className="float-end">Rs. {(subTotal - discountAmount).toFixed(2)}</p></p>
-                <button className="btn btn-success w-100">Checkout</button>
+                <p className="fw-bold">
+                  Total: <p className="float-end">Rs. {(subTotal - discountAmount).toFixed(2)}</p>
+                </p>
+                <button className="btn btn-success w-100" onClick={handleCheckout}>
+                  Checkout
+                </button>
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </div>

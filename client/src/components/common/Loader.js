@@ -10,7 +10,7 @@ function Loader() {
           <div className="dnacircle dnac2"></div>
         </div>
         
-        <div className="dnarow2 dnarowc"><div className="dnacircle dnadnac1"></div><div className="dnacircle dnadnac2"></div></div>
+        <div className="dnarow2 dnarowc"><div className="dnacircle dnac1"></div><div className="dnacircle dnac2"></div></div>
         <div className="dnarow3 dnarowc"><div className="dnacircle dnac1"></div><div className="dnacircle dnac2"></div></div>
         <div className="dnarow4 dnarowc"><div className="dnacircle dnac1"></div><div className="dnacircle dnac2"></div></div>
         <div className="dnarow5 dnarowc"><div className="dnacircle dnac1"></div><div className="dnacircle dnac2"></div></div>

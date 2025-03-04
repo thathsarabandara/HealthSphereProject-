@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect} from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import emptyImage from '../../assets/images/emptyProfile.png';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate } from 'react-router-dom';
+import Loader from '../../components/common/Loader';
 
 function DoctorFullRegister() {
   const { id } = useParams();
@@ -29,6 +30,31 @@ function DoctorFullRegister() {
   });
 
   const [profilePicturePreview, setProfilePicturePreview] = useState(emptyImage);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadingTimeout = setTimeout(() => setIsLoading(false), 3000);
+    return () => clearTimeout(loadingTimeout);
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#f0f4f8',
+        zIndex: 9999
+      }}>
+        <Loader />
+      </div>
+    );
+  };
 
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
@@ -71,7 +97,7 @@ function DoctorFullRegister() {
     .then((response) => {
       console.log('Registration request submitted successfully:', response);
       alert('Registration request submitted successfully!');
-      navigate('doctor/login'); // Navigate to another page after submission
+      navigate('/doctor/login'); // Navigate to another page after submission
     })
     .catch((err) => {
       console.log(formData)
