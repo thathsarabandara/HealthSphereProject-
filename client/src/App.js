@@ -52,7 +52,7 @@ import Bookings from './pages/User/Bookings';
 import DoctorPatientProfile from './pages/doctor/DoctorPatientProfile';
 import DoctorDashboard from './pages/doctor/DoctorDashboard';
 import AdminPanel from './components/admin/AdminPanel';
-
+import AdminLogin from './pages/admin/Login';
 
 const getNavbarAndFooter = (path) => {
   let NavbarComponent, FooterComponent, SidebarComponent;
@@ -61,8 +61,12 @@ const getNavbarAndFooter = (path) => {
     NavbarComponent = DoctorNavbar;
     FooterComponent = DoctorFooter; 
   } else if (path.startsWith('/admin')) {
-    SidebarComponent = AdminPanel; 
-    
+    //SidebarComponent = AdminPanel; 
+    if (path === '/admin/') { 
+      SidebarComponent = null
+    } else {
+      SidebarComponent = AdminPanel; // Show Sidebar for other Admin Pages
+    }
   } else {
     NavbarComponent = PatientNavbar; 
     FooterComponent = PatientFooter; 
@@ -82,8 +86,10 @@ function App() {
 
   return (
     <div>
-      {SidebarComponent ? (
-        <SidebarComponent/>
+      {SidebarComponent === null ? (
+        <AdminLogin/>
+      ) : SidebarComponent ?(  
+        <SidebarComponent/> 
       ) : (
         <>
           {NavbarComponent && <NavbarComponent />}

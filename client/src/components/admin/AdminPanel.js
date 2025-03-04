@@ -9,7 +9,7 @@ import PatientManagement from '../../pages/admin/PatientManagement';
 import BillinAndFinancial from '../../pages/admin/BillingAndFinancialManagement';
 import InventoryAndResource from '../../pages/admin/InventoryAndResourcesManagement';
 import ICU from '../../pages/admin/IntensiveCareUnit';
-import AdminLogin from '../../pages/admin/Login';
+
 
 
 function AdminPanel() {
@@ -104,7 +104,7 @@ function AdminPanel() {
       {/* Main Content */}
       <div style={mainContentStyle}>
         <Routes>
-          <Route path='/admin/' element={<AdminLogin/>} />
+          
           <Route path="/admin/dashboard" element={<AdminDashboard />} />  {/*--changeed--*/}
           <Route path="/admin/doctorsandstaffManagement" element={<DoctorsAndStaffManagement />} />
           <Route path="/admin/appointmentmanagement" element={<AppointmentManagement />} />
