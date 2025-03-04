@@ -51,7 +51,6 @@ import Bookings from './pages/User/Bookings';
 import DoctorPatientProfile from './pages/doctor/DoctorPatientProfile';
 import PrescriptionView from './pages/doctor/PrescriptionView';
 import PatientPrescriptionView from './pages/User/PatientPrescriptionView';
-import SuccessPopup from './components/common/success popup/SuccessPopup';
 import Checkout from './pages/User/Checkout';
 import DoctorDashboard from './pages/doctor/DoctorDashboard';
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -91,7 +90,9 @@ function App() {
         <>
           <SidebarComponent />
             <Routes>
-
+              <Route path="/admin/dashboard" element={<AdminDashboard />} />
+              <Route path="/admin/staffmanagement" element={<DoctorAndStaffManagement />} />
+              <Route path="/admin/appointmentmanagement" element={<AppointmentManagement />} />
             </Routes>
         </>
       ):(
