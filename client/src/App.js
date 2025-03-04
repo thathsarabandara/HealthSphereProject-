@@ -117,9 +117,11 @@ function App() {
         <Route path="/userprofile" element={<PatientProfile />} />
         <Route path="/paymenthistory" element={<PatientPaymentHistory />} />
         <Route path="/prescriptionhistory" element={<PatientPrescriptionHistory />} />
+        <Route path="/prescriptionhistory/:patientid/viewprescription/:reservationid" element={<PatientPrescriptionView/>} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/bookings" element={<Bookings />} />
-        <Route path="/checkout" element={<Payment />} />
+        <Route path="/checkout/:id" element={<Payment/>} />
+        <Route path="/checkouts/:id" element={<Checkout/>} />
         <Route path="/refund" element={<Refund />} />
         
         {/* Error Pages */}
