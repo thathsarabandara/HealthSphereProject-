@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import PatientNavbar from './components/user/PatientNavbar';
 import DoctorNavbar from './components/doctor/DoctorNavbar';
-import AdminNavbar from './components/admin/AdminPanel'; 
 import PatientHome from './pages/User/PatientHome';
 import PatientDoctors from './pages/User/PatientDoctors';
 import PatientLaboratory from './pages/User/PatientLaboratory';
@@ -52,94 +51,111 @@ import Bookings from './pages/User/Bookings';
 import DoctorPatientProfile from './pages/doctor/DoctorPatientProfile';
 import PrescriptionView from './pages/doctor/PrescriptionView';
 import PatientPrescriptionView from './pages/User/PatientPrescriptionView';
-import SuccessPopup from './components/common/success popup/SuccessPopup';
 import Checkout from './pages/User/Checkout';
+import DoctorDashboard from './pages/doctor/DoctorDashboard';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import DoctorAndStaffManagement from './pages/admin/DoctorsAndStaffManagement';
+import AppointmentManagement from './pages/admin/AppointmentManagement';
+import AdminPanel from './components/admin/AdminPanel';
 
 
 const getNavbarAndFooter = (path) => {
-  let NavbarComponent, FooterComponent;
+  let NavbarComponent, FooterComponent, SidebarComponent;
 
   if (path.startsWith('/doctor')) {
     NavbarComponent = DoctorNavbar;
     FooterComponent = DoctorFooter; 
   } else if (path.startsWith('/admin')) {
-    NavbarComponent = AdminNavbar;
+    SidebarComponent = AdminPanel;
   } else {
     NavbarComponent = PatientNavbar; 
     FooterComponent = PatientFooter; 
   }
 
-  return { NavbarComponent, FooterComponent };
+  return { NavbarComponent, FooterComponent, SidebarComponent };
 };
 
 function App() {
   const location = useLocation();
-  const { NavbarComponent, FooterComponent } = getNavbarAndFooter(location.pathname);
+  const { NavbarComponent, FooterComponent, SidebarComponent } = getNavbarAndFooter(location.pathname);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     setTimeout(() => setIsLoading(false), 3000); // Simulate loading time
   }, []);
 
-  return (
-    <div>
-      <NavbarComponent />
-      <Routes>
+  return(
+    <>
+      {SidebarComponent ? (
+        <>
+          <SidebarComponent />
+            <Routes>
+              <Route path="/admin/dashboard" element={<AdminDashboard />} />
+              <Route path="/admin/staffmanagement" element={<DoctorAndStaffManagement />} />
+              <Route path="/admin/appointmentmanagement" element={<AppointmentManagement />} />
+            </Routes>
+        </>
+      ):(
+        <>
+    {NavbarComponent && <NavbarComponent />}
+    <Routes>
         <Route path="/" element={<PatientHome />} />
         <Route path="/finddoctors" element={<PatientDoctors />} />
         <Route path="/finddoctors/:category" element={<DoctorDetails />} />
-        <Route path="/finddoctors/:category/reservation/:scheduleid" element={<Reservations/>} />
+        <Route path="/finddoctors/:category/reservation/:scheduleid" element={<Reservations />} />
         <Route path="/profileDoctor/:id" element={<DoctorsProfile />} />
         <Route path="/packages" element={<PatientPackages />} />
         <Route path="/laboratory" element={<PatientLaboratory />} />
         <Route path="/pharmacy" element={<PatientPharmacy />} />
-        <Route path="/about" element={<PatientAbout/>} />
-        <Route path="/medicalcondions" element={<MedicalConditions/>} />
+        <Route path="/about" element={<PatientAbout />} />
+        <Route path="/medicalcondions" element={<MedicalConditions />} />
         <Route path="/login" element={<PatientLogin />} />
         <Route path="/register" element={<PatientRegister />} />
         <Route path="/resetpassword" element={<PatientPasswordReset />} />
         <Route path="/verifyuser" element={<OTPVerification />} />
         <Route path="/resetpasswordRequest" element={<ResetPassword />} />
         <Route path="/userprofile" element={<PatientProfile />} />
-        <Route path="/paymenthistory" element={<PatientPaymentHistory/>} />
-        <Route path="/prescriptionhistory" element={<PatientPrescriptionHistory/>} />
-        <Route path="/prescriptionhistory/:patientid/viewprescription/:reservationid" element={<PatientPrescriptionView/>} />
-        <Route path="/cart" element={<Cart/>} />
-        <Route path="/bookings" element={<Bookings/>} />
-        <Route path="/checkout/:id" element={<Payment/>} />
-        <Route path="/checkouts/:id" element={<Checkout/>} />
-        <Route path="/refund" element={<Refund/>} />
+        <Route path="/paymenthistory" element={<PatientPaymentHistory />} />
+        <Route path="/prescriptionhistory" element={<PatientPrescriptionHistory />} />
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/bookings" element={<Bookings />} />
+        <Route path="/checkout" element={<Payment />} />
+        <Route path="/refund" element={<Refund />} />
+        
+        {/* Error Pages */}
+        <Route path="/error/accessdenied" element={<DataAccesDenied />} />
+        <Route path="/error/400" element={<Error400 />} />
+        <Route path="/error/401" element={<Error401 />} />
+        <Route path="/error/403" element={<Error403 />} />
+        <Route path="/error/404" element={<Error404 />} />
+        <Route path="/error/408" element={<Error408 />} />
+        <Route path="/error/429" element={<Error429 />} />
+        <Route path="/error/500" element={<Error500 />} />
+        <Route path="/error/503" element={<Error503 />} />
+        <Route path="/error/maintenance" element={<Maintenance />} />
 
-        <Route path="/error/accessdenied" element={<DataAccesDenied/>} />
-        <Route path="/error/400" element={<Error400/>} />
-        <Route path="/error/401" element={<Error401/>} />
-        <Route path="/error/403" element={<Error403/>} />
-        <Route path="/error/404" element={<Error404/>} />
-        <Route path="/error/408" element={<Error408/>} />
-        <Route path="/error/429" element={<Error429/>} />
-        <Route path="/error/500" element={<Error500/>} />
-        <Route path="/error/503" element={<Error503/>} />
-        <Route path="/error/maintenance" element={<Maintenance/>} />
-
+        {/* Doctor Routes */}
         <Route path="/doctor/login" element={<DoctorLogin />} />
-        <Route path="/doctor/register" element={<DoctorRegister/>} />
-        <Route path="/doctor/patientProfile/:id" element={<DoctorPatientProfile/>} />
-        <Route path="/doctor/verifyuser" element={<DoctorVerify/>} />
-        <Route path="/doctor/about" element={<DoctorAbout/>} />
-        <Route path="/doctor/" element={<DoctorHome/>} />
-        <Route path="/doctor/schedule" element={<DoctorSchedule/>} />
-        <Route path="/doctor/videoconsultation" element={<DoctorVideoConsultation/>} />
-        <Route path="/doctor/clinic" element={<DoctorClinic/>} />
-        <Route path="/doctor/clinic/:reservationid/prescription/:patientid" element={<DoctorPrescription/>} />
-        <Route path="/doctor/clinic/:reservationid/viewprescription/:patientid" element={<PrescriptionView/>} />
-        <Route path="/doctor/fullregister/:id" element={<DoctorFullRegister/>} />
+        <Route path="/doctor/register" element={<DoctorRegister />} />
+        <Route path="/doctor/patientProfile/:id" element={<DoctorPatientProfile />} />
+        <Route path="/doctor/verifyuser" element={<DoctorVerify />} />
+        <Route path="/doctor/about" element={<DoctorAbout />} />
+        <Route path="/doctor/" element={<DoctorHome />} />
+        <Route path="/doctor/schedule" element={<DoctorSchedule />} />
+        <Route path="/doctor/videoconsultation" element={<DoctorVideoConsultation />} />
+        <Route path="/doctor/clinic" element={<DoctorClinic />} />
+        <Route path="/doctor/clinic/:reservationid/prescription/:patientid" element={<DoctorPrescription />} />
+        <Route path="/doctor/clinic/:reservationid/viewprescription/:patientid" element={<PrescriptionView />} />
+        <Route path="/doctor/fullregister/:id" element={<DoctorFullRegister />} />
+    </Routes>
 
-        {/* Add more routes as necessary */}
-      </Routes>
-      <WebBot/>
-      <FooterComponent />
-    </div>
-  );
+    <WebBot />
+    {FooterComponent && <FooterComponent />}
+</>
+
+      )}
+    </>
+  )
 }
 
 const WrapperApp = () => (

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, { useState } from 'react';
 import Rectangle82 from '../../assets/images/Rectangle 82.svg'
 import rectangle90 from '../../assets/images/Rectangle 90.svg'
 import rectangle91 from '../../assets/images/Rectangle 90 (1).svg'
@@ -10,8 +10,16 @@ import Loader from '../../components/common/Loader'
 
 
 function Laboratory() {
+    const [showPopup, setShowPopup] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
+    const handleAddToCart = () => {
+      setShowPopup(true);
+      setTimeout(() => {
+        setShowPopup(false);
+      }, 3000); // Popup will disappear after 3 seconds
+    };
+    
     useEffect(() => {
       const loadingTimeout = setTimeout(() => setIsLoading(false), 3000);
       return () => clearTimeout(loadingTimeout);
@@ -35,6 +43,7 @@ function Laboratory() {
         </div>
       );
     };
+    
   return (
     <div>
       <section className="section1">
@@ -75,11 +84,35 @@ function Laboratory() {
                         </button>
                     </div>
                     <div className='col-3 col-sm-4 col-md-3 col-lg-4 mt-4'>
-                        <button className='btn w-auto' style={{ height: 'auto', backgroundColor: '#C8D8F6', borderRadius: 12, fontSize: 'calc(12px + 0.7vw)', fontFamily: 'Sansation', fontWeight: '700', color: 'black', boxShadow: '0px 4px 10px rgba(17, 45, 78, 0.5)' }}>
+                        <button className='btn w-auto' style={{ height: 'auto', backgroundColor: '#C8D8F6', borderRadius: 12, fontSize: 'calc(12px + 0.7vw)', fontFamily: 'Sansation', fontWeight: '700', color: 'black', boxShadow: '0px 4px 10px rgba(17, 45, 78, 0.5)' }} onClick={handleAddToCart}>
                             Make a Booking
                         </button>
                     </div>
                 </div>
+
+                {/* Popup Message */}
+            {showPopup && (
+              <div style={{position: 'fixed', top: '20%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: '#C8F6D8', padding: '20px',width: '300px', borderRadius: '10px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)', textAlign: 'center', zIndex: 1000,
+              }}>
+                <h3 style={{color: '#2A5D9C', fontSize: '20px', fontFamily: 'Sansation', fontWeight: '700'
+                }}>
+                  🎉 Successfully Added to Cart!
+                </h3>
+                <p style={{color: '#504E4E', fontSize: '14px', fontFamily: 'Sans Serif Collection'
+                }}>
+                  Your Essential Health Checkup is now in the cart. Ready to proceed?
+                </p>
+                <button 
+                  style={{backgroundColor: '#2A5D9C', color: 'white', padding: '8px 16px', fontSize: '14px', borderRadius: '5px', marginTop: '10px',cursor: 'pointer'
+                  }}
+                  onClick={() => alert('Navigating to cart...')} // Replace with navigation logic
+                >
+                  Check it out!
+                </button>
+              </div> 
+            )}
+
+
                 {/*Liver Function Tests (LFT)*/}
                 <div className='row mt-4 justify-content-center' style={{ background: '#2A5D9C', borderRadius: 19 }}>
                     <div className='col-2 col-sm-1 col-md-1 col-lg-1 mt-3 d-flex justify-content-center align-items-center'>
@@ -96,7 +129,7 @@ function Laboratory() {
                         </button>
                     </div>
                     <div className='col-3 col-sm-4 col-md-3 col-lg-4 mt-4'>
-                        <button className='btn w-auto' style={{ height: 'auto', backgroundColor: '#C8D8F6', borderRadius: 12, fontSize: 'calc(12px + 0.7vw)', fontFamily: 'Sansation', fontWeight: '700', color: 'black', boxShadow: '0px 4px 10px rgba(17, 45, 78, 0.5)' }}>
+                        <button className='btn w-auto' style={{ height: 'auto', backgroundColor: '#C8D8F6', borderRadius: 12, fontSize: 'calc(12px + 0.7vw)', fontFamily: 'Sansation', fontWeight: '700', color: 'black', boxShadow: '0px 4px 10px rgba(17, 45, 78, 0.5)' }} onClick={handleAddToCart}>
                             Make a Booking
                         </button>
                     </div>
@@ -117,7 +150,7 @@ function Laboratory() {
                         </button>
                     </div>
                     <div className='col-3 col-sm-4 col-md-3 col-lg-4 mt-4'>
-                        <button className='btn w-auto' style={{ height: 'auto', backgroundColor: '#C8D8F6', borderRadius: 12, fontSize: 'calc(12px + 0.7vw)', fontFamily: 'Sansation', fontWeight: '700', color: 'black', boxShadow: '0px 4px 10px rgba(17, 45, 78, 0.5)' }}>
+                        <button className='btn w-auto' style={{ height: 'auto', backgroundColor: '#C8D8F6', borderRadius: 12, fontSize: 'calc(12px + 0.7vw)', fontFamily: 'Sansation', fontWeight: '700', color: 'black', boxShadow: '0px 4px 10px rgba(17, 45, 78, 0.5)' }} onClick={handleAddToCart}>
                             Make a Booking
                         </button>
                     </div>
@@ -138,7 +171,7 @@ function Laboratory() {
                         </button>
                     </div>
                     <div className='col-3 col-sm-4 col-md-3 col-lg-4 mt-4'>
-                        <button className='btn w-auto' style={{ height: 'auto', backgroundColor: '#C8D8F6', borderRadius: 12, fontSize: 'calc(12px + 0.7vw)', fontFamily: 'Sansation', fontWeight: '700', color: 'black', boxShadow: '0px 4px 10px rgba(17, 45, 78, 0.5)' }}>
+                        <button className='btn w-auto' style={{ height: 'auto', backgroundColor: '#C8D8F6', borderRadius: 12, fontSize: 'calc(12px + 0.7vw)', fontFamily: 'Sansation', fontWeight: '700', color: 'black', boxShadow: '0px 4px 10px rgba(17, 45, 78, 0.5)' }} onClick={handleAddToCart}>
                             Make a Booking
                         </button>
                     </div>
@@ -159,7 +192,7 @@ function Laboratory() {
                         </button>
                     </div>
                     <div className='col-3 col-sm-4 col-md-3 col-lg-4 mt-4'>
-                        <button className='btn w-auto' style={{ height: 'auto', backgroundColor: '#C8D8F6', borderRadius: 12, fontSize: 'calc(12px + 0.7vw)', fontFamily: 'Sansation', fontWeight: '700', color: 'black', boxShadow: '0px 4px 10px rgba(17, 45, 78, 0.5)' }}>
+                        <button className='btn w-auto' style={{ height: 'auto', backgroundColor: '#C8D8F6', borderRadius: 12, fontSize: 'calc(12px + 0.7vw)', fontFamily: 'Sansation', fontWeight: '700', color: 'black', boxShadow: '0px 4px 10px rgba(17, 45, 78, 0.5)' }} onClick={handleAddToCart}>
                             Make a Booking
                         </button>
                     </div>
@@ -180,7 +213,7 @@ function Laboratory() {
                         </button>
                     </div>
                     <div className='col-3 col-sm-4 col-md-3 col-lg-4 mt-4'>
-                        <button className='btn w-auto' style={{ height: 'auto', backgroundColor: '#C8D8F6', borderRadius: 12, fontSize: 'calc(12px + 0.7vw)', fontFamily: 'Sansation', fontWeight: '700', color: 'black', boxShadow: '0px 4px 10px rgba(17, 45, 78, 0.5)' }}>
+                        <button className='btn w-auto' style={{ height: 'auto', backgroundColor: '#C8D8F6', borderRadius: 12, fontSize: 'calc(12px + 0.7vw)', fontFamily: 'Sansation', fontWeight: '700', color: 'black', boxShadow: '0px 4px 10px rgba(17, 45, 78, 0.5)' }} onClick={handleAddToCart}>
                             Make a Booking
                         </button>
                     </div>

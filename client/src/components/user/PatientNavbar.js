@@ -12,6 +12,16 @@ function PatientNavbar() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  const formatUserName = (name) => {
+    if (!name) return 'User';
+    const nameParts = name.split(' ');
+    if (nameParts.length === 1) return nameParts[0];
+    
+    const lastName = nameParts.pop();
+    const initials = nameParts.map((part) => part.charAt(0).toUpperCase()).join('.');
+    return `${initials}. ${lastName}`;
+  };
+
   // Fetch user authentication status and profile data from the backend
   const fetchUserData = async () => {
     try {

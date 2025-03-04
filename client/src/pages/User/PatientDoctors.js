@@ -49,7 +49,7 @@ function PatientDoctors() {
     };
 
     // Fetch data from backend based on search criteria
-    axios.post('http://localhost:5000/finddoctor', {searchData})
+     axios.post('http://localhost:5000/finddoctor', {searchData})
       .then(response => {
         if (response.data.length === 0) {
           // If no data is returned, show no results found
