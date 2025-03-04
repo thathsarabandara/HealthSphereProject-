@@ -9,6 +9,8 @@ import PatientManagement from '../../pages/admin/PatientManagement';
 import BillinAndFinancial from '../../pages/admin/BillingAndFinancialManagement';
 import InventoryAndResource from '../../pages/admin/InventoryAndResourcesManagement';
 import ICU from '../../pages/admin/IntensiveCareUnit';
+import AdminLogin from '../../pages/admin/Login';
+
 
 function AdminPanel() {
   const sidebarStyle = {
@@ -67,7 +69,7 @@ function AdminPanel() {
         {/* Navigation Items */}
         <ul style={{ listStyle: 'none', padding: 0 }}>
           {[
-            { to: '/admin/', label: 'Dashboard', icon: <FaTachometerAlt /> },
+            { to: '/admin/dashboard', label: 'Dashboard', icon: <FaTachometerAlt /> }, //change kara
             { to: '/admin/doctorsandstaffManagement', label: 'Doctors and Staff Management', icon: <FaUserMd /> },
             { to: '/admin/appointmentmanagement', label: 'Appointment Management', icon: <FaClipboardList /> },
             { to: '/admin/patientmanagement', label: 'Patient Management', icon: <FaUsers /> },
@@ -102,7 +104,8 @@ function AdminPanel() {
       {/* Main Content */}
       <div style={mainContentStyle}>
         <Routes>
-          <Route path="/admin/" element={<AdminDashboard />} />
+          <Route path='/admin/' element={<AdminLogin/>} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />  {/*--changeed--*/}
           <Route path="/admin/doctorsandstaffManagement" element={<DoctorsAndStaffManagement />} />
           <Route path="/admin/appointmentmanagement" element={<AppointmentManagement />} />
           <Route path="/admin/patientmanagement" element={<PatientManagement />} />
