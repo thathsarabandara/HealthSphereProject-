@@ -1,28 +1,75 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import axios from "axios";
 
 function AppointmentManagement() {
-  const [doctorRequests, setDoctorRequests] = useState([
-    { id: "DOO1", name: "J.W.N.F. Silva", date: "2024/10/04", time: "11:00 P.M." },
-    { id: "DOO1", name: "J.W.N.F. Silva", date: "2024/10/04", time: "11:00 P.M." },
-    { id: "DOO1", name: "J.W.N.F. Silva", date: "2024/10/04", time: "11:00 P.M." },
-    { id: "DOO1", name: "J.W.N.F. Silva", date: "2024/10/04", time: "11:00 P.M." },
-  ]);
+  const [showModal, setShowModal] = useState(false);
+  const [rejectReason, setRejectReason] = useState("");
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [doctorRequests, setDoctorRequests] = useState([]);
+  const [cancelledRequests, setCancelledRequests] = useState([]);
 
-  const [cancelledRequests, setCancelledRequests] = useState([
-    { id: "DOO1", name: "J.W.N.F. Silva", date: "2024/10/04", time: "11:00 P.M." },
-    { id: "DOO1", name: "J.W.N.F. Silva", date: "2024/10/04", time: "11:00 P.M." },
-    { id: "DOO1", name: "J.W.N.F. Silva", date: "2024/10/04", time: "11:00 P.M." },
-    { id: "DOO1", name: "J.W.N.F. Silva", date: "2024/10/04", time: "11:00 P.M." },
-  ]);
+  useEffect(() => {
+    const fetchRequests = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/admin/schedules", {
+          withCredentials: true,
+        });
+        setDoctorRequests(response.data.requests || []);
+        setCancelledRequests(response.data.rejectedSchedules || []);
+        console.log(cancelledRequests)
+      } catch (error) {
+        console.error("Error fetching appointments:", error);
+      }
+    };
+    
+    fetchRequests();
+  }, []);
 
-  const roomOptions = [1, 2, 3, 4, 5, 6, 7, 8];
+  const handleRejectClick = (request) => {
+    setSelectedRequest(request);
+    setShowModal(true);
+  };
+
+  const handleAcceptClick = async (requestId) => {
+    try {
+      await axios.post(`http://localhost:5000/admin/acceptschedule/${requestId}`);
+      setDoctorRequests((prevRequests) => prevRequests.filter((req) => req.id !== requestId));
+    } catch (error) {
+      console.error("Error accepting request:", error);
+    }
+  };
+
+  const handleSendReason = async () => {
+    if (!rejectReason.trim()) {
+      alert("Please enter a reason!");
+      return;
+    }
+
+    try {
+      await axios.post(`http://localhost:5000/admin/rejectschedule/${selectedRequest.id}`, {
+        reason: rejectReason,
+      });
+
+      setDoctorRequests((prevRequests) => prevRequests.filter((req) => req.id !== selectedRequest.id));
+      setCancelledRequests((prev) => [...prev, { ...selectedRequest, reason: rejectReason }]);
+      
+      setShowModal(false);
+      setRejectReason("");
+    } catch (error) {
+      console.error("Error rejecting request:", error);
+    }
+  };
+
+  const roomOptions = ["-", 1, 2, 3, 4, 5, 6, 7, 8];
+
   return (
     <div className="container mt-4">
       <h5 className="mb-3">Doctor Requests</h5>
-      <table className="table table-bordered table-responsive" >
+      <table className="table table-bordered table-responsive">
         <thead className="table-dark">
           <tr>
+            <th>Schedule Id</th>
             <th>Doctor Id</th>
             <th>First Name</th>
             <th>Date</th>
@@ -32,12 +79,13 @@ function AppointmentManagement() {
           </tr>
         </thead>
         <tbody>
-          {doctorRequests.map((request, index) => (
-            <tr key={index}>
+          {doctorRequests.map((request) => (
+            <tr key={request.id}>
               <td>{request.id}</td>
-              <td>{request.name}</td>
-              <td>{request.date}</td>
-              <td>{request.time}</td>
+              <td>{request.doctor_id}</td>
+              <td>{request.doctor_first_name}</td>
+              <td>{request.schedule_date}</td>
+              <td>{request.schedule_time}</td>
               <td>
                 <select className="form-select">
                   {roomOptions.map((room) => (
@@ -48,8 +96,12 @@ function AppointmentManagement() {
                 </select>
               </td>
               <td>
-                <button className="btn btn-success btn-sm me-2">Accept</button>
-                <button className="btn btn-danger btn-sm">Reject</button>
+                <button className="btn btn-success btn-sm me-2" onClick={() => handleAcceptClick(request.id)}>
+                  Accept
+                </button>
+                <button className="btn btn-danger btn-sm" onClick={() => handleRejectClick(request)}>
+                  Reject
+                </button>
               </td>
             </tr>
           ))}
@@ -60,43 +112,63 @@ function AppointmentManagement() {
       <table className="table table-bordered table-responsive">
         <thead className="table-dark">
           <tr>
+            <th>Schedule Id</th>
             <th>Doctor Id</th>
             <th>First Name</th>
             <th>Date</th>
             <th>Time</th>
-            <th>Room</th>
             <th>Reason</th>
           </tr>
         </thead>
         <tbody>
-          {cancelledRequests.map((request, index) => (
-            <tr key={index}>
+          {cancelledRequests.map((request) => (
+            <tr key={request.id}>
               <td>{request.id}</td>
-              <td>{request.name}</td>
-              <td>{request.date}</td>
-              <td>{request.time}</td>
-              <td>
-                <select className="form-select">
-                  {roomOptions.map((room) => (
-                    <option key={room} value={room}>
-                      Room {room}
-                    </option>
-                  ))}
-                </select>
-              </td>
-              <td>
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Enter reason"
-                />
-              </td>
+              <td>{request.doctor_id}</td>
+              <td>{request.doctor_first_name}</td>
+              <td>{request.schedule_date}</td>
+              <td>{request.schedule_time}</td>
+              <td>{request.admin_feedback}</td>
             </tr>
           ))}
         </tbody>
       </table>
+
+      {showModal && (
+        <div className="modal fade show d-block" tabIndex="-1" role="dialog">
+          <div className="modal-dialog modal-dialog-centered" role="document">
+            <div className="modal-content">
+              <div className="modal-header bg-danger text-white">
+                <h5 className="modal-title">Reject Request</h5>
+                <button type="button" className="btn-close" onClick={() => setShowModal(false)}></button>
+              </div>
+              <div className="modal-body">
+                <p>Provide a reason for rejecting the request from <strong>{selectedRequest?.name}</strong>:</p>
+                <textarea
+                  className="form-control"
+                  rows="3"
+                  placeholder="Enter reason..."
+                  value={rejectReason}
+                  onChange={(e) => setRejectReason(e.target.value)}
+                />
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>
+                  Cancel
+                </button>
+                <button type="button" className="btn btn-danger" onClick={handleSendReason}>
+                  Send
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Backdrop */}
+      {showModal && <div className="modal-backdrop fade show"></div>}
     </div>
   );
-};
+}
 
-export default AppointmentManagement
+export default AppointmentManagement;

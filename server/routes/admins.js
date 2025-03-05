@@ -1,13 +1,25 @@
 const express = require('express');
 const router = express.Router();
-const adminAuthController = require('../controllers/Admins/adminAuthController')
+const adminLoginController = require('../controllers/Admins/adminLoginController');
+const scheduleController = require('../controllers/Admins/scheduleController');
+const adminAuthMiddleware = require('../middleware/auth/authorizeAdmin');
 
-router.get('/',);
-router.get('/admin',);
-router.get('/admin/dashboard',);
-router.get('/admin/managedoctors',);
-router.get('/admin/managepatient',);
-router.get('/admin/refund',);
-router.post('/login',adminAuthController.login);
+// Admin Authentication Routes
+router.post('/login', adminLoginController.login);
+router.post('/logout', adminLoginController.logout);
+
+// Schedule Management Routes
+router.get('/schedules', scheduleController.getScheduleRequest);
+router.post('/acceptschedule/:id',scheduleController.makeAcceptScheduleRequest);
+router.post('/rejectschedule/:id',scheduleController.makeRejectScheduleRequest);
+
+// Admin Dashboard (You need a controller function for dashboard)
+// router.get('/admin/dashboard', adminAuthMiddleware);
+
+// // Manage Patients (You need a controller function for managing patients)
+// router.get('/admin/managepatient', adminAuthMiddleware);
+
+// // Refund Management (You need a controller function for handling refunds)
+// router.get('/admin/refund', adminAuthMiddleware);
 
 module.exports = router;
