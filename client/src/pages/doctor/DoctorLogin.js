@@ -121,7 +121,7 @@ return (
           </div>
 
           <div className="text-center text-md-start mt-4 pt-2">
-            <button className="btn mt-1 w-100" style={{ background: '#112D4E', borderRadius: 10 }}>
+            <button className="btn mt-1 w-100" style={{ background: '#112D4E', borderRadius: 10 }} type='submit'>
               <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
                 Sign In
               </span>
