@@ -1,0 +1,49 @@
+.newsletter-section {
+    background-color: #f3f4f6;
+    padding-top: 50px;
+    padding-bottom: 50px;
+  }
+  
+  .newsletter-slide {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 30px;
+    background: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+  }
+  
+  .newsletter-content {
+    max-width: 600px;
+  }
+  
+  .newsletter-title {
+    font-size: 28px;
+    font-weight: 600;
+    color: #1e4d70;
+  }
+  
+  .newsletter-description {
+    font-size: 16px;
+    color: #777;
+    margin: 15px 0;
+  }
+  
+  .btn-subscribe:hover {
+    background-color: #0f3a59;
+  }
+  
+  .slick-dots {
+    bottom: 10px;
+  }
+  
+  .slick-dots li button:before {
+    color: #1e4d70;
+  }
+  
+  .slick-dots li.slick-active button:before {
+    color: #0f3a59;
+  }
+  

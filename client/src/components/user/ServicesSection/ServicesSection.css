@@ -1,0 +1,76 @@
+/* Services Section */
+.services-section {
+    background-color: #f7f8fa;
+  }
+  
+  .heading-section .subheading {
+    font-size: 18px;
+    color: #007BFF;
+    text-transform: uppercase;
+  }
+  
+  .heading-section h2 {
+    font-size: 36px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 40px;
+  }
+  
+  .services {
+    margin-bottom: 30px;
+  }
+  
+  .services .icon {
+    background-color: #007BFF;
+    color: #fff;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 20px;
+  }
+  
+  .services .media-body {
+    flex: 1;
+  }
+  
+  .services .heading {
+    font-size: 24px;
+    color: #333;
+    font-weight: 600;
+  }
+  
+  .services p {
+    color: #555;
+    font-size: 14px;
+  }
+  
+  .btn-custom {
+    background-color: #007BFF;
+    color: #fff;
+    padding: 8px 15px;
+    text-decoration: none;
+    border-radius: 4px;
+    margin-top: 10px;
+    display: inline-block;
+  }
+  
+  .btn-custom:hover {
+    background-color: #0056b3;
+  }
+  
+  .d-block.d-flex {
+    display: flex;
+    margin-bottom: 20px;
+  }
+  
+  .d-flex.align-items-center {
+    align-items: center;
+  }
+  
+  .d-flex.justify-content-center {
+    justify-content: center;
+  }
+  
