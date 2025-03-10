@@ -264,15 +264,28 @@ function DoctorFullRegister() {
         </div>
         <div className="col-md-6">
           <label className="form-label">Specialization</label>
-          <input
-            type="text"
-            name="specialization"  // Match with formData key
+          <select
+            name="specialization"
             className="form-control"
             style={{ background: '#ECE6E6' }}
             value={formData.specialization}
             onChange={handleChange}
             required
-          />
+          >
+            <option value="">Select Specialization</option>
+            <option value="1">General Practitioner</option>
+            <option value="2">Pediatrician</option>
+            <option value="3">Cardiologist</option>
+            <option value="4">Dermatologist</option>
+            <option value="5">Neurologist</option>
+            <option value="6">Oncologist</option>
+            <option value="7">Psychiatrist</option>
+            <option value="8">Endocrinologist</option>
+            <option value="9">Gastroenterologist</option>
+            <option value="10">Orthopedic Surgeon</option>
+            <option value="11">Ophthalmologist</option>
+            <option value="12">Pulmonologist</option>
+          </select>
         </div>
         <div className="col-md-6">
           <label className="form-label">Years of Experience</label>
