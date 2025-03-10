@@ -10,7 +10,6 @@ import BillinAndFinancial from '../../pages/admin/BillingAndFinancialManagement'
 import InventoryAndResource from '../../pages/admin/InventoryAndResourcesManagement';
 import ICU from '../../pages/admin/IntensiveCareUnit';
 import AdminLogin from '../../pages/admin/AdminLogin';
-
 function AdminPanel() {
   const sidebarStyle = {
     width: '250px',
