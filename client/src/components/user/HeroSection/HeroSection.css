@@ -1,0 +1,90 @@
+/* HeroSection.css */
+
+.hero-section {
+    position: relative;
+    height: 100vh;
+    background-size: cover;
+    background-position: center;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 20px;
+  }
+  
+  .hero-content {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    text-align: left;
+    max-width: 500px;
+  }
+  
+  .text-content h1 {
+    font-size: 3em;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .text-content h6 {
+    font-size: 1.5em;
+    font-weight: 300;
+    margin-bottom: 20px;
+  }
+  
+  .text-content p {
+    font-size: 1.2em;
+    margin-bottom: 30px;
+  }
+  
+  .buttons {
+    display: flex;
+    gap: 15px;
+  }
+  
+  .btn {
+    padding: 15px 25px;
+    font-size: 1.1em;
+    border-radius: 25px;
+    text-decoration: none;
+  }
+  
+  .btn-primary {
+    background-color: #ff5733;
+    color: white;
+    border: none;
+  }
+  
+  .btn-primary:hover {
+    background-color: #d44b29;
+  }
+  
+  .btn-secondary {
+    background-color: transparent;
+    border: 2px solid white;
+    color: white;
+  }
+  
+  .btn-secondary:hover {
+    background-color: white;
+    color: #ff5733;
+  }
+  
+  .social-icons {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    display: flex;
+    gap: 15px;
+  }
+  
+  .social-icons a {
+    color: white;
+    transition: transform 0.3s;
+  }
+  
+  .social-icons a:hover {
+    transform: scale(1.1);
+  }
+  

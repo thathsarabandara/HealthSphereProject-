@@ -1,0 +1,64 @@
+/* General Styling */
+.section2 .section-title {
+    color: black;
+    font-size: 30px;
+    font-family: 'Sansation', sans-serif;
+    font-weight: 700;
+    word-wrap: break-word;
+  }
+  
+  .section2 .section-description {
+    color: black;
+    font-size: 20px;
+    font-family: 'Segoe UI', sans-serif;
+    font-weight: 400;
+    word-wrap: break-word;
+  }
+  
+  .stat-box {
+    padding: 20px;
+    margin: 10px;
+    background-color: #1c3d5b;
+    border-radius: 10px;
+    color: white;
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
+  }
+  
+  .stat-number {
+    font-size: 40px;
+    font-weight: 700;
+  }
+  
+  .stat-plus {
+    font-size: 20px;
+  }
+  
+  .stat-label {
+    font-size: 18px;
+    font-weight: 500;
+  }
+  
+  .stat-box:hover {
+    background-color: #0d2b3c;
+    transform: translateY(-5px);
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .img-fluid {
+    border-radius: 8px;
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
+  }
+  
+  .section2 .row {
+    margin-bottom: 20px;
+  }
+  
+  @media (max-width: 768px) {
+    .section2 .row {
+      text-align: left;
+    }
+    .stat-box {
+      margin-bottom: 20px;
+    }
+  }
+  

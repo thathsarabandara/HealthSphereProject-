@@ -1,8 +1,3 @@
-import Home1 from "../../../assets/images/Rectangle 9 (3).svg";
-import img1 from '../../../assets/images/image-1.svg';
-import img2 from '../../../assets/images/img-2.svg';
-import img3 from '../../../assets/images/img-3.svg';
-import Rectangle98 from '../../../assets/images/Rectangle 98.svg';
 import Img0 from '../../../assets/images/img-1.svg';
 import Img1 from '../../../assets/images/img-1 (1).svg';
 import Img2 from '../../../assets/images/img-1 (2).svg';

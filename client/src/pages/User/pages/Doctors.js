@@ -232,7 +232,7 @@ function Doctors() {
                 {/* General Practitioner Card */}
                 <div className="col-12 col-md-12 col-lg-6 mb-5 " style={{width: 197, height: 273,  borderRadius: 8}}>
                   <div className="card text-center shadow" style={{ background: '#2A5D9C'}}>
-                    <div className="card-body">
+                    <div className="card-body" style={{ background: '#2A5D9C'}}>
                       <img 
                         src={Ellipse1} 
                         alt="General Practitioner" 
@@ -259,7 +259,7 @@ function Doctors() {
                 {/* Pediatrician Card */}
                 <div className="col-12 col-md-12 col-lg-6 mb-5 " style={{width: 197, height: 273,  borderRadius: 8}}>
                   <div className="card text-center shadow" style={{ background: '#2A5D9C' }}>
-                    <div className="card-body">
+                    <div className="card-body" style={{ background: '#2A5D9C'}}>
                       <img 
                         src={Ellipse1} 
                         alt="Pediatrician" 
@@ -286,7 +286,7 @@ function Doctors() {
                 {/* Cardiologist Card */}
                 <div className="col-12 col-md-12 col-lg-6 mb-5 " style={{width: 197, height: 273,  borderRadius: 8}}>
                   <div className="card text-center shadow" style={{ background: '#2A5D9C' }}>
-                    <div className="card-body">
+                    <div className="card-body" style={{ background: '#2A5D9C'}}>
                       <img 
                         src={Ellipse1} 
                         alt="Cardiologist" 
@@ -313,7 +313,7 @@ function Doctors() {
                 {/* Dermatologist Card */}
                 <div className="col-12 col-md-12 col-lg-6 mb-5" style={{width: 197, height: 243,  borderRadius: 8}}>
                   <div className="card text-center shadow" style={{ background: '#2A5D9C'}}>
-                    <div className="card-body">
+                    <div className="card-body" style={{ background: '#2A5D9C'}}>
                       <img 
                         src={Ellipse1} 
                         alt="Dermatologist" 
@@ -348,7 +348,7 @@ function Doctors() {
                 {/* Neurologist Card */}
                 <div className="col-12 col-md-12 col-lg-6 mb-5" style={{width: 197, height: 273,  borderRadius: 8}}>
                   <div className="card text-center shadow" style={{ background: '#2A5D9C'}}>
-                    <div className="card-body">
+                    <div className="card-body" style={{ background: '#2A5D9C'}}>
                       <img 
                         src={Ellipse1} 
                         alt="General Practitioner" 
@@ -375,7 +375,7 @@ function Doctors() {
                 {/* Oncologist Card */}
                 <div className="col-12 col-md-12 col-lg-6 mb-5" style={{width: 197, height: 273,  borderRadius: 8}}>
                   <div className="card text-center shadow" style={{ background: '#2A5D9C' }}>
-                    <div className="card-body">
+                    <div className="card-body" style={{ background: '#2A5D9C'}}>
                       <img 
                         src={Ellipse1} 
                         alt="Pediatrician" 
@@ -402,7 +402,7 @@ function Doctors() {
                 {/* Psychiatrist Card */}
                 <div className="col-12 col-md-12 col-lg-6 mb-5  " style={{width: 197, height: 273,  borderRadius: 8}}>
                   <div className="card text-center shadow" style={{ background: '#2A5D9C' }}>
-                    <div className="card-body">
+                    <div className="card-body" style={{ background: '#2A5D9C'}}>
                       <img 
                         src={Ellipse1} 
                         alt="Cardiologist" 
@@ -429,7 +429,7 @@ function Doctors() {
                 {/* Endocrinologist Card */}
                 <div className="col-12 col-md-12 col-lg-6 mb-5 " style={{width: 197, height: 243,  borderRadius: 8}}>
                   <div className="card text-center shadow" style={{ background: '#2A5D9C'}}>
-                    <div className="card-body">
+                    <div className="card-body" style={{ background: '#2A5D9C'}}>
                       <img 
                         src={Ellipse1} 
                         alt="Dermatologist" 
@@ -459,7 +459,7 @@ function Doctors() {
                 {/* Gastroenterologist Card */}
                 <div className="col-12 col-md-12 col-lg-6 mb-5" style={{width: 197, height: 273,  borderRadius: 8}}>
                   <div className="card text-center shadow" style={{ background: '#2A5D9C'}}>
-                    <div className="card-body">
+                    <div className="card-body" style={{ background: '#2A5D9C'}}>
                       <img 
                         src={Ellipse1} 
                         alt="General Practitioner" 
@@ -486,7 +486,7 @@ function Doctors() {
                 {/* Orthopedic Surgeon Card */}
                 <div className="col-12 col-md-12 col-lg-6 mb-5 " style={{width: 197, height: 273,  borderRadius: 8}}>
                   <div className="card text-center shadow" style={{ background: '#2A5D9C' }}>
-                    <div className="card-body">
+                    <div className="card-body" style={{ background: '#2A5D9C'}}>
                       <img 
                         src={Ellipse1} 
                         alt="Pediatrician" 
@@ -513,7 +513,7 @@ function Doctors() {
                 {/* Ophthalmologist Card */}
                 <div className="col-12 col-md-12 col-lg-6 mb-5 " style={{width: 197, height: 273,  borderRadius: 8}}>
                   <div className="card text-center shadow" style={{ background: '#2A5D9C' }}>
-                    <div className="card-body">
+                    <div className="card-body" style={{ background: '#2A5D9C'}}>
                       <img 
                         src={Ellipse1} 
                         alt="Cardiologist" 
@@ -540,7 +540,7 @@ function Doctors() {
                 {/* Pulmonologist Card */}
                 <div className="col-12 col-md-12 col-lg-6 mb-5" style={{width: 197, height: 243,  borderRadius: 8}}>
                   <div className="card text-center shadow" style={{ background: '#2A5D9C'}}>
-                    <div className="card-body">
+                    <div className="card-body" style={{ background: '#2A5D9C'}}>
                       <img 
                         src={Ellipse1} 
                         alt="Dermatologist" 
