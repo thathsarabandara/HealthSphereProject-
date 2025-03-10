@@ -24,7 +24,7 @@ router.post('/clinic/:reservationid/prescription/:patientid',[prescriptionUpload
 router.post('/resetpassword',doctorAuthMiddleware,loginController.resetPassword);
 router.get('/resetpassword/validate',doctorAuthMiddleware,loginController.validateToken);
 router.post('/resetpasswordRequest',doctorAuthMiddleware, loginController.resetPasswordRequest);
-router.post('/logout',doctorAuthMiddleware, loginController.logout);
+router.post('/logout', loginController.logout);
 router.post('/login',loginController.login);
 router.post('/register',registerController.register);
 router.post('/verifyuser',registerController.verifyUser);

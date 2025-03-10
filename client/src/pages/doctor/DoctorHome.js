@@ -62,7 +62,7 @@ const [currentDateTime, setCurrentDateTime] = useState(new Date());
   // Fetch statistics data (appointments, consultations, income, etc.)
   const fetchStatsData = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/stats', { withCredentials: true });
+      const response = await axios.get('', { withCredentials: true });
       if (response.status === 200) {
         setStatsData(response.data); // Assuming 'data' contains the stats info
       }
@@ -74,7 +74,7 @@ const [currentDateTime, setCurrentDateTime] = useState(new Date());
   // Fetch appointments data
   const fetchAppointments = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/appointments', { withCredentials: true });
+      const response = await axios.get('', { withCredentials: true });
       if (response.status === 200) {
         setAppointments(response.data); // Assuming 'data' contains the appointments info
       }
@@ -86,7 +86,7 @@ const [currentDateTime, setCurrentDateTime] = useState(new Date());
   // Fetch gender stats data
   const fetchGenderStats = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/gender-stats', { withCredentials: true });
+      const response = await axios.get('', { withCredentials: true });
       if (response.status === 200) {
         setGenderStats(response.data); // Assuming 'data' contains the gender stats info
       }
@@ -98,7 +98,7 @@ const [currentDateTime, setCurrentDateTime] = useState(new Date());
   // Fetch reviews data
   const fetchReviews = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/reviews', { withCredentials: true });
+      const response = await axios.get('', { withCredentials: true });
       if (response.status === 200) {
         setReviews(response.data); // Assuming 'data' contains the reviews info
       }
