@@ -3,29 +3,29 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import PatientNavbar from './components/user/PatientNavbar';
 import DoctorNavbar from './components/doctor/DoctorNavbar';
-import PatientHome from './pages/User/PatientHome';
-import PatientDoctors from './pages/User/PatientDoctors';
-import PatientLaboratory from './pages/User/PatientLaboratory';
-import PatientPharmacy from './pages/User/PatientPharmacy';
-import PatientAbout from './pages/User/PatientAbout';
+import PatientHome from './pages/User/pages/Home';
+import Doctors from './pages/User/pages/Doctors';
+import PatientLaboratory from './pages/User/pages/Laboratory';
+import PatientPharmacy from './pages/User/pages/Pharmacy';
+import PatientAbout from './pages/User/pages/About';
 import PatientFooter from './components/user/PatientFooter'; 
 import DoctorFooter from './components/doctor/DoctorFooter'; 
-import PatientPackages from './pages/User/PatientPackages';
-import PatientLogin from './pages/User/PatientLogin';
-import PatientRegister from './pages/User/PatientRegister';
-import OTPVerification from './pages/User/OTPVerification';
-import PatientProfile from './pages/User/PatientProfile';
-import ResetPassword from './pages/User/ResetPassword';
-import PatientPasswordReset from './pages/User/PatientPasswordReset';
-import Cart from './pages/User/Cart';
-import Payment from './pages/User/Payment';
-import PatientPaymentHistory from './pages/User/PatientPaymentHistory';
-import PatientPrescriptionHistory from './pages/User/PatientPrescriptionHistory';
-import Refund from './pages/User/Refund';
+import PatientPackages from './pages/User/pages/Packages';
+import PatientLogin from './pages/User/auth/Login';
+import PatientRegister from './pages/User/auth/Register';
+import OTPVerification from './pages/User/auth/OTPVerification';
+import PatientProfile from './pages/User/other/Profile';
+import ResetPassword from './pages/User/auth/ResetPassword';
+import PatientPasswordReset from './pages/User/auth/PasswordReset';
+import Cart from './pages/User/other/Cart';
+import Payment from './pages/User/payment/Payment';
+import PatientPaymentHistory from './pages/User/payment/PaymentHistory';
+import PatientPrescriptionHistory from './pages/User/healthcare/PrescriptionHistory';
+import Refund from './pages/User/payment/Refund';
 import Error403 from './pages/ErrorPages/Error403';
 import Error404 from './pages/ErrorPages/Error404';
-import DoctorDetails from './pages/User/DoctorDetails';
-import Reservations from './pages/User/Reservations';
+import DoctorDetails from './pages/User/healthcare/DoctorDetails';
+import Reservations from './pages/User/other/Reservations';
 import DoctorRegister from './pages/doctor/DoctorRegister';
 import DoctorLogin from './pages/doctor/DoctorLogin';
 import DoctorAbout from './pages/doctor/DoctorAbout';
@@ -43,15 +43,15 @@ import Error429 from './pages/ErrorPages/Error429';
 import Error500 from './pages/ErrorPages/Error500';
 import Error503 from './pages/ErrorPages/Error503';
 import Maintenance from './pages/ErrorPages/Maintenance';
-import DoctorsProfile from './pages/User/DoctorsProfile';
+import DoctorsProfile from './pages/User/healthcare/DoctorsProfile';
 import DoctorVerify from './pages/doctor/DoctorVerify';
 import WebBot from './components/Web Assistant/WebBot';
-import MedicalConditions from './pages/User/MedicalConditions';
-import Bookings from './pages/User/Bookings';
+import MedicalConditions from './pages/User/healthcare/MedicalConditions';
+import Bookings from './pages/User/other/Bookings';
 import DoctorPatientProfile from './pages/doctor/DoctorPatientProfile';
 import PrescriptionView from './pages/doctor/PrescriptionView';
-import PatientPrescriptionView from './pages/User/PatientPrescriptionView';
-import Checkout from './pages/User/Checkout';
+import PatientPrescriptionView from './pages/User/healthcare/PrescriptionView';
+import Checkout from './pages/User/payment/Checkout';
 import DoctorDashboard from './pages/doctor/DoctorDashboard';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import DoctorAndStaffManagement from './pages/admin/DoctorsAndStaffManagement';
@@ -100,7 +100,7 @@ function App() {
     {NavbarComponent && <NavbarComponent />}
     <Routes>
         <Route path="/" element={<PatientHome />} />
-        <Route path="/finddoctors" element={<PatientDoctors />} />
+        <Route path="/finddoctors" element={<Doctors />} />
         <Route path="/finddoctors/:category" element={<DoctorDetails />} />
         <Route path="/finddoctors/:category/reservation/:scheduleid" element={<Reservations />} />
         <Route path="/profileDoctor/:id" element={<DoctorsProfile />} />

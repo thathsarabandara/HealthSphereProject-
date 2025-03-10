@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import '../../styles/user/PatientProfile.css';
-import emptyImage from '../../assets/images/emptyProfile.png';
+import '../../../styles/user/PatientProfile.css';
+import emptyImage from '../../../assets/images/emptyProfile.png';
 import axios from 'axios'; // Import axios to make HTTP requests
-import Loader from '../../components/common/Loader';
-import ErrorPopup from '../../components/common/error popup/ErrorPopup';
-import SuccessPopup from '../../components/common/success popup/SuccessPopup';
+import Loader from '../../../components/common/Loader';
+import ErrorPopup from '../../../components/common/error popup/ErrorPopup';
+import SuccessPopup from '../../../components/common/success popup/SuccessPopup';
 let pp;
 
-function PatientProfile() {
+function Profile() {
   const [profileData, setProfileData] = useState({
     id: '',
     registrationDate: '',
@@ -341,4 +341,4 @@ function PatientProfile() {
   );
 }
 
-export default PatientProfile;
+export default Profile;

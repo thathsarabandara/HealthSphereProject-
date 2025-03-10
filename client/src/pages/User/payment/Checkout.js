@@ -1,14 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import '../../styles/user/Payment.css';
-import Loader from '../../components/common/Loader';
+import '../../../styles/user/Payment.css';
+import Loader from '../../../components/common/Loader';
 import { useNavigate, useParams } from 'react-router-dom';
+import SuccessPopup from '../../../components/common/success popup/SuccessPopup';
+import ErrorPopup from '../../../components/common/error popup/ErrorPopup';
 
-function Payment() {
+function Checkout() {
   const { id }= useParams();
   const [paymentMethod, setPaymentMethod] = useState('Online Payment');
   const [isLoading, setIsLoading] = useState(true);
   const [checkoutAmount, setCheckoutAmount] = useState(null);
+  const [errorVisible, setErrorVisible] = useState(false);
+  const [successVisible, setSuccessVisible] = useState(false);
+  const handleErrorClose = () => setErrorVisible(false);
+  const handleSuccessClose = () => setSuccessVisible(false);
   const navigate = useNavigate();
 
   const [billingDetails, setBillingDetails] = useState({
@@ -88,16 +94,16 @@ function Payment() {
             formData.append('paymentProof', paymentDetails.paymentProof);
         }
 
-        const response = await axios.post(`http://localhost:5000/checkout/pay/${id}`, formData, {
+        const response = await axios.post(`http://localhost:5000/checkouts/pay/${id}`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
           withCredentials: true,
         });
 
-      alert('Payment Successful!');
+      setSuccessVisible(true);
       navigate('/')
     } catch (error) {
       console.error('Error submitting payment:', error);
-      alert('Payment failed. Please try again.');
+      setErrorVisible(true)
     } finally {
       setIsLoading(false);
     }
@@ -127,6 +133,8 @@ function Payment() {
 
   return (
     <div className="billing-container">
+      <ErrorPopup show={errorVisible} onClose={handleErrorClose} title="Something Went Wrong!" message="Payment Failed Try again!" button='Okay' />
+      <SuccessPopup show={successVisible} onClose={handleSuccessClose} title="Updated Success Fully " message="Payment Successfull!" button='Okay' />
       <div className="billing-details ms-5 mt-5 mb-5">
         <h3>
           <span className="icon">▣</span> Billing Details
@@ -266,4 +274,4 @@ function Payment() {
   );
 }
 
-export default Payment;
+export default Checkout;

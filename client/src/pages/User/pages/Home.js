@@ -1,25 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import Home1 from "../../assets/images/Rectangle 9 (3).svg";
+import Home1 from "../../../assets/images/Rectangle 9 (3).svg";
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import 'typeface-anton';
-import img1 from '../../assets/images/image-1.svg';
-import img2 from '../../assets/images/img-2.svg';
-import img3 from '../../assets/images/img-3.svg';
-import Rectangle98 from '../../assets/images/Rectangle 98.svg';
-import Img0 from '../../assets/images/img-1.svg';
-import Img1 from '../../assets/images/img-1 (1).svg';
-import Img2 from '../../assets/images/img-1 (2).svg';
-import Img3 from '../../assets/images/img-1 (3).svg';
-import Img4 from '../../assets/images/img-1 (4).svg';
-import Img5 from '../../assets/images/img-1 (5).svg';
-import Img6 from '../../assets/images/img-1 (6).svg';
-import Img7 from '../../assets/images/img-1 (7).svg';
-import Img8 from '../../assets/images/img-1 (8).svg';
-import Img9 from '../../assets/images/img-1 (9).svg';
-import Loader from '../../components/common/Loader';
-import emptyImage from '../../assets/images/emptyProfile.png';
+import img1 from '../../../assets/images/image-1.svg';
+import img2 from '../../../assets/images/img-2.svg';
+import img3 from '../../../assets/images/img-3.svg';
+import Rectangle98 from '../../../assets/images/Rectangle 98.svg';
+import Img0 from '../../../assets/images/img-1.svg';
+import Img1 from '../../../assets/images/img-1 (1).svg';
+import Img2 from '../../../assets/images/img-1 (2).svg';
+import Img3 from '../../../assets/images/img-1 (3).svg';
+import Img4 from '../../../assets/images/img-1 (4).svg';
+import Img5 from '../../../assets/images/img-1 (5).svg';
+import Img6 from '../../../assets/images/img-1 (6).svg';
+import Img7 from '../../../assets/images/img-1 (7).svg';
+import Img8 from '../../../assets/images/img-1 (8).svg';
+import Img9 from '../../../assets/images/img-1 (9).svg';
+import Loader from '../../../components/common/Loader';
+import emptyImage from '../../../assets/images/emptyProfile.png';
 import { Bar, Line } from 'react-chartjs-2';
 import { FaClinicMedical, FaGift, FaHeartbeat, FaBalanceScale } from 'react-icons/fa';
 import {
@@ -33,8 +33,8 @@ import {
   Tooltip,
   Legend
 } from 'chart.js';
-import PatientImg from '../../assets/images/profileImg.png';
-import '../../styles/Home.css';
+import PatientImg from '../../../assets/images/profileImg.png';
+import '../../../styles/Home.css';
 
 ChartJS.register(
   CategoryScale,

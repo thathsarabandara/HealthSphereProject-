@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios'; // Import Axios
-import Loader from '../../components/common/Loader';
+import Loader from '../../../components/common/Loader';
 
 function DoctorDetails() {
   const { category } = useParams(); // Extract the category from URL parameters

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import ErrorPopup from '../../components/common/error popup/ErrorPopup';
-import SuccessPopup from '../../components/common/success popup/SuccessPopup';
+import ErrorPopup from '../../../components/common/error popup/ErrorPopup';
+import SuccessPopup from '../../../components/common/success popup/SuccessPopup';
 
 function OTPVerification() {
     const [otp, setOtp] = useState('');

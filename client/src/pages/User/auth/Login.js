@@ -2,10 +2,10 @@ import React, { useState , useEffect } from 'react';
 import { triggerLoginEvent } from './authEvents'; // Make sure to adjust the import path
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import '../../styles/temp.css';
+import '../../../styles/temp.css';
 import { Link } from 'react-router-dom';
-import signin from '../../assets/images/Rectangle 84 (1).svg'
-import Loader from '../../components/common/Loader';
+import signin from '../../../assets/images/Rectangle 84 (1).svg'
+import Loader from '../../../components/common/Loader';
 
 function Login() {
     const [email, setEmail] = useState('');

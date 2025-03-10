@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, NavigationType, useNavigate } from 'react-router-dom';
 import { MdEvent, MdPayment, MdPerson, MdInfo } from 'react-icons/md';
 import axios from 'axios';
-import Loader from '../../components/common/Loader';
+import Loader from '../../../components/common/Loader';
 
 const Bookings = () => {
   const [bookings, setBookings] = useState([]);

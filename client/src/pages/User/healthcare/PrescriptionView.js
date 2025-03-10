@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Link,  useParams } from 'react-router-dom';
 import { FaArrowLeft } from 'react-icons/fa';
 
-function PatientPrescriptionView() {
+function PrescriptionView() {
   const [prescription, setPrescription] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
@@ -82,4 +82,4 @@ function PatientPrescriptionView() {
   );
 }
 
-export default PatientPrescriptionView;
+export default PrescriptionView;

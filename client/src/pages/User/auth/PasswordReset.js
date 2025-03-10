@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useLocation, useNavigate } from 'react-router-dom';
-import Loader from '../../components/common/Loader';
+import Loader from '../../../components/common/Loader';
 
-const PatientPasswordReset = () => {
+const PasswordReset = () => {
     const [isValidToken, setIsValidToken] = useState(false);
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -118,4 +118,4 @@ const PatientPasswordReset = () => {
     );
 };
 
-export default PatientPasswordReset;
+export default PasswordReset;

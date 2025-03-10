@@ -1,11 +1,11 @@
 import React, { useState ,useEffect } from 'react';
-import signup from '../../assets/images/Rectangle 84.svg';
-import '../../styles/temp.css';
+import signup from '../../../assets/images/Rectangle 84.svg';
+import '../../../styles/temp.css';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import Loader from '../../components/common/Loader';
+import Loader from '../../../components/common/Loader';
 
-function App() {
+function Register() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -212,5 +212,5 @@ function App() {
   );
 }
 
-export default App;
+export default Register;
 

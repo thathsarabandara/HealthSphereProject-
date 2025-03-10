@@ -13,9 +13,9 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import TextField from '@mui/material/TextField';
-import Loader from '../../components/common/Loader';
-import ErrorPopup from '../../components/common/error popup/ErrorPopup';
-import SuccessPopup from '../../components/common/success popup/SuccessPopup';
+import Loader from '../../../components/common/Loader';
+import ErrorPopup from '../../../components/common/error popup/ErrorPopup';
+import SuccessPopup from '../../../components/common/success popup/SuccessPopup';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {

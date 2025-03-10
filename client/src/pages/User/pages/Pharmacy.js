@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import Rectangle60 from '../../assets/images/Rectangle 60.svg';
-import Rectangle81 from '../../assets/images/Rectangle 81.svg';
-import Loader from '../../components/common/Loader';
+import Rectangle60 from '../../../assets/images/Rectangle 60.svg';
+import Rectangle81 from '../../../assets/images/Rectangle 81.svg';
+import Loader from '../../../components/common/Loader';
 
-function PatientPharmacy() {
+function Pharmacy() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -173,5 +173,5 @@ function PatientPharmacy() {
   );
 }
 
-export default PatientPharmacy;
+export default Pharmacy;
 

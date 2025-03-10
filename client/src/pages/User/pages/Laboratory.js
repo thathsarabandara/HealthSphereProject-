@@ -1,12 +1,12 @@
 import React, { useState , useEffect} from 'react';
-import Rectangle82 from '../../assets/images/Rectangle 82.svg'
-import rectangle90 from '../../assets/images/Rectangle 90.svg'
-import rectangle91 from '../../assets/images/Rectangle 90 (1).svg'
-import rectangle92 from '../../assets/images/Rectangle 90 (2).svg'
-import rectangle93 from '../../assets/images/Rectangle 90 (3).svg'
-import rectangle94 from '../../assets/images/Rectangle 90 (4).svg'
-import rectangle95 from '../../assets/images/Rectangle 90 (5).svg'
-import Loader from '../../components/common/Loader'
+import Rectangle82 from '../../../assets/images/Rectangle 82.svg'
+import rectangle90 from '../../../assets/images/Rectangle 90.svg'
+import rectangle91 from '../../../assets/images/Rectangle 90 (1).svg'
+import rectangle92 from '../../../assets/images/Rectangle 90 (2).svg'
+import rectangle93 from '../../../assets/images/Rectangle 90 (3).svg'
+import rectangle94 from '../../../assets/images/Rectangle 90 (4).svg'
+import rectangle95 from '../../../assets/images/Rectangle 90 (5).svg'
+import Loader from '../../../components/common/Loader'
 
 
 function Laboratory() {

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import Rectangle56 from '../../assets/images/Rectangle 56.svg'
-import Ellipse1 from '../../assets/images/Ellipse 1.svg'
-import '../../styles/Doctors.css'
+import Rectangle56 from '../../../assets/images/Rectangle 56.svg'
+import Ellipse1 from '../../../assets/images/Ellipse 1.svg'
+import '../../../styles/Doctors.css'
 import axios from 'axios';
-import Loader from '../../components/common/Loader';
+import Loader from '../../../components/common/Loader';
 
-function PatientDoctors() {
+function Doctors() {
   const [isLoading, setIsLoading] = useState(true);
   const [doctorData, setDoctorData] = useState([]);
   const [isCardViewVisible, setIsCardViewVisible] = useState(true);
@@ -572,4 +572,4 @@ function PatientDoctors() {
   );
 }
 
-export default PatientDoctors;
+export default Doctors;

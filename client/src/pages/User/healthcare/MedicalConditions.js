@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Loader from '../../components/common/Loader';
-import ErrorPopup from '../../components/common/error popup/ErrorPopup';
-import SuccessPopup from '../../components/common/success popup/SuccessPopup';
+import Loader from '../../../components/common/Loader';
+import ErrorPopup from '../../../components/common/error popup/ErrorPopup';
+import SuccessPopup from '../../../components/common/success popup/SuccessPopup';
 
 function MedicalConditions() {
   const [allergies, setAllergies] = useState([]);

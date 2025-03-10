@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import axios from 'axios';
-import Rectangle57 from '../../assets/images/Rectangle 57.svg';
-import Loader from '../../components/common/Loader';
+import Rectangle57 from '../../../assets/images/Rectangle 57.svg';
+import Loader from '../../../components/common/Loader';
 
 function Packages() {
 

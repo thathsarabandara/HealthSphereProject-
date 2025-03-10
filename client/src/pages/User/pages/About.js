@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react'
-import Rectangle83 from '../../assets/images/Rectangle 83.svg'
-import Rectangle92 from '../../assets/images/Rectangle 92.svg'
-import Loader from '../../components/common/Loader';
+import Rectangle83 from '../../../assets/images/Rectangle 83.svg'
+import Rectangle92 from '../../../assets/images/Rectangle 92.svg'
+import Loader from '../../../components/common/Loader';
 
 function About() {
   const [isLoading, setIsLoading] = useState(true);

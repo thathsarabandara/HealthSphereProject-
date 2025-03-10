@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Loader from '../../components/common/Loader';
+import Loader from '../../../components/common/Loader';
 import { useNavigate } from 'react-router-dom';
-import ErrorPopup from '../../components/common/error popup/ErrorPopup';
-import SuccessPopup from '../../components/common/success popup/SuccessPopup';
+import ErrorPopup from '../../../components/common/error popup/ErrorPopup';
+import SuccessPopup from '../../../components/common/success popup/SuccessPopup';
 
 function Cart() {
   const [cartItems, setCartItems] = useState([]);

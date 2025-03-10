@@ -1,6 +1,6 @@
 import React, { useState , useEffect } from 'react';
 import axios from 'axios';
-import Loader from '../../components/common/Loader';
+import Loader from '../../../components/common/Loader';
 
 function ResetPassword() {
     const [email, setEmail] = useState('');
