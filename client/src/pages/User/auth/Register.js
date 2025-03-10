@@ -42,7 +42,6 @@ function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate if password and confirm password match
     if (password !== confirmPassword) {
       setErrorMessage('Passwords do not match');
       return;
@@ -54,15 +53,12 @@ function Register() {
         { username, email, password },
         { withCredentials: true }
       );
-
       setSuccess(response.data.message);
       setErrorMessage('');
       setUsername('');
       setEmail('');
       setPassword('');
       setConfirmPassword('');
-
-      // Redirect to verifyuser page after successful registration
       navigate('/verifyuser');
     } catch (error) {
       setErrorMessage(error.response?.data?.error || 'Registration failed');
@@ -74,8 +70,12 @@ function Register() {
     <div className="container p-3 my-5 h-custom">
       <div className="row mt-3 mb-3" style={{ background: '#C8D8F6', borderRadius: 12 }}>
         <div className="col-md-1" />
-        <div className="col-md-5 mt-5">
-          <img src={signup} className="img-fluid" alt="Sample image" />
+        <div className="col-md-5">
+          <img 
+            src={signup} className="img-fluid" 
+            alt="Sample image"
+            style={{ marginTop: '150px' , borderRadius: '15px'}}
+          />
         </div>
 
         <div className="col-md-5">
@@ -89,7 +89,7 @@ function Register() {
                 fontWeight: 700,
                 lineHeight: '18px',
                 wordWrap: 'break-word',
-                marginTop: '10px',
+                marginTop: '0px',
               }}
             >
               Enter a username and email to register as a new patient.
@@ -99,7 +99,7 @@ function Register() {
           </div>
 
           <form onSubmit={handleSubmit}>
-            <div className="mb-4">
+            <div className="mb-2">
               <label htmlFor="name" className="form-label">
                 Full Name
               </label>
@@ -114,7 +114,7 @@ function Register() {
               />
             </div>
 
-            <div className="mb-4">
+            <div className="mb-2">
               <label htmlFor="email" className="form-label">
                 Email address
               </label>
@@ -129,7 +129,7 @@ function Register() {
               />
             </div>
 
-            <div className="mb-4">
+            <div className="mb-2">
               <label htmlFor="password" className="form-label">
                 Password
               </label>
@@ -144,7 +144,7 @@ function Register() {
               />
             </div>
 
-            <div className="mb-4">
+            <div className="mb-2">
               <label htmlFor="confirm_password" className="form-label">
                 Confirm Password
               </label>
@@ -159,7 +159,7 @@ function Register() {
               {errorMessage && <small className="text-danger">{errorMessage}</small>}
             </div>
 
-            <div className="d-flex justify-content-between mb-4">
+            <div className="d-flex justify-content-between mb-2">
               <div className="form-check">
                 <input className="form-check-input" type="checkbox" id="rememberMe" />
                 <label className="form-check-label" htmlFor="rememberMe">
@@ -168,10 +168,10 @@ function Register() {
               </div>
             </div>
 
-            <div className="text-center text-md-start mt-4 pt-2">
+            <div className="text-center text-md-start mt-2 pt-2">
               <button
                 type="submit"
-                className="btn mt-1 w-100 mb-4"
+                className="btn mt-1 w-100 mb-2"
                 style={{ background: '#112D4E', borderRadius: 10 }}
               >
                 <span

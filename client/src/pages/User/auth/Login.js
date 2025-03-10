@@ -43,22 +43,19 @@ function Login() {
         e.preventDefault();
         try {
             const response = await axios.post('http://localhost:5000/login', { email, password }, { withCredentials: true });
-
             setSuccess(response.data.message);
             setError('');
             setEmail('');
             setPassword('');
-            
-            sessionStorage.setItem('isAuthenticated', 'true'); // Persist authentication state
+            sessionStorage.setItem('isAuthenticated', 'true'); 
             triggerLoginEvent()
-
-            // Navigate to the desired route after successful login
-            navigate('/'); // Change this to your desired route
+            navigate('/'); 
         } catch (err) {
             setError(err.response?.data?.error || 'Login failed. Please try again.');
             setSuccess('');
         }
   };
+
   return (
     <div className="container p-3 my-5 h-custom">
       <div className="row g-0" style={{background: '#C8D8F6', borderRadius: 12}}>
@@ -66,8 +63,9 @@ function Login() {
         <div className="col-md-5 no-gap" >
           <img
             src={signin}
-            className="img-fluid mt-5"
+            className="img-fluid"
             alt="Sample image"
+            style={{ marginTop: '100px' , maxWidth: '450px', maxHeight: '450px', objectFit: 'contain', borderRadius: '15px'}}
           />
         </div>
 
@@ -131,7 +129,6 @@ function Login() {
                 </span>
               </button>
 
-              {/* Social Login Section */}
               <div className="text-center my-3">
                   <small>or login with</small>
               </div>
@@ -147,6 +144,7 @@ function Login() {
                 Don't have an account? <Link to="/signup" className="link-danger">Register</Link>
               </p>
             </div>
+            
           </form>
         </div>
         <div className='col-md-1'/>
