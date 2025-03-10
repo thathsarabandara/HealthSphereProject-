@@ -53,11 +53,8 @@ import PrescriptionView from './pages/doctor/PrescriptionView';
 import PatientPrescriptionView from './pages/User/healthcare/PrescriptionView';
 import Checkout from './pages/User/payment/Checkout';
 import DoctorDashboard from './pages/doctor/DoctorDashboard';
-import AdminDashboard from './pages/admin/AdminDashboard';
-import DoctorAndStaffManagement from './pages/admin/DoctorsAndStaffManagement';
-import AppointmentManagement from './pages/admin/AppointmentManagement';
 import AdminPanel from './components/admin/AdminPanel';
-
+import AdminLogin from './pages/admin/Login';
 
 const getNavbarAndFooter = (path) => {
   let NavbarComponent, FooterComponent, SidebarComponent;
@@ -66,7 +63,12 @@ const getNavbarAndFooter = (path) => {
     NavbarComponent = DoctorNavbar;
     FooterComponent = DoctorFooter; 
   } else if (path.startsWith('/admin')) {
-    SidebarComponent = AdminPanel;
+    //SidebarComponent = AdminPanel; 
+    if (path === '/admin/') { 
+      SidebarComponent = null
+    } else {
+      SidebarComponent = AdminPanel; // Show Sidebar for other Admin Pages
+    }
   } else {
     NavbarComponent = PatientNavbar; 
     FooterComponent = PatientFooter; 
@@ -84,18 +86,13 @@ function App() {
     setTimeout(() => setIsLoading(false), 3000); // Simulate loading time
   }, []);
 
-  return(
-    <>
-      {SidebarComponent ? (
-        <>
-          <SidebarComponent />
-            <Routes>
-              <Route path="/admin/dashboard" element={<AdminDashboard />} />
-              <Route path="/admin/staffmanagement" element={<DoctorAndStaffManagement />} />
-              <Route path="/admin/appointmentmanagement" element={<AppointmentManagement />} />
-            </Routes>
-        </>
-      ):(
+  return (
+    <div>
+      {SidebarComponent === null ? (
+        <AdminLogin/>
+      ) : SidebarComponent ?(  
+        <SidebarComponent/> 
+      ) : (
         <>
     {NavbarComponent && <NavbarComponent />}
     <Routes>
@@ -136,28 +133,26 @@ function App() {
         <Route path="/error/503" element={<Error503 />} />
         <Route path="/error/maintenance" element={<Maintenance />} />
 
-        {/* Doctor Routes */}
-        <Route path="/doctor/login" element={<DoctorLogin />} />
-        <Route path="/doctor/register" element={<DoctorRegister />} />
-        <Route path="/doctor/patientProfile/:id" element={<DoctorPatientProfile />} />
-        <Route path="/doctor/verifyuser" element={<DoctorVerify />} />
-        <Route path="/doctor/about" element={<DoctorAbout />} />
-        <Route path="/doctor/" element={<DoctorHome />} />
-        <Route path="/doctor/schedule" element={<DoctorSchedule />} />
-        <Route path="/doctor/videoconsultation" element={<DoctorVideoConsultation />} />
-        <Route path="/doctor/clinic" element={<DoctorClinic />} />
-        <Route path="/doctor/clinic/:reservationid/prescription/:patientid" element={<DoctorPrescription />} />
-        <Route path="/doctor/clinic/:reservationid/viewprescription/:patientid" element={<PrescriptionView />} />
-        <Route path="/doctor/fullregister/:id" element={<DoctorFullRegister />} />
-    </Routes>
+            <Route path="/doctor/login" element={<DoctorLogin />} />
+            <Route path="/doctor/register" element={<DoctorRegister/>} />
+            <Route path="/doctor/patientProfile/:id" element={<DoctorPatientProfile/>} />
+            <Route path="/doctor/verifyuser" element={<DoctorVerify/>} />
+            <Route path="/doctor/about" element={<DoctorAbout/>} />
+            <Route path="/doctor/" element={<DoctorHome/>} />
+            <Route path="/doctor/dashboard" element={<DoctorDashboard/>} />
+            <Route path="/doctor/schedule" element={<DoctorSchedule/>} />
+            <Route path="/doctor/videoconsultation" element={<DoctorVideoConsultation/>} />
+            <Route path="/doctor/clinic" element={<DoctorClinic/>} />
+            <Route path="/doctor/prescription" element={<DoctorPrescription/>} />
+            <Route path="/doctor/fullregister/:id" element={<DoctorFullRegister/>} />
 
-    <WebBot />
-    {FooterComponent && <FooterComponent />}
-</>
-
+          </Routes>
+          <WebBot/>
+          {FooterComponent && <FooterComponent />}
+        </>
       )}
-    </>
-  )
+    </div>    
+  );
 }
 
 const WrapperApp = () => (
