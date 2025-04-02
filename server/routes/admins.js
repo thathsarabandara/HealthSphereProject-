@@ -3,6 +3,7 @@ const router = express.Router();
 const adminLoginController = require('../controllers/Admins/adminLoginController');
 const scheduleController = require('../controllers/Admins/scheduleController');
 const adminAuthMiddleware = require('../middleware/auth/authorizeAdmin');
+const patientmanagement  = require('../controllers/Admins/patientmanagementcontroller');
 
 // Admin Authentication Routes
 router.post('/login', adminLoginController.login);
@@ -17,7 +18,10 @@ router.post('/rejectschedule/:id',scheduleController.makeRejectScheduleRequest);
 // router.get('/admin/dashboard', adminAuthMiddleware);
 
 // // Manage Patients (You need a controller function for managing patients)
-// router.get('/admin/managepatient', adminAuthMiddleware);
+router.put('/patientmanagement',adminAuthMiddleware, patientmanagement.saveProfile);
+router.get('/patientmanagement/viewpatient',adminAuthMiddleware, patientmanagement.patientDetails);
+router.get('/patientmanagement/viewdoctor/:id',adminAuthMiddleware, patientmanagement.loadDoctortProfile);
+router.get('/patientmanagement/loadprescription/:reservationid',adminAuthMiddleware, patientmanagement.loadPrescription);
 
 // // Refund Management (You need a controller function for handling refunds)
 // router.get('/admin/refund', adminAuthMiddleware);
