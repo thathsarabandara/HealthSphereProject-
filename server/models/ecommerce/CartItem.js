@@ -31,6 +31,9 @@ const CartItem = sequelize.define('CartItem', {
             unique: false,
             fields: ['price'], // Add an index on price
         },
+        {
+            fields: ['product_name'], 
+        },
     ],
 });
 

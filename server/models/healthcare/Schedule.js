@@ -45,6 +45,15 @@ const Schedule = sequelize.define('Schedule', {
 }, {
     tableName: 'schedules',
     timestamps: false,
+    indexes: [
+        {
+            fields: ['schedule_date'], 
+        },
+        {
+            fields: ['schedule_time'], 
+        },
+
+    ],
 });
 
 module.exports = {

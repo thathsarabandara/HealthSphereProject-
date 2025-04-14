@@ -47,6 +47,11 @@ const Review = sequelize.define('Review', {
 }, {
     tableName: 'reviews',
     timestamps: false,
+    indexes: [
+        {
+            fields: ['rating'], 
+        },
+    ],
 });
 
 module.exports = {

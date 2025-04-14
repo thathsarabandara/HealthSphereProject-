@@ -19,6 +19,11 @@ const Group = sequelize.define('Group', {
 }, {
   tableName: 'groups',
   timestamps: true,
+  indexes: [
+    {
+        fields: ['name'], 
+    },
+  ],
 });
 
 module.exports = {

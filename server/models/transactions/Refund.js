@@ -34,6 +34,11 @@ const Refund = sequelize.define('Refund', {
 }, {
     tableName: 'refunds',
     timestamps: false,
+    indexes: [
+            {
+                fields: ['refund_reason'], 
+            },
+    ],
 });
 
 module.exports = {

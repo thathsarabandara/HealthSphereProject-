@@ -47,6 +47,18 @@ const BillingDetails = sequelize.define('BillingDetails', {
   }, {
     tableName: 'billing_details',
     timestamps: false, // Disable default timestamps
+    indexes: [
+      {
+          fields: ['fullName'], 
+      },
+      {
+          fields: ['phoneNumber'], 
+      },
+      {
+          fields: ['email'], 
+      },
+    ],
+
   });
 
 module.exports = {

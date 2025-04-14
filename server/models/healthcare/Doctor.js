@@ -89,6 +89,18 @@ const Doctor = sequelize.define('Doctor', {
 }, {
     tableName: 'doctors',
     timestamps: false,
+    indexes: [
+        {
+            fields: ['first_name'], 
+        },
+        {
+            fields: ['last_name'], 
+        },
+        {
+            fields: ['phone_number'], 
+        },
+
+    ],
 });
 
 module.exports = {
