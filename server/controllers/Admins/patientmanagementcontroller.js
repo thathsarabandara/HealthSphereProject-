@@ -4,82 +4,72 @@ const { Reservation } = require("../../models/healthcare/Reservation");
 const { Doctor } = require("../../models/healthcare/Doctor");
 const { Schedule } = require("../../models/healthcare/Schedule");
 exports.patientDetails = async (req, res) => {
-  //onsole.log(`accessed`);
   try {
-    const { id } = req.query; //query id from the request
+    const { id } = req.query;
 
-    // Validate if the ID is a valid positive integer using regex
+    // Validate the ID
     if (!id) {
       return res.status(400).json({ message: "Patient ID is required." });
     }
     const isValidId = /^\d+$/.test(id);
     if (!isValidId) {
-      return res
-        .status(400)
-        .json({
-          message: "Invalid patient ID. ID must be a positive integer.",
-        });
+      return res.status(400).json({
+        message: "Invalid patient ID. ID must be a positive integer.",
+      });
     }
 
+    // Fetch patient data
     const patientData = await Patient.findOne({
       where: { id: id },
     });
-
     if (!patientData) {
       return res.status(404).json({ message: "Patient data not found" });
     }
 
-    console.log(`patientData: ${JSON.stringify(patientData, null, 2)}`); // data comes until here
-
-    const reservationData = await Reservation.findOne({
+    // Fetch all reservations for the patient
+    const reservationData = await Reservation.findAll({
       where: { patient_id: id },
+      order: [["reservation_date", "DESC"]], // Order by last updated time
     });
 
-    if (!reservationData) {
-      return res.status(404).json({ message: "Reservation data not found" });
+    if (!reservationData || reservationData.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No reservations found for this patient" });
     }
-    // Log reservation data
-    console.log(`reservationData: ${JSON.stringify(reservationData, null, 2)}`);
 
-    const scheduleData = await Schedule.findOne({
-      where: { id: reservationData.schedule_id },
-    });
+    // Fetch schedule and doctor data for each reservation
+    const reservationsWithDetails = await Promise.all(
+      reservationData.map(async (reservation) => {
+        const scheduleData = await Schedule.findOne({
+          where: { id: reservation.schedule_id },
+        });
 
-    // Log schedule data
-    console.log(`scheduleData: ${JSON.stringify(scheduleData, null, 2)}`);
+        const doctorData = await Doctor.findOne({
+          where: { id: scheduleData.doctor_id },
+        });
 
-    const doctorData = await Doctor.findOne({
-      where: { id: scheduleData.doctor_id },
-    });
-
-    // Log doctor data
-    console.log(`doctorData: ${JSON.stringify(doctorData, null, 2)}`);
+        return {
+          reservationId: reservation.id,
+          reservationDate: reservation.reservation_date,
+          reservationTime: reservation.reservation_time,
+          doctorId: doctorData.id,
+          doctorName: doctorData.first_name + " " + doctorData.last_name,
+          scheduleId: scheduleData.id,
+          scheduleDate: scheduleData.date,
+          scheduleTime: scheduleData.time,
+        };
+      })
+    );
 
     return res.status(200).json({
-      message: "User authenticated successfully Reservation data found",
-
-      data: {
-        patientId: patientData.id,
-        patientFirstName: patientData.first_name,
-        patientLastName: patientData.last_name,
-        patientDateOfBirth: patientData.date_of_birth,
-        patientGender: patientData.gender,
-        patientPhoneNumber: patientData.phone_number,
-        patientAddress: patientData.address,
-        profilePicture: patientData.profilePictureLocation,
-        patientemail: patientData.email,
-
-        reservationId: reservationData.schedule_id,
-        reservationDate: reservationData.reservation_date,
-        reservationTime: reservationData.reservation_time,
-
-        doctorId: scheduleData.doctor_id,
-        doctorFirstName: doctorData.first_name,
-        doctorLastName: doctorData.last_name,
-      },
+      message: "Patient and reservation data retrieved successfully",
+      patient: patientData,
+      reservations: reservationsWithDetails, // Return reservations with schedule and doctor details
     });
   } catch (error) {
-    return res.status(error.status || 500).json({ message: error.message });
+    console.error("Error fetching patient details:", error);
+    return res.status(500).json({ message: "An internal error occurred" });
   }
 };
 exports.loadDoctortProfile = async (req, res) => {
@@ -160,6 +150,7 @@ exports.saveProfile = async (req, res) => {
     const [updatedRows] = await Patient.update(updateFields, {
       where: { id },
     });
+    console.log(`Update fields: ${JSON.stringify(updateFields, null, 2)}`); // Log the updated fields for debugging
 
     // Check if any rows were updated
     if (updatedRows === 0) {
