@@ -5,39 +5,63 @@ import "bootstrap/dist/css/bootstrap.min.css";
 function PatientManagement() {
   const [searchBy, setSearchBy] = useState("Patient ID");
   const [searchValue, setSearchValue] = useState("");
-  const [patientData, setPatientData] = useState(null);
+  const [patientData, setPatientData] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [prescriptions, setPrescriptions] = useState([]);
+  const [reservations, setReservations] = useState([]);
   const [editing, setEditing] = useState(false);
   const [editForm, setEditForm] = useState({});
 
-  // Fetch patient data when search is performed
   const handleSearch = async () => {
     setLoading(true);
     setError(null);
+
+    // Clear existing data
+    setPatientData(null);
+    setEditForm({});
+    setReservations([]);
+
+    // Validate that searchValue is a positive integer
+    const parsedValue = parseInt(searchValue, 10); // Convert searchValue to an integer
+    if (isNaN(parsedValue) || parsedValue <= 0) {
+      setError("Please enter a valid positive integer for Patient ID.");
+      setLoading(false);
+      return;
+    }
 
     try {
       if (searchBy === "Patient ID") {
         // Call patientDetails endpoint
         const response = await axios.get(
-          "http://localhost:5000/patientDetails/viewpatient",
+          `http://localhost:5000/admin/patientmanagement/viewpatient?id=${parsedValue}`,
           {
-            params: { id: searchValue },
+            //params: { id: parsedValue },
             withCredentials: true,
           }
         );
-        console.log("Patient data:", response.data);
+        console.log("Patient data from frontend:", response.data);
 
-        setPatientData(response.data.data);
+        // const transformedPatientData = {
+        // patientId: response.data.patient.id,
+        // firstName: response.data.patient.first_name,
+        // lastName: response.data.patient.last_name,
+        // phoneNumber: response.data.patient.phone_number,
+        // gender: response.data.patient.gender,
+        // email: response.data.patient.email,
+        // address: response.data.patient.address,
 
-        // If you have a way to get prescriptions for this patient, add that here
-        // For example:
-        // const presResponse = await axios.get(`/patientPrescriptions/${response.data.data.patientId}`);
-        // setPrescriptions(presResponse.data);
+        // Map other fields as needed
+        //};
+        // setPatientData(transformedPatientData);
+
+        setPatientData(response.data.patient);
+        console.log(" Patient data:", patientData);
+
+        // Assign reservation data
+        setReservations(response.data.reservations); // should be setReservationData
       } else {
         // Implement search by first name if needed
-        // This would require a new endpoint in your backend
+        setError("Search by First Name is not implemented yet.");
       }
     } catch (err) {
       setError(err.response?.data?.message || "Failed to fetch patient data");
@@ -51,13 +75,13 @@ function PatientManagement() {
   const handleEditClick = () => {
     setEditing(true);
     setEditForm({
-      first_name: patientData?.patientFirstName || "",
-      last_name: patientData?.patientLastName || "",
-      date_of_birth: patientData?.patientDateOfBirth || "",
-      gender: patientData?.patientGender || "",
-      phone_number: patientData?.patientPhoneNumber || "",
-      address: patientData?.patientAddress || "",
-      email: patientData?.patientemail || "",
+      first_name: patientData?.first_name || "",
+      last_name: patientData?.last_name || "",
+      date_of_birth: patientData?.date_of_birth || "",
+      gender: patientData?.gender || "",
+      phone_number: patientData?.phone_number || "",
+      address: patientData?.address || "",
+      email: patientData?.email || "",
     });
   };
 
@@ -70,16 +94,20 @@ function PatientManagement() {
   // Save profile updates
   const handleSaveProfile = async () => {
     try {
-      const response = await axios.post(
-        "http://localhost:5000/saveProfile",
+      const response = await axios.put(
+        "http://localhost:5000/admin/patientmanagement",
         {
-          id: patientData.patientId,
+          id: patientData.id,
           ...editForm,
         },
         {
           withCredentials: true,
         }
       );
+      console.log("Profile updated:", response.id);
+
+      // Show success message
+      alert("Profile updated successfully!");
 
       // Refresh patient data
       await handleSearch();
@@ -95,20 +123,20 @@ function PatientManagement() {
     setEditing(false);
   };
 
-  // View prescription details
+  // View reservations details
   const handleViewPrescription = async (reservationId) => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/loadPrescription/${reservationId}`,
+        `http://localhost:5000/admin/patientmanagement/loadprescription/${reservationId}`,
         {
           withCredentials: true,
         }
       );
       // You might want to display this in a modal
-      alert(`Prescription Details:\n${response.data.details}`);
+      alert(`reservations Details:\n${response.data.details}`);
     } catch (err) {
       setError("Failed to load prescription details");
-      console.error("Prescription error:", err);
+      console.error("reservations error:", err);
     }
   };
 
@@ -187,7 +215,7 @@ function PatientManagement() {
                 <input
                   type="text"
                   className="form-control"
-                  value={patientData.patientId}
+                  value={patientData.id}
                   readOnly
                 />
               </div>
@@ -196,7 +224,7 @@ function PatientManagement() {
                 <input
                   type="text"
                   className="form-control"
-                  value={patientData.reservationDate}
+                  value={patientData.created_at}
                   readOnly
                 />
               </div>
@@ -216,7 +244,7 @@ function PatientManagement() {
                   <input
                     type="text"
                     className="form-control"
-                    value={patientData.patientFirstName}
+                    value={patientData.first_name}
                     readOnly
                   />
                 )}
@@ -235,7 +263,7 @@ function PatientManagement() {
                   <input
                     type="text"
                     className="form-control"
-                    value={patientData.patientLastName}
+                    value={patientData.last_name}
                     readOnly
                   />
                 )}
@@ -256,7 +284,7 @@ function PatientManagement() {
                   <input
                     type="text"
                     className="form-control"
-                    value={patientData.patientPhoneNumber}
+                    value={patientData.phone_number}
                     readOnly
                   />
                 )}
@@ -278,7 +306,7 @@ function PatientManagement() {
                   <input
                     type="text"
                     className="form-control"
-                    value={patientData.patientGender}
+                    value={patientData.gender}
                     readOnly
                   />
                 )}
@@ -317,7 +345,7 @@ function PatientManagement() {
                 ) : (
                   <textarea
                     className="form-control"
-                    value={patientData.patientAddress}
+                    value={patientData.address}
                     rows={2}
                     readOnly
                   />
@@ -339,7 +367,7 @@ function PatientManagement() {
                   <input
                     type="text"
                     className="form-control"
-                    value={patientData.patientDateOfBirth}
+                    value={patientData.date_of_birth}
                     readOnly
                   />
                 )}
@@ -374,49 +402,53 @@ function PatientManagement() {
         </div>
       )}
 
-      {/* Prescription History */}
+      {/* reservations History */}
       <div className="mt-4">
-        <h5>Prescription History</h5>
+        <h5>Reservation History</h5>
         <table className="table table-bordered">
           <thead>
             <tr>
-              <th>Patient ID</th>
+              <th>Reservation ID</th>
               <th>Date</th>
               <th>Time</th>
               <th>Doctor ID</th>
               <th>Doctor Name</th>
               <th>Profile View</th>
-              <th>Prescription ID</th>
-              <th>Details</th>
+              <th>Doctor Schedule ID</th>
+              <th>Prescription</th>
             </tr>
           </thead>
           <tbody>
-            {prescriptions.length > 0 ? (
-              prescriptions.map((prescription) => (
-                <tr key={prescription.id}>
-                  <td>{patientData?.patientId}</td>
+            {reservations.length > 0 ? (
+              reservations.map((reservations) => (
+                <tr key={reservations.reservationId}>
+                  <td>{reservations?.reservationId}</td>
                   <td>
-                    {new Date(prescription.date_issued).toLocaleDateString()}
+                    {new Date(
+                      reservations.reservationDate
+                    ).toLocaleDateString()}
                   </td>
                   <td>
-                    {new Date(prescription.date_issued).toLocaleTimeString()}
+                    {new Date(
+                      reservations.reservationTime
+                    ).toLocaleTimeString()}
                   </td>
-                  <td>{prescription.doctorId}</td>
-                  <td>{prescription.doctorName}</td>
+                  <td>{reservations.doctorId}</td>
+                  <td>{reservations.doctorName}</td>
                   <td>
                     <button className="btn btn-outline-primary btn-sm">
                       View
                     </button>
                   </td>
-                  <td>{prescription.id}</td>
+                  <td>{reservations.scheduleId}</td>
                   <td>
                     <button
                       className="btn btn-outline-secondary btn-sm"
                       onClick={() =>
-                        handleViewPrescription(prescription.reservation_id)
+                        handleViewPrescription(reservations.reservationId)
                       }
                     >
-                      Details
+                      View Prescription
                     </button>
                   </td>
                 </tr>
@@ -424,7 +456,7 @@ function PatientManagement() {
             ) : (
               <tr>
                 <td colSpan="8" className="text-center">
-                  No prescription history found
+                  No reservations history found
                 </td>
               </tr>
             )}
