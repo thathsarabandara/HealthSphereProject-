@@ -35,13 +35,13 @@ router.put(
 );
 console.log(patientmanagement);
 
-router.get("/patientmanagement/viewpatient", patientmanagement.patientDetails);
+router.get("/patientmanagement/viewpatient",adminAuthMiddleware, patientmanagement.patientDetails);
 router.get(
-  "/patientmanagement/viewdoctor/:id",
+  "/patientmanagement/viewdoctor/:id",adminAuthMiddleware,
   patientmanagement.loadDoctortProfile
 );
 router.get(
-  "/patientmanagement/loadprescription/:reservationid",
+  "/patientmanagement/loadprescription/:reservationid",adminAuthMiddleware,
   patientmanagement.loadPrescription
 );
 
