@@ -4,6 +4,9 @@ const adminLoginController = require("../controllers/Admins/adminLoginController
 const scheduleController = require("../controllers/Admins/scheduleController");
 const adminAuthMiddleware = require("../middleware/auth/authorizeAdmin");
 const patientmanagement = require("../controllers/Admins/patientmanagementcontroller");
+const {
+  profilePictureUpload,
+} = require("../middleware/upload/profilePictureUpload");
 
 // Admin Authentication Routes
 router.post("/login", adminLoginController.login);
@@ -24,24 +27,21 @@ router.post(
 // router.get('/admin/dashboard', adminAuthMiddleware);
 
 // Manage Patients
+router.put("/patientmanagement", patientmanagement.saveProfile);
 router.put(
-  "/patientmanagement",
-  adminAuthMiddleware,
-  patientmanagement.saveProfile
+  "/patientmanagement/upload-profile-picture/:id",
+  profilePictureUpload,
+  patientmanagement.uploadPatientProfilePicture
 );
-router.get(
-  "/patientmanagement/viewpatient",
-  adminAuthMiddleware,
-  patientmanagement.patientDetails
-);
+console.log(patientmanagement);
+
+router.get("/patientmanagement/viewpatient", patientmanagement.patientDetails);
 router.get(
   "/patientmanagement/viewdoctor/:id",
-  adminAuthMiddleware,
   patientmanagement.loadDoctortProfile
 );
 router.get(
   "/patientmanagement/loadprescription/:reservationid",
-  adminAuthMiddleware,
   patientmanagement.loadPrescription
 );
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -11,6 +11,7 @@ function PatientManagement() {
   const [reservations, setReservations] = useState([]);
   const [editing, setEditing] = useState(false);
   const [editForm, setEditForm] = useState({});
+  const fileInputRef = useRef(null);
 
   const handleSearch = async () => {
     setLoading(true);
@@ -35,30 +36,16 @@ function PatientManagement() {
         const response = await axios.get(
           `http://localhost:5000/admin/patientmanagement/viewpatient?id=${parsedValue}`,
           {
-            //params: { id: parsedValue },
             withCredentials: true,
           }
         );
-        console.log("Patient data from frontend:", response.data);
-
-        // const transformedPatientData = {
-        // patientId: response.data.patient.id,
-        // firstName: response.data.patient.first_name,
-        // lastName: response.data.patient.last_name,
-        // phoneNumber: response.data.patient.phone_number,
-        // gender: response.data.patient.gender,
-        // email: response.data.patient.email,
-        // address: response.data.patient.address,
-
-        // Map other fields as needed
-        //};
-        // setPatientData(transformedPatientData);
+        console.log("Patient data from backend:", response.data);
 
         setPatientData(response.data.patient);
-        console.log(" Patient data:", patientData);
+        console.log(" Patient data:", patientData.date_of_birth);
 
         // Assign reservation data
-        setReservations(response.data.reservations); // should be setReservationData
+        setReservations(response.data.reservations);
       } else {
         // Implement search by first name if needed
         setError("Search by First Name is not implemented yet.");
@@ -97,7 +84,7 @@ function PatientManagement() {
       const response = await axios.put(
         "http://localhost:5000/admin/patientmanagement",
         {
-          id: patientData.id,
+          id: patientData.User_id,
           ...editForm,
         },
         {
@@ -137,6 +124,47 @@ function PatientManagement() {
     } catch (err) {
       setError("Failed to load prescription details");
       console.error("reservations error:", err);
+    }
+  };
+
+  const handleProfilePictureChange = async (event) => {
+    const file = event.target.files[0]; // Get the selected file
+    if (!file) return;
+
+    // Validate file type and size
+    if (!file.type.startsWith("image/")) {
+      alert("Please select a valid image file.");
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      // 2MB limit
+      alert("File size should not exceed 2MB.");
+      return;
+    }
+
+    // Create FormData to send the file
+    const formData = new FormData();
+    formData.append("profilePicture", file);
+
+    try {
+      // Send the file to the backend
+      const response = await axios.put(
+        `http://localhost:5000/admin/patientmanagement/upload-profile-picture/${patientData.User_id}`,
+        formData,
+        { withCredentials: true }
+      );
+
+      // Update the profile picture in the frontend
+      setPatientData((prev) => ({
+        ...prev,
+        profilePicture: response.data.profilePicture, // Update with the new image URL
+      }));
+      console.log("Profile picture updated:", response.data.profilePicture);
+
+      alert("Profile picture updated successfully!");
+    } catch (err) {
+      console.error("Error uploading profile picture:", err);
+      alert("Failed to upload profile picture. Please try again.");
     }
   };
 
@@ -198,13 +226,25 @@ function PatientManagement() {
                 margin: "auto",
                 backgroundImage: patientData.profilePicture
                   ? `url(${patientData.profilePicture})`
-                  : undefined,
+                  : "",
+
                 backgroundSize: "cover",
+                backgroundPosition: "center",
               }}
             ></div>
-            <button className="btn btn-outline-primary mb-3">
+            <button
+              className="btn btn-outline-primary mb-3"
+              onClick={() => fileInputRef.current.click()} // Trigger file input
+            >
               Edit Profile Picture
             </button>
+            <input
+              type="file"
+              accept="image/*"
+              style={{ display: "none" }}
+              ref={fileInputRef} // Reference to the file input
+              onChange={handleProfilePictureChange} // Handle file selection
+            />
           </div>
 
           {/* Patient Info Section */}
@@ -215,7 +255,7 @@ function PatientManagement() {
                 <input
                   type="text"
                   className="form-control"
-                  value={patientData.id}
+                  value={patientData.User_id}
                   readOnly
                 />
               </div>
@@ -327,7 +367,7 @@ function PatientManagement() {
                   <input
                     type="email"
                     className="form-control"
-                    value={patientData.patientemail}
+                    value={patientData.email}
                     readOnly
                   />
                 )}

@@ -3,9 +3,12 @@ const { Prescription } = require("../../models/healthcare/Prescription");
 const { Reservation } = require("../../models/healthcare/Reservation");
 const { Doctor } = require("../../models/healthcare/Doctor");
 const { Schedule } = require("../../models/healthcare/Schedule");
+const { User } = require("../../models/auth/User");
+
 exports.patientDetails = async (req, res) => {
   try {
-    const { id } = req.query;
+    const { id } = req.query; // this id means user_id
+    console.log("frontend request:", req.query); // Debugging
 
     // Validate the ID
     if (!id) {
@@ -20,10 +23,21 @@ exports.patientDetails = async (req, res) => {
 
     // Fetch patient data
     const patientData = await Patient.findOne({
-      where: { id: id },
+      where: { User_id: id },
     });
     if (!patientData) {
       return res.status(404).json({ message: "Patient data not found" });
+    }
+
+    // Fetch user data for the patient
+    const userData = await User.findOne({
+      where: { id: patientData.User_id },
+      attributes: ["email"], // Fetch only the email field
+    });
+
+    //console.log(`userData: ${JSON.stringify(userData, null, 2)}`); // data comes until here
+    if (!userData) {
+      return res.status(404).json({ message: "related User data not found" });
     }
 
     // Fetch all reservations for the patient
@@ -31,11 +45,11 @@ exports.patientDetails = async (req, res) => {
       where: { patient_id: id },
       order: [["reservation_date", "DESC"]], // Order by last updated time
     });
+    let reservationMessage = "Reservations retrieved successfully";
 
     if (!reservationData || reservationData.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No reservations found for this patient" });
+      // If no reservations are found, set a message and return an empty array
+      reservationMessage = "No reservations found for this patient";
     }
 
     // Fetch schedule and doctor data for each reservation
@@ -64,8 +78,15 @@ exports.patientDetails = async (req, res) => {
 
     return res.status(200).json({
       message: "Patient and reservation data retrieved successfully",
-      patient: patientData,
+      patient: {
+        ...patientData.toJSON(),
+        email: userData.email, // Add the user's email
+        profilePicture: patientData.profilePictureLocation
+          ? `http://localhost:5000${patientData.profilePictureLocation}` // Include the image URL
+          : null, // If no profile picture, return null
+      },
       reservations: reservationsWithDetails, // Return reservations with schedule and doctor details
+      reservationMessage, // Include the message if no reservations are found
     });
   } catch (error) {
     console.error("Error fetching patient details:", error);
@@ -148,7 +169,7 @@ exports.saveProfile = async (req, res) => {
 
     // Update the patient's profile
     const [updatedRows] = await Patient.update(updateFields, {
-      where: { id },
+      where: { User_id: id },
     });
     console.log(`Update fields: ${JSON.stringify(updateFields, null, 2)}`); // Log the updated fields for debugging
 
@@ -210,5 +231,37 @@ exports.loadPrescription = async (req, res) => {
     // Return a server error if there's an issue
     console.error("Error loading prescription:", error);
     return res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.uploadPatientProfilePicture = async (req, res) => {
+  try {
+    const { id } = req.params; // Patient ID from the route parameter
+    console.log("Request params:", req.params); // Debugging
+
+    // Check if a file was uploaded
+    if (!req.profile_picture) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+    console.log("Uploaded file:", req.profile_picture); // Debugging
+
+    // Construct the profile picture URL
+    const profilePictureUrl = `/uploads/storage/patient/${id}/profilepictures/${req.profile_picture}`;
+    console.log(`Profile picture URL: ${profilePictureUrl}`); // Debugging
+
+    // Update the patient's profile picture in the database
+    await Patient.update(
+      { profilePictureLocation: profilePictureUrl },
+      { where: { User_id: id } }
+    );
+
+    // Respond with the new profile picture URL
+    return res.status(200).json({
+      message: "Profile picture uploaded successfully",
+      profilePicture: `http://localhost:5000${profilePictureUrl}`,
+    });
+  } catch (error) {
+    console.error("Error uploading profile picture:", error);
+    return res.status(500).json({ message: "An internal error occurred" });
   }
 };
