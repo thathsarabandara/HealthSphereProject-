@@ -4,6 +4,8 @@ import Ellipse1 from '../../../assets/images/Ellipse 1.svg'
 import '../../../styles/Doctors.css'
 import axios from 'axios';
 import Loader from '../../../components/common/Loader';
+import SearchForm from '../../../components/user/Doctors/SearchForm';
+import DoctorCard from '../../../components/user/Doctors/DoctorCard';
 
 function Doctors() {
   const [isLoading, setIsLoading] = useState(true);
@@ -92,6 +94,84 @@ function Doctors() {
     );
   };
 
+  const doctorCards = [
+    {
+      image: Ellipse1,
+      title: 'Channel a General Practitioner',
+      description: 'Provides comprehensive healthcare, including routine check-ups, preventive care, and treatment for a variety of illnesses and injuries across all ages.',
+      link: '/finddoctors/General Practitioner'
+    },
+    {
+      image: Ellipse1,
+      title: 'Channel a Pediatrician',
+      description: 'Focuses on the health of children from birth to adolescence, including preventive healthcare and chronic disease management.',
+      link: '/finddoctors/Pediatrician'
+    },
+    {
+      image: Ellipse1,
+      title: 'Channel a Cardiologist',
+      description: 'Diagnoses and treats heart conditions such as heart attacks, hypertension, and arrhythmias, and provides preventive care.',
+      link: '/finddoctors/Cardiologist'
+    },
+    {
+      image: Ellipse1,
+      title: 'Channel a Dermatologist',
+      description: 'Specializes in the treatment of skin, hair, and nail conditions like acne, eczema, and psoriasis.',
+      link: '"/finddoctors/Dermatologist'
+    }
+  ];
+  const doctorCards1 = [
+    {
+      image: Ellipse1,
+      title: 'Channel a Neurologist',
+      description: 'Diagnoses and treats disorders of the nervous system, including the brain, spinal cord, nerves, and muscles, such as epilepsy, multiple sclerosis, migraines, and neurodegenerative diseases.',
+      link: '/finddoctors/Neurologist'
+    },
+    {
+      image: Ellipse1,
+      title: 'Channel a Oncologist',
+      description: 'Specializes in the diagnosis, treatment, and management of cancer using methods such as chemotherapy, radiation therapy, and surgery, and provides supportive care and symptom management.',
+      link: '/finddoctors/Oncologist'
+    },
+    {
+      image: Ellipse1,
+      title: 'Channel a Psychiatrist',
+      description: 'Diagnoses, treats, and helps prevent mental, emotional, and behavioral disorders, using a combination of medication, psychotherapy, and other treatments tailored to individual patient needs.',
+      link: '/finddoctors/Psychiatrist'
+    },
+    {
+      image: Ellipse1,
+      title: 'Channel a Endocrinologist',
+      description: 'Focuses on hormone-related diseases and disorders, including diabetes, thyroid diseases, metabolic disorders, osteoporosis, and reproductive health issues.',
+      link: '"/finddoctors/Endocrinologist'
+    }];
+  const doctorCards2 = [
+    {
+      image: Ellipse1,
+      title: 'Channel a Gastroenterologist',
+      description: "Diagnoses and treats disorders of the digestive system, including the stomach, intestines, and gallbladder, such as IBS, Crohn's disease, hepatitis, and ulcers.",
+      link: '/finddoctors/Gastroenterologist'
+    },
+    {
+      image: Ellipse1,
+      title: 'Channel a Orthopedic Surgeon',
+      description: 'Specializes in the diagnosis, treatment, and surgical repair of conditions related to the musculoskeletal system, including bones, joints, tendons, and muscles.',
+      link: '/finddoctors/Orthopedic Surgeon'
+    },
+    {
+      image: Ellipse1,
+      title: 'Channel a Ophthalmologist',
+      description: 'Provides medical and surgical care for eye conditions, including vision problems, cataracts, glaucoma, macular degeneration, and eye injuries.',
+      link: '/finddoctors/Ophthalmologist'
+    },
+    {
+      image: Ellipse1,
+      title: 'Channel a Pulmonologist',
+      description: 'Diagnoses and treats diseases of the respiratory system, including chronic conditions like asthma, COPD, lung infections, and sleep-related breathing disorders.',
+      link: '"/finddoctors/Pulmonologist'
+    }
+  ];
+
   return (
     <div>
       <section className='section'>
@@ -100,83 +180,13 @@ function Doctors() {
         </div>
       </section>
 
-      <div className="position-absolute start-50 translate-middle text-center search-form-container">
-          <form method="POST" onSubmit={handleSearchButton}>
-            {/* First row: Doctor Name and Specialization */}
-            <div className="row">
-              <div className="col">
-                <div className="form-group">
-                  <label htmlFor="doctorName" className="label-class">Doctor name</label>
-                  <input 
-                      type="text" 
-                      name="doctorName" 
-                      className="form-input form-control" 
-                      placeholder="Search Doctor Name" 
-                      style={{width: 520, height: 53}} 
-                      value={searchCriteria.doctorName}
-                      onChange={handleInputChange}
-                      />
-                </div>
-              </div>
-              <div className="col">
-                <div className="form-group">
-                  <label htmlFor="specialization" className="label-class">Specialization</label>
-                  <select 
-                      name="specialization" 
-                      className="form-input form-control" 
-                      placeholder="Select Specialization" 
-                      style={{width: 305, height: 53}} 
-                      value={searchCriteria.specialization}
-                      onChange={handleInputChange}
-                    >
-                      <option value="">Select Specialization</option>
-                      {specializationOptions.map((specialization, index) => (
-                        <option key={index} value={specialization.value}>{specialization.label}</option>
-                      ))}
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            {/* Second row: Session Time, Date, and Search Button */}
-            <div className="row mt-3">
-              <div className="col">
-                <div className="form-group">
-                  <label htmlFor="sessionTime" className="label-class">Session Time</label>
-                  <input type="time" 
-                    name="sessionTime" 
-                    className="form-input form-control" 
-                    placeholder="Enter Session Time" 
-                    style={{width: 305, height: 53}} 
-                    value={searchCriteria.sessionTime}
-                    onChange={handleInputChange}
-                  />
-                </div>
-              </div>
-              <div className="col">
-                <div className="form-group">
-                  <label htmlFor="date" className="label-class">Date</label>
-                  <input 
-                      type="date" 
-                      name="date" 
-                      className="form-input form-control" 
-                      placeholder="YY / MM / DD" 
-                      style={{width: 305, height: 53}} 
-                      value={searchCriteria.date}
-                      onChange={handleInputChange}
-                    />
-                </div>
-              </div>
-              <div className="col">
-                <button className="btn" style={{ width: 196, height: 53, background: '#2A5D9C', borderRadius: 13, marginTop: '32px',display: 'flex', justifyContent: 'center',alignItems: 'center', border: 'none' }} type="submit">
-                  <span className="text-white" style={{ fontSize: 16, fontFamily: 'Sansation', fontWeight: '400', wordWrap: 'break-word', background: '#2A5D9C' }}>
-                    Search
-                  </span>
-                </button>
-              </div>
-            </div>
-          </form>
-        </div>
+      {/* Importing the SearchForm component */}
+      <SearchForm
+         searchCriteria={searchCriteria}
+         handleInputChange={handleInputChange}
+         handleSearchButton={handleSearchButton}
+         specializationOptions={specializationOptions}
+      />
       
       {/* Hide card view if data is available */}
       {!isCardViewVisible && (
@@ -227,115 +237,10 @@ function Doctors() {
         <div id="card view">
           <section className='section1 py-5' style={{ background: '#C8D8F6' }}>
             <div className='container'>
-              <div className='row text-center  justify-content-center' style={{marginTop: 120}}>
-
-                {/* General Practitioner Card */}
-                <div className="col-12 col-md-12 col-lg-6 mb-5 " style={{width: 197, height: 273,  borderRadius: 8}}>
-                  <div className="card text-center shadow" style={{ background: '#2A5D9C'}}>
-                    <div className="card-body" style={{ background: '#2A5D9C'}}>
-                      <img 
-                        src={Ellipse1} 
-                        alt="General Practitioner" 
-                        className="rounded-circle mb-1" 
-                        style={{ width: 94, height: 94 }} 
-                      />
-                      <div className="text-white mb-0" style={{ fontSize: 16, fontFamily: 'Sansation', fontWeight: '400' }}>
-                        Channel a General <br /> Practitioner
-                      </div>
-                      <div className="text-white mb-1" style={{ fontSize: 9, fontFamily: 'Sansation', fontWeight: '400' }}>
-                        Provides comprehensive healthcare, including routine check-ups, preventive care, and treatment for a variety of illnesses and injuries across all ages.
-                      </div>
-                      <button className="btn mt-1 w-100" style={{ background: '#112D4E', borderRadius: 10 }}>
-                        <a href="/finddoctors/General Practitioner" style={{ textDecoration: 'none', color: 'white', width: '100%', display: 'block', height: '100%' }}>
-                          <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
-                            Book
-                          </span>
-                        </a>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Pediatrician Card */}
-                <div className="col-12 col-md-12 col-lg-6 mb-5 " style={{width: 197, height: 273,  borderRadius: 8}}>
-                  <div className="card text-center shadow" style={{ background: '#2A5D9C' }}>
-                    <div className="card-body" style={{ background: '#2A5D9C'}}>
-                      <img 
-                        src={Ellipse1} 
-                        alt="Pediatrician" 
-                        className="rounded-circle mb-1" 
-                        style={{ width: 94, height: 94 }} 
-                      />
-                      <div className="text-white mb-0" style={{ fontSize: 16, fontFamily: 'Sansation', fontWeight: '400' }}>
-                        Channel a <br /> Pediatrician
-                      </div>
-                      <div className="text-white mb-3" style={{ fontSize: 9, fontFamily: 'Sansation', fontWeight: '400' }}>
-                        Focuses on the health of children from birth to adolescence, including preventive healthcare and chronic disease management.
-                      </div>
-                      <button className="btn mt-1 w-100" style={{ background: '#112D4E', borderRadius: 10 }}>
-                        <a href="/finddoctors/Pediatrician" style={{ textDecoration: 'none', color: 'white', width: '100%', display: 'block', height: '100%' }}>
-                          <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
-                            Book
-                          </span>
-                        </a>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Cardiologist Card */}
-                <div className="col-12 col-md-12 col-lg-6 mb-5 " style={{width: 197, height: 273,  borderRadius: 8}}>
-                  <div className="card text-center shadow" style={{ background: '#2A5D9C' }}>
-                    <div className="card-body" style={{ background: '#2A5D9C'}}>
-                      <img 
-                        src={Ellipse1} 
-                        alt="Cardiologist" 
-                        className="rounded-circle mb-1" 
-                        style={{ width: 94, height: 94 }} 
-                      />
-                      <div className="text-white mb-0" style={{ fontSize: 16, fontFamily: 'Sansation', fontWeight: '400' }}>
-                        Channel a <br /> Cardiologist
-                      </div>
-                      <div className="text-white mb-3" style={{ fontSize: 9, fontFamily: 'Sansation', fontWeight: '400' }}>
-                        Diagnoses and treats heart conditions such as heart attacks, hypertension, and arrhythmias, and provides preventive care.
-                      </div>
-                      <button className="btn mt-1 w-100" style={{ background: '#112D4E', borderRadius: 10 }}>
-                        <a href="/finddoctors/Cardiologist" style={{ textDecoration: 'none', color: 'white', width: '100%', display: 'block', height: '100%' }}>
-                          <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
-                            Book
-                          </span>
-                        </a>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Dermatologist Card */}
-                <div className="col-12 col-md-12 col-lg-6 mb-5" style={{width: 197, height: 243,  borderRadius: 8}}>
-                  <div className="card text-center shadow" style={{ background: '#2A5D9C'}}>
-                    <div className="card-body" style={{ background: '#2A5D9C'}}>
-                      <img 
-                        src={Ellipse1} 
-                        alt="Dermatologist" 
-                        className="rounded-circle mb-1" 
-                        style={{ width: 94, height: 94 }} 
-                      />
-                      <div className="text-white mb-0" style={{ fontSize: 16, fontFamily: 'Sansation', fontWeight: '400' }}>
-                        Channel a <br /> Dermatologist
-                      </div>
-                      <div className="text-white mb-4" style={{ fontSize: 9, fontFamily: 'Sansation', fontWeight: '400' }}>
-                        Specializes in the treatment of skin, hair, and nail conditions like acne, eczema, and psoriasis.
-                      </div>
-                      <button className="btn mt-1 w-100" style={{ background: '#112D4E', borderRadius: 10 }}>
-                        <a href="/finddoctors/Dermatologist" style={{ textDecoration: 'none', color: 'white', width: '100%', display: 'block', height: '100%' }}>
-                          <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
-                            Book
-                          </span>
-                        </a>
-                      </button>
-                    </div>
-                  </div>
-                </div>
+              <div className='row text-center justify-content-center' style={{ marginTop: 120 }}>
+                {doctorCards.map((doctor, index) => (
+                  <DoctorCard key={index} {...doctor} />
+                ))}
               </div>
             </div>
           </section>
@@ -343,229 +248,20 @@ function Doctors() {
           <section className='section2 py-5 bg-white'>
             <div className='container'>
               <div className='row text-center mt-3 justify-content-center'>
-
-
-                {/* Neurologist Card */}
-                <div className="col-12 col-md-12 col-lg-6 mb-5" style={{width: 197, height: 273,  borderRadius: 8}}>
-                  <div className="card text-center shadow" style={{ background: '#2A5D9C'}}>
-                    <div className="card-body" style={{ background: '#2A5D9C'}}>
-                      <img 
-                        src={Ellipse1} 
-                        alt="General Practitioner" 
-                        className="rounded-circle mb-1" 
-                        style={{ width: 94, height: 94 }} 
-                      />
-                      <div className="text-white mb-0" style={{ fontSize: 16, fontFamily: 'Sansation', fontWeight: '400' }}>
-                        Channel a  <br /> Neurologist
-                      </div>
-                      <div className="text-white mb-1" style={{ fontSize: 9, fontFamily: 'Sansation', fontWeight: '400' }}>
-                        Diagnoses and treats disorders of the nervous system, including the brain, spinal cord, nerves, and muscles, such as epilepsy, multiple sclerosis, migraines, and neurodegenerative diseases.
-                      </div>
-                      <button className="btn mt-1 w-100" style={{ background: '#112D4E', borderRadius: 10 }}>
-                        <a href="/finddoctors/Neurologist" style={{ textDecoration: 'none', color: 'white', width: '100%', display: 'block', height: '100%' }}>
-                          <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
-                            Book
-                          </span>
-                        </a>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Oncologist Card */}
-                <div className="col-12 col-md-12 col-lg-6 mb-5" style={{width: 197, height: 273,  borderRadius: 8}}>
-                  <div className="card text-center shadow" style={{ background: '#2A5D9C' }}>
-                    <div className="card-body" style={{ background: '#2A5D9C'}}>
-                      <img 
-                        src={Ellipse1} 
-                        alt="Pediatrician" 
-                        className="rounded-circle mb-1" 
-                        style={{ width: 94, height: 94 }} 
-                      />
-                      <div className="text-white mb-0" style={{ fontSize: 16, fontFamily: 'Sansation', fontWeight: '400' }}>
-                        Channel a <br /> Oncologist
-                      </div>
-                      <div className="text-white mb-1" style={{ fontSize: 9, fontFamily: 'Sansation', fontWeight: '400' }}>
-                        Specializes in the diagnosis, treatment, and management of cancer using methods such as chemotherapy, radiation therapy, and surgery, and provides supportive care and symptom management.
-                      </div>
-                      <button className="btn mt-1 w-100" style={{ background: '#112D4E', borderRadius: 10 }}>
-                        <a href="/finddoctors/Oncologist" style={{ textDecoration: 'none', color: 'white', width: '100%', display: 'block', height: '100%' }}>
-                          <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
-                            Book
-                          </span>
-                        </a>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Psychiatrist Card */}
-                <div className="col-12 col-md-12 col-lg-6 mb-5  " style={{width: 197, height: 273,  borderRadius: 8}}>
-                  <div className="card text-center shadow" style={{ background: '#2A5D9C' }}>
-                    <div className="card-body" style={{ background: '#2A5D9C'}}>
-                      <img 
-                        src={Ellipse1} 
-                        alt="Cardiologist" 
-                        className="rounded-circle mb-1" 
-                        style={{ width: 94, height: 94 }} 
-                      />
-                      <div className="text-white mb-0" style={{ fontSize: 16, fontFamily: 'Sansation', fontWeight: '400' }}>
-                        Channel a <br /> Psychiatrist
-                      </div>
-                      <div className="text-white mb-1" style={{ fontSize: 9, fontFamily: 'Sansation', fontWeight: '400' }}>
-                        Diagnoses, treats, and helps prevent mental, emotional, and behavioral disorders, using a combination of medication, psychotherapy, and other treatments tailored to individual patient needs.
-                      </div>
-                      <button className="btn mt-1 w-100" style={{ background: '#112D4E', borderRadius: 10 }}>
-                        <a href="/finddoctors/Psychiatrist" style={{ textDecoration: 'none', color: 'white', width: '100%', display: 'block', height: '100%' }}>
-                          <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
-                            Book
-                          </span>
-                        </a>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Endocrinologist Card */}
-                <div className="col-12 col-md-12 col-lg-6 mb-5 " style={{width: 197, height: 243,  borderRadius: 8}}>
-                  <div className="card text-center shadow" style={{ background: '#2A5D9C'}}>
-                    <div className="card-body" style={{ background: '#2A5D9C'}}>
-                      <img 
-                        src={Ellipse1} 
-                        alt="Dermatologist" 
-                        className="rounded-circle mb-1" 
-                        style={{ width: 94, height: 94 }} 
-                      />
-                      <div className="text-white mb-0" style={{ fontSize: 16, fontFamily: 'Sansation', fontWeight: '400' }}>
-                        Channel a <br /> Endocrinologist
-                      </div>
-                      <div className="text-white mb-3" style={{ fontSize: 9, fontFamily: 'Sansation', fontWeight: '400' }}>
-                        Focuses on hormone-related diseases and disorders, including diabetes, thyroid diseases, metabolic disorders, osteoporosis, and reproductive health issues.
-                      </div>
-                      <button className="btn mt-1 w-100" style={{ background: '#112D4E', borderRadius: 10 }}>
-                        <a href="/finddoctors/Endocrinologist" style={{ textDecoration: 'none', color: 'white', width: '100%', display: 'block', height: '100%' }}>
-                          <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
-                            Book
-                          </span>
-                        </a>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
+		            {doctorCards1.map((doctor, index) => (
+                <DoctorCard key={index} {...doctor} />
+                ))}
+            </div>
               <div className='row text-center mt-3 justify-content-center'>
-
-                {/* Gastroenterologist Card */}
-                <div className="col-12 col-md-12 col-lg-6 mb-5" style={{width: 197, height: 273,  borderRadius: 8}}>
-                  <div className="card text-center shadow" style={{ background: '#2A5D9C'}}>
-                    <div className="card-body" style={{ background: '#2A5D9C'}}>
-                      <img 
-                        src={Ellipse1} 
-                        alt="General Practitioner" 
-                        className="rounded-circle mb-1" 
-                        style={{ width: 94, height: 94 }} 
-                      />
-                      <div className="text-white mb-0" style={{ fontSize: 16, fontFamily: 'Sansation', fontWeight: '400' }}>
-                        Channel a General <br /> Gastroenterologist
-                      </div>
-                      <div className="text-white mb-2" style={{ fontSize: 9, fontFamily: 'Sansation', fontWeight: '400' }}>
-                        Diagnoses and treats disorders of the digestive system, including the stomach, intestines, liver, pancreas, and gallbladder, such as IBS, Crohn's disease, hepatitis, and ulcers.
-                      </div>
-                      <button className="btn mt-1 w-100" style={{ background: '#112D4E', borderRadius: 10 }}>
-                        <a href="/finddoctors/Gastroenterologist" style={{ textDecoration: 'none', color: 'white', width: '100%', display: 'block', height: '100%' }}>
-                          <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
-                            Book
-                          </span>
-                        </a>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Orthopedic Surgeon Card */}
-                <div className="col-12 col-md-12 col-lg-6 mb-5 " style={{width: 197, height: 273,  borderRadius: 8}}>
-                  <div className="card text-center shadow" style={{ background: '#2A5D9C' }}>
-                    <div className="card-body" style={{ background: '#2A5D9C'}}>
-                      <img 
-                        src={Ellipse1} 
-                        alt="Pediatrician" 
-                        className="rounded-circle mb-1" 
-                        style={{ width: 94, height: 94 }} 
-                      />
-                      <div className="text-white mb-0" style={{ fontSize: 16, fontFamily: 'Sansation', fontWeight: '400' }}>
-                        Channel a <br /> Orthopedic Surgeon
-                      </div>
-                      <div className="text-white mb-2" style={{ fontSize: 9, fontFamily: 'Sansation', fontWeight: '400' }}>
-                        Specializes in the diagnosis, treatment, and surgical repair of conditions related to the musculoskeletal system, including bones, joints, tendons, and muscles.
-                      </div>
-                      <button className="btn mt-1 w-100" style={{ background: '#112D4E', borderRadius: 10 }}>
-                        <a href="/finddoctors/Orthopedic Surgeon" style={{ textDecoration: 'none', color: 'white', width: '100%', display: 'block', height: '100%' }}>
-                          <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
-                            Book
-                          </span>
-                        </a>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Ophthalmologist Card */}
-                <div className="col-12 col-md-12 col-lg-6 mb-5 " style={{width: 197, height: 273,  borderRadius: 8}}>
-                  <div className="card text-center shadow" style={{ background: '#2A5D9C' }}>
-                    <div className="card-body" style={{ background: '#2A5D9C'}}>
-                      <img 
-                        src={Ellipse1} 
-                        alt="Cardiologist" 
-                        className="rounded-circle mb-1" 
-                        style={{ width: 94, height: 94 }} 
-                      />
-                      <div className="text-white mb-0" style={{ fontSize: 16, fontFamily: 'Sansation', fontWeight: '400' }}>
-                        Channel a <br /> Ophthalmologist
-                      </div>
-                      <div className="text-white mb-2" style={{ fontSize: 9, fontFamily: 'Sansation', fontWeight: '400' }}>
-                        Provides medical and surgical care for eye conditions, including vision problems, cataracts, glaucoma, macular degeneration, and eye injuries.
-                      </div>
-                      <button className="btn mt-1 w-100" style={{ background: '#112D4E', borderRadius: 10 }}>
-                        <a href="/finddoctors/Ophthalmologist" style={{ textDecoration: 'none', color: 'white', width: '100%', display: 'block', height: '100%' }}>
-                          <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
-                            Book
-                          </span>
-                        </a>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Pulmonologist Card */}
-                <div className="col-12 col-md-12 col-lg-6 mb-5" style={{width: 197, height: 243,  borderRadius: 8}}>
-                  <div className="card text-center shadow" style={{ background: '#2A5D9C'}}>
-                    <div className="card-body" style={{ background: '#2A5D9C'}}>
-                      <img 
-                        src={Ellipse1} 
-                        alt="Dermatologist" 
-                        className="rounded-circle mb-1" 
-                        style={{ width: 94, height: 94 }} 
-                      />
-                      <div className="text-white mb-0" style={{ fontSize: 16, fontFamily: 'Sansation', fontWeight: '400' }}>
-                        Channel a <br /> Pulmonologist
-                      </div>
-                      <div className="text-white mb-2" style={{ fontSize: 9, fontFamily: 'Sansation', fontWeight: '400' }}>
-                        Diagnoses and treats diseases of the respiratory system, including chronic conditions like asthma, COPD, lung infections, and sleep-related breathing disorders.
-                      </div>
-                      <button className="btn mt-1 w-100" style={{ background: '#112D4E', borderRadius: 10 }}>
-                        <a href="/finddoctors/Pulmonologist" style={{ textDecoration: 'none', color: 'white', width: '100%', display: 'block', height: '100%' }}>
-                          <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
-                            Book
-                          </span>
-                        </a>
-                      </button>
-                    </div>
-                  </div>
-                </div>
+		            {doctorCards2.map((doctor, index) => (
+                <DoctorCard key={index} {...doctor} />
+                ))}
+                
               </div>
             </div>
           </section>
+
+          
         </div>
       )}
     </div>
