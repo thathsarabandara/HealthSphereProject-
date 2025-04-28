@@ -66,7 +66,7 @@ function DoctorDetails() {
 
   // Main return block
   return (
-    <div className="container">
+    <div className="container" style={{minHeight: '70vh'}}>
       <h2 className="title">Channel A {category}</h2>
       {error && <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>} {/* Display error if any */}
       <table className="table">

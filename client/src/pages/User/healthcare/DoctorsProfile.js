@@ -119,12 +119,16 @@ function DoctorsProfile() {
       <div className="col-lg-3 col-md-12 mb-4">
         <div className="card h-100 shadow-sm">
           <div className="card-body text-center">
-            <img
-              src={`http://localhost:5000/uploads/storage/doctor/${profile?.userid}/profiledocuments/${profile?.profilePicture}` || '/default-profile.png'}
-              alt="profile"
-              className="rounded-circle mb-3"
-              style={{ width: '150px', height: '150px' }}
-            />
+          <img
+            src={
+              profile?.profilePicture
+                ? `http://localhost:5000/uploads/storage/doctor/${profile?.userid}/profiledocuments/${profile.profilePicture}`
+                : '../../../assets/images/emptyProfile.png'
+            }
+            alt="profile"
+            className="rounded-circle mb-3"
+            style={{ width: '150px', height: '150px' }}
+          />
             <h5 className="mb-1">{profile?.id} - {profile?.firstName} {profile?.lastName}</h5>
             <small className="text-muted">
               {profile?.gender} - Age {age.years} Years 
