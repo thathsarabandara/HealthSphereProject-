@@ -1,15 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import axios from 'axios';
+import debounce from 'lodash.debounce'; // import lodash.debounce
+
 import Rectangle56 from '../../../assets/images/Rectangle 56.svg'
 import Ellipse1 from '../../../assets/images/Ellipse 1.svg'
 import '../../../styles/Doctors.css'
-import axios from 'axios';
 import Loader from '../../../components/common/Loader';
 import SearchForm from '../../../components/user/Doctors/SearchForm';
 import DoctorCard from '../../../components/user/Doctors/DoctorCard';
 
 function Doctors() {
-  const [isLoading, setIsLoading] = useState(true);
   const [doctorData, setDoctorData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isCardViewVisible, setIsCardViewVisible] = useState(true);
   const [searchCriteria, setSearchCriteria] = useState({
     doctorName: '',
@@ -17,11 +19,6 @@ function Doctors() {
     sessionTime: '',
     date: ''
   });
-
-  useEffect(() => {
-    const loadingTimeout = setTimeout(() => setIsLoading(false), 3000);
-    return () => clearTimeout(loadingTimeout);
-  }, []);
 
   const specializationOptions = [
     { label: 'General Practitioner', value: '1' },
@@ -38,42 +35,41 @@ function Doctors() {
     { label: 'Pulmonologist', value: '12' }
   ];
 
-  function handleSearchButton(event) {
-    setIsLoading(true)
-    event.preventDefault();
+  useEffect(() => {
+    const loadingTimeout = setTimeout(() => setIsLoading(false), 3000);
+    return () => clearTimeout(loadingTimeout);
+  }, []);
 
-    // Prepare the search criteria for the API call
-    const searchData = {
-      doctorName: searchCriteria.doctorName || null,
-      specialization: searchCriteria.specialization || null,
-      sessionTime: searchCriteria.sessionTime || null,
-      sessionDate: searchCriteria.date || null
-    };
+  const fetchSearchResults = async (criteria) => {
+    try {
+      const response = await axios.post('http://localhost:5000/finddoctor', criteria);
+      setDoctorData(response.data);
+      setIsCardViewVisible(false);
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Error fetching doctor data:', error);
+      setIsLoading(false);
+    }
+  };
 
-    // Fetch data from backend based on search criteria
-     axios.post('http://localhost:5000/finddoctor', {searchData})
-      .then(response => {
-        if (response.data.length === 0) {
-          // If no data is returned, show no results found
-          setDoctorData([]);
-          setIsLoading(false)
-        } else {
-          setDoctorData(response.data);
-        }
-        setIsCardViewVisible(false); // Hide card view after fetching data
-      })
-      .catch(error => {
-        console.error('There was an error fetching doctor data:', error);
-      });
-  }
+  const debouncedFetch = useCallback(debounce(fetchSearchResults, 500), []);
 
-  function handleInputChange(event) {
-    const { name, value } = event.target;
-    setSearchCriteria({
-      ...searchCriteria,
-      [name]: value
-    });
-  }
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    const updatedCriteria = { ...searchCriteria, [name]: value };
+    setSearchCriteria(updatedCriteria);
+
+    if (name === 'doctorName') {
+      debouncedFetch(updatedCriteria);
+    }
+  };
+
+  const handleSearchButton = (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    fetchSearchResults(searchCriteria);
+  };
+    
 
   if (isLoading) {
     return (
@@ -195,39 +191,41 @@ function Doctors() {
           {doctorData.length === 0 ? (
             <div className="text-center text-danger">No results found</div>
           ) : (
-            <table className="table">
-              <thead>
-                <tr>
-                  <th>Schedule ID</th>
-                  <th>Doctor ID</th>
-                  <th>Doctor Name</th>
-                  <th>Date</th>
-                  <th>Time</th>
-                  <th>Doctor Profile</th>
-                  <th>Consultation Fee</th>
-                  <th>Book</th>
-                </tr>
-              </thead>
-              <tbody>
-                {doctorData.map((schedule, index) => (
-                  <tr key={index}>
-                    <td>{schedule.schedule_id}</td>
-                    <td>{schedule.doctor_id}</td>
-                    <td>{schedule.doctorName}</td>
-                    <td>{schedule.date}</td>
-                    <td>{schedule.time}</td>
-                    <td>
-                      <button className="btn btn-primary">View</button>
-                    </td>
-                    <td>{schedule.consultationFee.toFixed(2)}</td>
-                    <td>
-                      {/* Book button: you can implement booking functionality here */}
-                      <button className="btn btn-primary">Book</button>
-                    </td>
+            <div className='' style={{paddingTop: '136px'}}>
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>Schedule ID</th>
+                    <th>Doctor ID</th>
+                    <th>Doctor Name</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Doctor Profile</th>
+                    <th>Consultation Fee</th>
+                    <th>Book</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {doctorData.map((schedule, index) => (
+                    <tr key={index}>
+                      <td>{schedule.schedule_id}</td>
+                      <td>{schedule.doctor_id}</td>
+                      <td>{schedule.doctorName}</td>
+                      <td>{schedule.date}</td>
+                      <td>{schedule.time}</td>
+                      <td>
+                        <button className="btn btn-primary">View</button>
+                      </td>
+                      <td>{schedule.consultationFee.toFixed(2)}</td>
+                      <td>
+                        {/* Book button: you can implement booking functionality here */}
+                        <button className="btn btn-primary">Book</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
       )}
