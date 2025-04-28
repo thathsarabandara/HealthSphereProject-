@@ -34,7 +34,8 @@ exports.profileLoad = async (req, res) => {
 };
 
 exports.saveProfile = async (req, res) => {
-    const { id, first_name, last_name, date_of_birth, gender, phone_number, address } = req.body;
+    const {id} = req.params;
+    const { first_name, last_name, date_of_birth, gender, phone_number, address } = req.body;
     const profilePictureLocation = req.profile_picture;
 
     try {
