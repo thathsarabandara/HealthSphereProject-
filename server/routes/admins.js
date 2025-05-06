@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const adminLoginController = require('../controllers/Admins/adminLoginController');
 const scheduleController = require('../controllers/Admins/scheduleController');
-const adminAuthMiddleware = require('../middleware/auth/authorizeAdmin');
+const {adminAuthMiddleware} = require('../middleware/auth/authorizeAdmin');
 const patientmanagement  = require('../controllers/Admins/patientmanagementcontroller');
 
 // Admin Authentication Routes

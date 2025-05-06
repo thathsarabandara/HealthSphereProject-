@@ -5,7 +5,7 @@ const { UserGroup } = require("../../models/auth/UserGroup");
 const { generateToken } = require("../../utils/tokenUtils");
 const { createToken } = require("../../models/auth/Token");
 
-module.exports.login = async (req, res) => {
+exports.login = async (req, res) => {
     try {
         const { email, password } = req.body;
 

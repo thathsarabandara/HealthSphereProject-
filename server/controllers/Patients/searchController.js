@@ -39,9 +39,8 @@ exports.loadDoctors = async (req, res) => {
             } 
         });
 
-        // Step 6: Construct the response data according to the frontend expectations
         const response = doctors.map(doctor => {
-            const doctorSchedules = schedules.filter(schedule => schedule.doctor_id === doctor.id); // Get schedules for each doctor
+            const doctorSchedules = schedules.filter(schedule => schedule.doctor_id === doctor.id);
             
             return doctorSchedules.map(schedule => ({
                 doctor_id: doctor.id,
@@ -49,14 +48,12 @@ exports.loadDoctors = async (req, res) => {
                 doctorname: doctor.first_name +' '+ doctor.last_name,
                 date: schedule.schedule_date,
                 time: schedule.schedule_time,
-                consultationFee: parseInt(schedule.fees) + 500.00 // Adding hospital charges
+                consultationFee: parseInt(schedule.fees) + 500.00
             }));
-        }).flat(); // Flatten the array to get a single array of doctor-schedule objects
+        }).flat();
 
-        // Step 7: Remove doctors without schedules
-        const filteredResponse = response.filter(doc => doc.date && doc.time); // Ensure there are schedules present
+        const filteredResponse = response.filter(doc => doc.date && doc.time);
 
-        // Step 8: Send the response
         res.status(200).json(filteredResponse);
     } catch (error) {
         console.error("Error loading doctors:", error);
@@ -65,7 +62,7 @@ exports.loadDoctors = async (req, res) => {
 };
 
 exports.searchDoctors = async (req, res) => {
-    const { doctorName, specialization, sessionTime, sessionDate } = req.body.searchData;
+    const { doctorName, specialization, sessionTime, sessionDate } = req.body;
 
     // Validate the search data
     if (!doctorName && !specialization && !sessionTime && !sessionDate) {

@@ -3,6 +3,7 @@ const{Prescription}= require("../../models/healthcare/Prescription");
 const{Reservation}= require("../../models/healthcare/Reservation");
 const {Doctor} = require("../../models/healthcare/Doctor");
 const{Schedule}= require("../../models/healthcare/Schedule");
+
 exports.patientDetails = async(req,res)=>{
    //onsole.log(`accessed`);
     try{
@@ -126,6 +127,7 @@ exports.loadDoctortProfile = async(req,res)=>{
         return res.status(error.status || 500).json({ message: error.message });
     }
 }
+
 exports.saveProfile = async (req, res) => {
     const { id, first_name, last_name, date_of_birth, gender, phone_number, address } = req.body;
     const profilePictureLocation = req.profile_picture;
