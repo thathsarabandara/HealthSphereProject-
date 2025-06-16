@@ -1,5 +1,5 @@
-const Staff = require('../../models/Staff');
-const User = require('../../models/User');
+const staff = require('../../models/healthcare/Staff');
+const User = require('../../models/auth/User');
 
 // Get all sign-up requests
 const getSignupRequests = async (req, res) => {
