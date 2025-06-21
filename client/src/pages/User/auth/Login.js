@@ -8,7 +8,7 @@ import signin from '../../../assets/images/Rectangle 84 (1).svg'
 import Loader from '../../../components/common/Loader';
 
 function Login() {
-    const [email, setEmail] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -58,6 +58,12 @@ function Login() {
 
   return (
     <div className="container p-3 my-5 h-custom">
+      {/* Social Login Buttons */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px', alignItems: 'center' }}>
+        <a href="http://localhost:5000/auth/google?group=patient" style={{ textDecoration: 'none' }}>
+          <button type="button" style={{ background: '#4285F4', color: '#fff', border: 'none', borderRadius: 4, padding: '10px 20px', fontWeight: 'bold', width: 250 }}>Login with Google</button>
+        </a>
+      </div>
       <div className="row g-0" style={{background: '#C8D8F6', borderRadius: 12}}>
         <div className='col-md-1'/>
         <div className="col-md-5 no-gap" >
@@ -135,7 +141,7 @@ function Login() {
               <button className="btn btn-outline-primary btn-block social-btn ms-5">
                   <i className="fab fa-facebook-f"></i> Login with Facebook
               </button>
-              <button className="btn btn-outline-danger btn-block social-btn ms-3">
+              <button className="btn btn-outline-danger btn-block social-btn ms-3" onClick={() => window.location.href = 'http://localhost:5000/auth/google?group=patient'}>
                   <i className="fab fa-google"></i> Login with Google
               </button>
 

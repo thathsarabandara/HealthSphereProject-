@@ -57,6 +57,12 @@ const handleSubmit = async (e) => {
 };
 return (
   <div className="container p-3 my-5 h-custom">
+    {/* Social Login Buttons */}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px', alignItems: 'center' }}>
+      <a href="http://localhost:5000/auth/google?group=doctor" style={{ textDecoration: 'none' }}>
+        <button type="button" style={{ background: '#4285F4', color: '#fff', border: 'none', borderRadius: 4, padding: '10px 20px', fontWeight: 'bold', width: 250 }}>Login with Google</button>
+      </a>
+    </div>
     <div className="row g-0" style={{background: '#C8D8F6', borderRadius: 12}}>
       <div className='col-md-1'/>
       <div className="col-md-5 no-gap" >

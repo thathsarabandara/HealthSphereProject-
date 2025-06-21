@@ -12,6 +12,8 @@ function Register() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [success, setSuccess] = useState('');
+  const [errors, setErrors] = useState({});
+  const [policyChecked, setPolicyChecked] = useState(false);
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
 
@@ -19,6 +21,48 @@ function Register() {
     const loadingTimeout = setTimeout(() => setIsLoading(false), 3000);
     return () => clearTimeout(loadingTimeout);
   }, []);
+
+  const usernameRegex = /^.{8,}$/;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/;
+
+  const handleUsernameChange = (e) => {
+      const value = e.target.value;
+      setUsername(value);
+      setErrors((prev) => ({
+        ...prev,
+        username: usernameRegex.test(value) ? '' : 'Username must be at least 8 characters.'
+      }));
+  };
+
+   const handleEmailChange = (e) => {
+    const value = e.target.value;
+    setEmail(value);
+    setErrors((prev) => ({
+      ...prev,
+      email: emailRegex.test(value) ? '' : 'Invalid email format.'
+    }));
+  };
+
+  const handlePasswordChange = (e) => {
+    const value = e.target.value;
+    setPassword(value);
+    setErrors((prev) => ({
+      ...prev,
+      password: passwordRegex.test(value)
+        ? ''
+        : 'Password must be at least 8 characters, with one uppercase letter and one symbol.'
+    }));
+  };
+
+  const handleConfirmPasswordChange = (e) => {
+    const value = e.target.value;
+    setConfirmPassword(value);
+    setErrors((prev) => ({
+      ...prev,
+      confirmPassword: value === password ? '' : 'Passwords do not match.'
+    }));
+  };
 
   if (isLoading) {
     return (
@@ -42,8 +86,28 @@ function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (password !== confirmPassword) {
-      setErrorMessage('Passwords do not match');
+    if (
+      errors.username ||
+      errors.email ||
+      errors.password ||
+      errors.confirmPassword ||
+      !username ||
+      !email ||
+      !password ||
+      !confirmPassword
+    ) {
+      setErrors((prev) => ({
+        ...prev,
+        form: 'Please fix the errors in the form before submitting.'
+      }));
+      return;
+    }
+
+    if (!policyChecked) {
+      setErrors((prev) => ({
+        ...prev,
+        policy: 'You must agree to the policy regulations.'
+      }));
       return;
     }
 
@@ -101,7 +165,7 @@ function Register() {
           <form onSubmit={handleSubmit}>
             <div className="mb-2">
               <label htmlFor="name" className="form-label">
-                Full Name
+                UserName
               </label>
               <input
                 type="text"
@@ -109,9 +173,10 @@ function Register() {
                 className="form-control"
                 placeholder="Enter your full name"
                 value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                onChange={handleUsernameChange}
                 required
               />
+              {errors.username && <div style={{ color: 'red' }}>{errors.username}</div>}
             </div>
 
             <div className="mb-2">
@@ -124,9 +189,10 @@ function Register() {
                 className="form-control"
                 placeholder="Enter your email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={handleEmailChange}
                 required
               />
+              {errors.email && <div style={{ color: 'red' }}>{errors.email}</div>}
             </div>
 
             <div className="mb-2">
@@ -139,9 +205,10 @@ function Register() {
                 className="form-control"
                 placeholder="Enter your password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={handlePasswordChange}
                 required
               />
+              {errors.password && <div style={{ color: 'red' }}>{errors.password}</div>}
             </div>
 
             <div className="mb-2">
@@ -154,18 +221,19 @@ function Register() {
                 className="form-control"
                 placeholder="Confirm your password"
                 value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
+                onChange={handleConfirmPasswordChange}
               />
-              {errorMessage && <small className="text-danger">{errorMessage}</small>}
+              {errors.confirmPassword && <div style={{ color: 'red' }}>{errors.confirmPassword}</div>}
             </div>
 
             <div className="d-flex justify-content-between mb-2">
               <div className="form-check">
-                <input className="form-check-input" type="checkbox" id="rememberMe" />
+                <input className="form-check-input" type="checkbox" id="rememberMe" checked={policyChecked} onChange={(e) => setPolicyChecked(e.target.checked)}/>
                 <label className="form-check-label" htmlFor="rememberMe">
                   Agree to Our Terms of Use and Privacy Policy
                 </label>
               </div>
+              {errors.policy && <div style={{ color: 'red' }}>{errors.policy}</div>}
             </div>
 
             <div className="text-center text-md-start mt-2 pt-2">

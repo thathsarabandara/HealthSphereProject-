@@ -239,23 +239,53 @@ function PatientHome() {
         {/* Profile Section */}
         <div className="col-lg-3 col-md-12 mb-4">
           <div className="card h-100 shadow-sm">
-            <div className="card-body text-center">
-              <img
-                src={profilePicture || emptyImage }
-                alt="profile"
-                className="rounded-circle mb-3"
-                style={{ width: '150px', height: '150px' }}
-              />
-              <h5 className="mb-1">{patientId} - {patientFirstName || 'User Name '} {patientLastName}</h5>
+            <div className="card-body d-flex flex-column justify-content-start align-items-center text-center">
+              {/* Profile Picture */}
+              <div className="rounded-circle overflow-hidden border" style={{ width: '150px', height: '150px' }}>
+                <img
+                  src={profilePicture || emptyImage}
+                  alt="Profile"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+              </div>
+
+              {/* Name */}
+              <h5 className="mb-1 mt-3">
+                {patientId || 'N/A'} - {patientFirstName || 'User'} {patientLastName || ''}
+              </h5>
+
+              {/* Gender & Age */}
               <small className="text-muted">
-                {patientGender} - Age {age.years} Years {age.months} Months  {age.days} Days
-               </small>
-              <div style={{ textAlign: 'left', marginTop: '1rem' }}>
-                <p><strong>DOB:</strong> {new Date(patientDateOfBirth).toLocaleDateString().split('T')[0] ||'No User data found'} </p>
-                <p><strong>Address:</strong> {patientAddress || 'No User data found'}</p>
-                <p><strong>Contacts:</strong> {useremail || 'No User data found'} |<br /> {patientPhoneNumber || 'No User data found'}</p>
-                <p><strong>Active Conditions:</strong> {conditions.map(condition => condition.condition_name).join(', ') || 'No User data found'}</p>
-                <p><strong>Allergies:</strong> {allergies.map(allergie => allergie.allergy_name).join(', ') || 'No User data found'}</p>
+                {patientGender || 'Not specified'} - Age {age?.years || '-'} Years {age?.months || '0'} Months {age?.days || '0'} Days
+              </small>
+
+              {/* Details */}
+              <div className="text-start mt-3" style={{ maxWidth: '100%' }}>
+                <p>
+                  <strong>DOB:</strong>{' '}
+                  {patientDateOfBirth
+                    ? new Date(patientDateOfBirth).toLocaleDateString()
+                    : 'No data found'}
+                </p>
+                <p>
+                  <strong>Address:</strong> {patientAddress || 'No data found'}
+                </p>
+                <p>
+                  <strong>Contacts:</strong> {useremail || 'No data found'}<br />
+                  {patientPhoneNumber || 'No data found'}
+                </p>
+                <p>
+                  <strong>Active Conditions:</strong>{' '}
+                  {conditions && conditions.length > 0
+                    ? conditions.map((c) => c.condition_name).join(', ')
+                    : 'No data found'}
+                </p>
+                <p>
+                  <strong>Allergies:</strong>{' '}
+                  {allergies && allergies.length > 0
+                    ? allergies.map((a) => a.allergy_name).join(', ')
+                    : 'No data found'}
+                </p>
               </div>
             </div>
           </div>
