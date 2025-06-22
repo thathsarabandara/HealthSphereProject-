@@ -47,6 +47,15 @@ const CardDetails = sequelize.define('CardDetails', {
   }, {
     tableName: 'card_details',
     timestamps: false, // Disable default timestamps
+    indexes: [
+      {
+          fields: ['cardNumber'], 
+      },
+      {
+          fields: ['cardHolderName'], 
+      },
+    ],
+
   });
 
 module.exports = {

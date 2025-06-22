@@ -57,6 +57,11 @@ const Cart = sequelize.define('Cart', {
 }, {
     tableName: 'cart',
     timestamps: false,
+    indexes: [
+        {
+            fields: ['status'], 
+        },
+    ],
 });
 
 module.exports = {

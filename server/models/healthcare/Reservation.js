@@ -63,6 +63,22 @@ const Reservation = sequelize.define('Reservation', {
 }, {
     tableName: 'reservations',
     timestamps: false,
+    indexes: [
+        {
+            fields: ['reservation_name'], 
+        },
+        {
+            fields: ['reservation_phonenumber'], 
+        },
+        {
+            fields: ['reservation_email'], 
+        },
+        {
+            fields: ['reservation_date'], 
+        },
+
+
+    ],
 });
 
 module.exports = {

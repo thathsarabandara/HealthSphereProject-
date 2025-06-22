@@ -19,6 +19,11 @@ const Permission = sequelize.define('Permission', {
 }, {
   tableName: 'permissions',
   timestamps: true,
+  indexes: [
+    {
+        fields: ['name'], 
+    },
+  ],
 });
 
 module.exports = {
