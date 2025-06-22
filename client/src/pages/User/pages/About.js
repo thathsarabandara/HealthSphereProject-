@@ -1,6 +1,9 @@
 import React, {useEffect, useState} from 'react'
 import Rectangle83 from '../../../assets/images/Rectangle 83.svg'
 import Rectangle92 from '../../../assets/images/Rectangle 92.svg'
+import about1 from '../../../assets/images/about/1.png';
+import about2 from '../../../assets/images/about/2.png';
+import about3 from '../../../assets/images/about/3.png';
 import Loader from '../../../components/common/Loader';
 
 function About() {
@@ -72,29 +75,13 @@ function About() {
                     About Us
                 </h2>
                 <p style={{ fontFamily: 'Sansation', fontSize: '16px', fontWeight: 400 }}>
-                    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's 
-                    standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a 
-                    type specimen book.
+                  Welcome to Health Sphere, a premier healthcare institution dedicated to providing exceptional medical services through innovation, compassion, and cutting-edge technology. Our hospital is built on a foundation of trust, excellence, and patient-centered care, ensuring that every individual receives the highest standard of treatment in a supportive and efficient environment.
                 </p>
                 <p style={{ fontFamily: 'Sansation', fontSize: '16px', fontWeight: 400 }}>
-                    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's 
-                    standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a 
-                    type specimen book.
+                At Health Sphere, we understand that managing healthcare needs can be complex. That’s why we’ve integrated a state-of-the-art Hospital Management System (HMS) to streamline every aspect of patient care—from appointment scheduling and doctor consultations to prescription management and billing. Our system is designed to enhance operational efficiency, reduce wait times, and deliver a seamless experience for patients, doctors, and administrative staff alike.
                 </p>
                 <p style={{ fontFamily: 'Sansation', fontSize: '16px', fontWeight: 400 }}>
-                    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's 
-                    standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a 
-                    type specimen book.
-                </p>
-                <p style={{ fontFamily: 'Sansation', fontSize: '16px', fontWeight: 400 }}>
-                    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's 
-                    standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a 
-                    type specimen book.
-                </p>
-                <p style={{ fontFamily: 'Sansation', fontSize: '16px', fontWeight: 400 }}>
-                    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's 
-                    standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a 
-                    type specimen book.
+                With a commitment to leveraging the latest advancements in healthcare technology, we aim to bridge the gap between medical professionals and patients, ensuring transparency, accessibility, and top-tier service. Whether you’re visiting for a routine check-up or specialized treatment, Health Sphere is your trusted partner in health and wellness.
                 </p>
                 </div>
             </div>
@@ -117,14 +104,23 @@ function About() {
                   Our Vision
                 </div>
                 <div style={{ color: 'black', fontSize: '16px', fontFamily: 'Sansation', fontWeight: 400, marginTop: '10px' }}>
-                  Lorem Ipsum is simply dummy text of the printing and<br/> typesetting industry. Lorem Ipsum has been the industry's<br/> standard dummy text ever since the 1500s.
+                To redefine healthcare delivery by combining medical expertise with innovative digital solutions, creating a future where quality healthcare is accessible, efficient, and personalized for every patient.
                 </div>
               </div>
 
               <div className="col-auto">
-                <div 
-                  style={{ width: '214px', height: '214px', background: '#D9D9D9', borderRadius: '50%' }}>
-                </div>
+                  <div 
+                      style={{ 
+                        width: '214px', 
+                        height: '214px',
+                        borderRadius: '50%',
+                        overflow: 'hidden',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                      }}>
+                        <img src={about1} alt="About" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
               </div>
             </div>
           </div>
@@ -137,7 +133,16 @@ function About() {
               {/* Circle on the left */}
               <div className="col-auto" style={{ marginRight: '20px' }}>
                   <div 
-                      style={{ width: '214px', height: '214px',background: '#D9D9D9', borderRadius: '50%' }}>
+                      style={{ 
+                        width: '214px', 
+                        height: '214px',
+                        borderRadius: '50%',
+                        overflow: 'hidden',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                      }}>
+                        <img src={about2} alt="About" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   </div>
               </div>
 
@@ -147,9 +152,7 @@ function About() {
                       Our Mission
                   </div>
                   <div style={{ color: 'black', fontSize: '16px', fontFamily: 'Sansation',fontWeight: 400, marginTop: '10px' }}>
-                      Lorem Ipsum is simply dummy text of the printing and<br/> 
-                      typesetting industry. Lorem Ipsum has been the industry's<br/> 
-                      standard dummy text ever since the 1500s.
+                      To empower hospitals with a secure, efficient, and patient-centric management system that enhances operational excellence and elevates the standard of medical services.
                   </div>
               </div>
             </div>
@@ -165,14 +168,23 @@ function About() {
                   Our Goal
                 </div>
                 <div style={{ color: 'black', fontSize: '16px', fontFamily: 'Sansation', fontWeight: 400, marginTop: '10px' }}>
-                  Lorem Ipsum is simply dummy text of the printing and<br/> typesetting industry. Lorem Ipsum has been the industry's<br/> standard dummy text ever since the 1500s.
+                  To create an efficient, patient-centered healthcare ecosystem by integrating advanced technology with compassionate service—streamlining hospital operations, enhancing medical care, and improving accessibility for all.
                 </div>
               </div>
 
-              <div className="col-auto">
-                <div 
-                  style={{ width: '214px', height: '214px', background: '#D9D9D9', borderRadius: '50%' }}>
-                </div>
+              <div className="col-auto" >
+                  <div 
+                      style={{ 
+                        width: '214px', 
+                        height: '214px',
+                        borderRadius: '50%',
+                        overflow: 'hidden',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                      }}>
+                        <img src={about3} alt="About" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
               </div>
             </div>
           </div>
