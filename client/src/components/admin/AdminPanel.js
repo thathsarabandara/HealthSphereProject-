@@ -11,6 +11,8 @@ import InventoryAndResource from '../../pages/admin/InventoryAndResourcesManagem
 import ICU from '../../pages/admin/IntensiveCareUnit';
 import AdminLogin from '../../pages/admin/AdminLogin';
 import DoctorRequestPage from '../../pages/admin/DoctorRequstPage'
+import AdminDoctorProfilePage from '../../pages/admin/AdminDoctorProfilePage'; 
+
 function AdminPanel() {
   const sidebarStyle = {
     width: '250px',
@@ -111,6 +113,7 @@ function AdminPanel() {
           <Route path="/admin/inventoryandresource" element={<InventoryAndResource />} />
           <Route path="/admin/icu" element={<ICU />} />
           <Route path="/admin/doctorrequests" element={<DoctorRequestPage />} />
+          <Route path="/admin/doctor/:doctorId" element={<AdminDoctorProfilePage />} /> {/* Add this route */}
           {/* Add other routes as needed */}
         </Routes>
       </div>

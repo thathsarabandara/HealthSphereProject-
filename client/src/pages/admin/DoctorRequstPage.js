@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 function DoctorRequestPage() {
   const [requests, setRequests] = useState([
@@ -144,12 +144,7 @@ function DoctorRequestPage() {
               <td style={tableCellStyle}>{request.name}</td>
               <td style={tableCellStyle}>{request.status}</td>
               <td style={tableCellStyle}>
-                <button 
-                  style={buttonStyle}
-                  onClick={() => handleViewProfile(request.id)}
-                >
-                  View Profile
-                </button>
+                <Link to={`/admin/doctor/${request.id}`} style={buttonStyle}>View Profile</Link>
               </td>
               <td style={tableCellStyle}>
                 <button 
