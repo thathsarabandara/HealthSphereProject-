@@ -95,14 +95,23 @@ function DoctorPatientProfile() {
         <div className="col-lg-3 col-md-12 mb-4">
           <div className="card h-100 shadow-sm">
             <div className="card-body text-center">
-              <img
-                src={`http://localhost:5000/uploads/storage/patient/${patientId}/profilepictures/${profilePicture}`}
-                alt="profile"
-                className="rounded-circle mb-3"
-                style={{ width: '150px', height: '150px' }}
-              />
+              <div className="profile-image-container">
+                <img
+                  src={`http://localhost:5000/uploads/storage/patient/${patientId}/profilepictures/${profilePicture}`}
+                  alt="profile"
+                  className="img-fluid rounded-circle"
+                  style={{
+                    width: '150px',
+                    height: '150px',
+                    objectFit: 'cover',
+                    margin: '0 auto 1rem',
+                    border: '3px solid #112D4E',
+                    boxShadow: '0 4px 15px rgba(0, 0, 0, 0.1)'
+                  }}
+                />
+              </div>
               <h5 className="mb-1">
-                {patientId} - {patientFirstName} {patientLastName}
+                {patientFirstName} {patientLastName}
               </h5>
               <small className="text-muted">
                 {patientGender} - Age {age.years} Years {age.months} Months {age.days} Days

@@ -65,11 +65,16 @@ const getNavbarAndFooter = (path) => {
     NavbarComponent = DoctorNavbar;
     FooterComponent = DoctorFooter; 
   } else if (path.startsWith('/admin')) {
-    //SidebarComponent = AdminPanel; 
     if (path === '/admin/') { 
       SidebarComponent = null
+    } else if (path === '/admin/login') {
+      SidebarComponent = null;
+      NavbarComponent = null;
+      FooterComponent = null;
     } else {
       SidebarComponent = AdminPanel; // Show Sidebar for other Admin Pages
+      NavbarComponent = null;
+      FooterComponent = null;
     }
   } else {
     NavbarComponent = PatientNavbar; 
