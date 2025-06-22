@@ -81,34 +81,7 @@ const AdminLogin = () => {
               Sign In
             </button>
 
-            <div className="text-center my-3">
-              <small>or login with</small>
-            </div>
-
-            <div className="d-flex justify-content-center">
-              <a
-                href="http://localhost:5000/auth/google?group=doctor"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ textDecoration: 'none' }}
-              >
-                <button
-                  type="button"
-                  style={{
-                    background: '#4285F4',
-                    color: '#fff',
-                    border: 'none',
-                    borderRadius: 4,
-                    padding: '10px 20px',
-                    fontWeight: 'bold',
-                    width: '100%',
-                    maxWidth: 250
-                  }}
-                >
-                  Login with Google
-                </button>
-              </a>
-            </div>
+            
           </form>
         </div>
       </div>
