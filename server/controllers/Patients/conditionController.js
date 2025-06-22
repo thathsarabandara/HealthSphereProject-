@@ -31,10 +31,66 @@ const getData = async (model, patientId, res) => {
 
 const updateStatus = async (model, id, res) => {
   try {
-    await model.update({ status: 'delete' }, { where: { id } });
+    await model.update(
+      { status: 'delete' },
+      { 
+        where: { id },
+        transaction: true
+      }
+    );
     res.json({ message: 'Status updated to delete' });
   } catch (error) {
     res.status(500).json({ message: `Error updating status`, error: error.message });
+  }
+};
+
+const updateRecord = async (model, id, data, res) => {
+  try {
+    const token = res.req.cookies['token'];
+    const patient = await getPatientByToken(token);
+    
+    // Ensure the record belongs to the patient
+    const record = await model.findOne({
+      where: { 
+        id,
+        patient_id: patient.id,
+        status: 'active'
+      }
+    });
+    
+    if (!record) {
+      return res.status(404).json({ message: 'Record not found or not accessible' });
+    }
+
+    // Update only allowed fields
+    const updatableFields = Object.keys(model.rawAttributes).filter(field => 
+      !['id', 'patient_id', 'status', 'createdAt', 'updatedAt'].includes(field)
+    );
+
+    const updateData = {};
+    for (const field of updatableFields) {
+      if (data[field] !== undefined) {
+        updateData[field] = data[field];
+      }
+    }
+
+    await model.update(
+      updateData,
+      { 
+        where: { id },
+        transaction: true
+      }
+    );
+
+    res.json({ 
+      message: 'Record updated successfully',
+      data: { ...record.toJSON(), ...updateData }
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      message: `Error updating record`, 
+      error: error.message 
+    });
   }
 };
 
@@ -47,6 +103,11 @@ exports.getAllergies = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
+};
+
+exports.updateAllergy = async (req, res) => {
+  const { id } = req.body;
+  await updateRecord(PatientAllergy, id, req.body, res);
 };
 
 exports.deleteAllergy = async (req, res) => {
@@ -103,6 +164,11 @@ exports.getBloodSugar = async (req, res) => {
   }
 };
 
+exports.updateBloodSugar = async (req, res) => {
+  const { id } = req.body;
+  await updateRecord(PatientBloodSugar, id, req.body, res);
+};
+
 exports.deleteBloodSugar = async (req, res) => {
   const { id } = req.body;
   await updateStatus(PatientBloodSugar, id, res);
@@ -155,6 +221,11 @@ exports.getBmi = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
+};
+
+exports.updateBmi = async (req, res) => {
+  const { id } = req.body;
+  await updateRecord(PatientBMI, id, req.body, res);
 };
 
 exports.deleteBmi = async (req, res) => {

@@ -49,7 +49,18 @@ function Login() {
         e.preventDefault();
         try {
             const response = await axios.post('http://localhost:5000/login', { email, password }, { withCredentials: true });
-            toast.success(response.data.message);
+            toast.success(response.data.message, 
+              {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+              }
+            );
             setEmail('');
             setPassword('');
             sessionStorage.setItem('isAuthenticated', 'true'); 
