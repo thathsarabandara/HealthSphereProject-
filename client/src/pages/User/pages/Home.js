@@ -240,14 +240,28 @@ function PatientHome() {
         <div className="col-lg-3 col-md-12 mb-4">
           <div className="card h-100 shadow-sm">
             <div className="card-body d-flex flex-column justify-content-start align-items-center text-center">
-              {/* Profile Picture */}
-              <div className="rounded-circle overflow-hidden border" style={{ width: '150px', height: '150px' }}>
-                <img
-                  src={profilePicture || emptyImage}
-                  alt="Profile"
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                />
-              </div>
+               {/* Profile Picture */}
+               <div className="rounded-circle overflow-hidden border" style={{ 
+                 width: '150px', 
+                 height: '150px', 
+                 border: '2px solid #e0e0e0',
+                 display: 'flex',
+                 alignItems: 'center',
+                 justifyContent: 'center',
+                 backgroundColor: '#f8f9fa'
+               }}>
+                 <img
+                   src={profilePicture || emptyImage}
+                   alt="Profile"
+                   style={{ 
+                     width: '100%', 
+                     height: '100%', 
+                     objectFit: 'cover',
+                     borderRadius: '50%',
+                     border: profilePicture ? '2px solid #fff' : 'none'
+                   }}
+                 />
+               </div>
 
               {/* Name */}
               <h5 className="mb-1 mt-3">

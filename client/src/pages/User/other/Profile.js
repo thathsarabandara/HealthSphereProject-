@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import '../../../styles/user/PatientProfile.css';
 import emptyImage from '../../../assets/images/emptyProfile.png';
-import axios from 'axios'; // Import axios to make HTTP requests
+import axios from 'axios';
 import Loader from '../../../components/common/Loader';
-import ErrorPopup from '../../../components/common/error popup/ErrorPopup';
-import SuccessPopup from '../../../components/common/success popup/SuccessPopup';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Profile() {
   const [profileData, setProfileData] = useState({
@@ -20,10 +20,6 @@ function Profile() {
 
   const [originalData, setOriginalData] = useState({});
   const [loading, setLoading] = useState(true);
-  const [errorVisible, setErrorVisible] = useState(false);
-  const [successVisible, setSuccessVisible] = useState(false);
-  const handleErrorClose = () => setErrorVisible(false);
-  const handleSuccessClose = () => setSuccessVisible(false);
 
   const [pp, setPp] = useState(emptyImage);
 
@@ -125,12 +121,20 @@ function Profile() {
   
     axios.put(`http://localhost:5000/userprofile/${profileData.id}`, formData)
       .then(res => {
-        setSuccessVisible(true);
+        toast.success('Profile updated successfully!', {
+          position: "bottom-right",
+          autoClose: 3000,
+          theme: "colored"
+        });
         setOriginalData(profileData);
       })
       .catch(err => {
         console.error(err);
-        setErrorVisible(true);
+        toast.error('Failed to update profile', {
+          position: "bottom-right",
+          autoClose: 3000,
+          theme: "colored"
+        });
       });
   };
   
@@ -141,8 +145,6 @@ function Profile() {
 
   return (
     <div>
-      <ErrorPopup show={errorVisible} onClose={handleErrorClose} title="Something Went Wrong!" message="Profile Update Failed Try again!" button='Okay' />
-      <SuccessPopup show={successVisible} onClose={handleSuccessClose} title="Updated Success Fully " message="Profile Updated Successfully !" button='Okay' />
         <div className="container mt-5 mb-5">
       <div className="row gutters">
         {/* Profile Picture */}
@@ -151,15 +153,25 @@ function Profile() {
             <div className="card-body">
               <div className="account-settings">
                 <div className="user-avatar">
-                  <img
-                    style={{ width: '30vh', height: '30vh', maxHeight: '250px', borderRadius: '50%', background: '#bebebe' }}
-                    src={pp || emptyImage}
-                    alt="profile"
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = emptyImage;
-                    }}
-                  />
+                   <div className="profile-picture-container">
+                     <div className="profile-picture-wrapper">
+                       <img
+                         src={pp || emptyImage}
+                         alt="profile"
+                         onError={(e) => {
+                           e.target.onerror = null;
+                           e.target.src = emptyImage;
+                         }}
+                         style={{ 
+                           width: '100%', 
+                           height: '100%', 
+                           objectFit: 'cover',
+                           borderRadius: '50%',
+                           border: pp ? '2px solid white' : 'none'
+                         }}
+                       />
+                     </div>
+                   </div>
                 </div>
                 <div className="mt-3">
                   <input type="file" id="profile-picture-upload" accept="image/*" style={{ display: 'none' }} onChange={handleFileChange} />
