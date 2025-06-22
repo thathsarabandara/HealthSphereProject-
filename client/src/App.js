@@ -51,7 +51,6 @@ import WebBot from './components/Web Assistant/WebBot';
 import MedicalConditions from './pages/User/healthcare/MedicalConditions';
 import Bookings from './pages/User/other/Bookings';
 import DoctorPatientProfile from './pages/doctor/DoctorPatientProfile';
-import PrescriptionView from './pages/doctor/PrescriptionView';
 import PatientPrescriptionView from './pages/User/healthcare/PrescriptionView';
 import Checkout from './pages/User/payment/Checkout';
 import DoctorDashboard from './pages/doctor/DoctorDashboard';

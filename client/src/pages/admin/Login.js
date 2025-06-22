@@ -2,27 +2,60 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import '../../styles/temp.css';
 import signin from '../../assets/images/Rectangle 84 (1).svg'
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import 'react-toastify/dist/ReactToastify.css';
+import { toast, ToastContainer } from 'react-toastify';
 
 const AdminLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState('');
-
-  const handleSubmit = (e) => {
+  const navigate = useNavigate();
+  
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Add authentication logic here
-    if (email !== "admin@example.com" || password !== "admin123") {
-      setError("Invalid email or password");
-    } else {
-      setError(null);
-      // Redirect to admin dashboard
-      window.location.href = "/admin/dashboard";
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/admin/login",
+        { email, password },
+        { withCredentials: true }
+      );
+      toast.success(response.data.message,
+        {
+          position: "bottom-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        }
+      );
+      setEmail("");
+      setPassword("");
+      
+      // Navigate to dashboard on successful login
+      navigate("/admin");
+    } catch (error) {
+      toast.error(error.response?.data?.error || "Login failed. Please try again.",
+        {
+          position: "bottom-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        }
+      );
     }
   };
 
   return (
     <div className="container d-flex justify-content-center align-items-center" style={{ minHeight: '100vh' }}>
+      <ToastContainer />
       <div className="row w-100 g-0" style={{ background: '#C8D8F6', borderRadius: 12, maxWidth: '1000px' }}>
         
         <div className="col-lg-6 col-md-6 d-none d-md-block p-4">
@@ -38,8 +71,6 @@ const AdminLogin = () => {
           <div className="text-center">
             <p className="lead fw-normal mb-2">Admin Login</p>
             <p>Please enter your email and password to login</p>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
-            {success && <p style={{ color: 'green' }}>{success}</p>}
           </div>
 
           <form onSubmit={handleSubmit}>

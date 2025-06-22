@@ -12,27 +12,26 @@ exports.login = async (req, res) => {
         const user = await User.findOne({ where: { email } });
 
         if (!user) {
-            return res.status(401).json({ message: "Incorrect Credentials" });
+            return res.status(400).json({ message: "Incorrect Credentials" });
         }
 
         // Fetch user's hashed password
         const userPassword = await UserPassword.findOne({ where: { user_id: user.id } });
 
         if (!userPassword) {
-            return res.status(401).json({ message: "Incorrect Credentials" });
+            return res.status(400).json({ message: "Incorrect Credentials" });
         }
 
         const isValidPassword = await comparePassword(password, userPassword.password_hash);
 
         if (!isValidPassword) {
-            return res.status(401).json({ message: "Incorrect Credentials" });
+            return res.status(400).json({ message: "Incorrect Credentials" });
         }
-
         // Fetch user's group
         const userGroup = await UserGroup.findOne({ where: { user_id: user.id } });
 
-        if (userGroup && userGroup.group_id === 3) {
-            return res.status(401).json({ message: "Access Denied" });
+        if (!userGroup || userGroup.group_id !== 3) {
+            return res.status(400).json({ message: "Access Denied" });
         }
 
         // Generate authentication token
