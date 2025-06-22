@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 function DoctorsAndStaffManagement() {
+
+  const navigate = useNavigate();
 
   const [dateTime, setDateTime] = useState(new Date().toLocaleString());
 
@@ -75,18 +79,19 @@ function DoctorsAndStaffManagement() {
               <div style={{width: '100%', height: '100%', background: '#786262'}} />
             </div>
             <button
-                  style={{
-                    marginTop: "10px",
-                    padding: "10px 20px",
-                    backgroundColor: "#7B61FF",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "5px",
-                    cursor: "pointer",
-                  }}
-                >
-                  View
-                </button>
+              style={{
+                marginTop: "10px",
+                padding: "10px 20px",
+                backgroundColor: "#7B61FF",
+                color: "white",
+                border: "none",
+                borderRadius: "5px",
+                cursor: "pointer",
+              }}
+              onClick={() => navigate('/admin/doctorrequests')}
+            >
+              View
+            </button>
           </div>
         </div>
 
@@ -125,7 +130,19 @@ function DoctorsAndStaffManagement() {
               <td style={tableCellStyle}>{row.date}</td>
               <td style={tableCellStyle}>{row.doctorName}</td>
               <td style={tableCellStyle}>
-                <button style={buttonStyle}>View</button>
+                <a
+                  style={{
+                    padding: "5px 10px",
+                    backgroundColor: "#17a2b8",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "4px",
+                    textDecoration: "none"
+                  }}
+                  href="/admin/doctorrequests"
+                >
+                  View
+                </a>
               </td>
             </tr>
           ))}

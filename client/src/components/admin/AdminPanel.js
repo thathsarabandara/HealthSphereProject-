@@ -10,6 +10,7 @@ import BillinAndFinancial from '../../pages/admin/BillingAndFinancialManagement'
 import InventoryAndResource from '../../pages/admin/InventoryAndResourcesManagement';
 import ICU from '../../pages/admin/IntensiveCareUnit';
 import AdminLogin from '../../pages/admin/AdminLogin';
+import DoctorRequestPage from '../../pages/admin/DoctorRequstPage'
 function AdminPanel() {
   const sidebarStyle = {
     width: '250px',
@@ -109,6 +110,7 @@ function AdminPanel() {
           <Route path="/admin/billingandfinancial" element={<BillinAndFinancial />} />
           <Route path="/admin/inventoryandresource" element={<InventoryAndResource />} />
           <Route path="/admin/icu" element={<ICU />} />
+          <Route path="/admin/doctorrequests" element={<DoctorRequestPage />} />
           {/* Add other routes as needed */}
         </Routes>
       </div>
