@@ -11,8 +11,24 @@ import InventoryAndResource from '../../pages/admin/InventoryAndResourcesManagem
 import ICU from '../../pages/admin/IntensiveCareUnit';
 import DoctorRequestPage from '../../pages/admin/DoctorRequstPage'
 import AdminDoctorProfilePage from '../../pages/admin/AdminDoctorProfilePage'; 
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 function AdminPanel() {
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      const response = await axios.post('http://localhost:5000/admin/logout', {}, { withCredentials: true });
+      if (response.status === 200) {
+        console.log('Logout successful:', response.data.message);
+        navigate('/admin/login');
+      }
+    } catch (error) {
+      console.error('Logout error:', error.response ? error.response.data : error.message);
+    }
+  };
+
   const sidebarStyle = {
     width: '250px',
     height: '100vh',
@@ -95,7 +111,7 @@ function AdminPanel() {
 
         {/* Logout */}
         <div style={{ textAlign: 'center', padding: '20px' }}>
-          <button style={{ width: '100%', backgroundColor: '#dc3545', color: 'white', border: 'none', padding: '10px' }}>
+          <button style={{ width: '100%', backgroundColor: '#dc3545', color: 'white', border: 'none', padding: '10px' }} onClick={handleLogout}>
             <FaSignOutAlt style={{ marginRight: '10px' }} />
             Log Out
           </button>

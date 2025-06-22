@@ -1,5 +1,6 @@
 const { User } = require("../../models/auth/User");
 const { UserPassword } = require("../../models/auth/UserPassword");
+const {Token} = require("../../models/auth/Token");
 const { comparePassword } = require("../../utils/hashpassword");
 const { UserGroup } = require("../../models/auth/UserGroup");
 const { generateToken } = require("../../utils/tokenUtils");
