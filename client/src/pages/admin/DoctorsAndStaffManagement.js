@@ -16,6 +16,26 @@ function DoctorsAndStaffManagement() {
     return () => clearInterval(interval); // Cleanup on component unmount
   }, []);
 
+  const [doctors, setDoctors] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/admin/loaddoctors');
+        console.log(response.data)
+        setDoctors(response.data);
+        setLoading(false);
+      } catch (err) {
+        setError('Failed to fetch doctors');
+        setLoading(false);
+      }
+    };
+
+    fetchDoctors();
+  }, []);
+
   const containerStyle = {
     marginTop: '20px',
     padding: '20px',
@@ -56,12 +76,6 @@ function DoctorsAndStaffManagement() {
     border: 'none',
     borderRadius: '4px',
   };
-
-  const data = [
-    { doctorId: 'D001', date: '2022.09.19', doctorName: 'John' },
-    { doctorId: 'D002', date: '2022.09.20', doctorName: 'Jane' },
-    { doctorId: 'D003', date: '2022.09.21', doctorName: 'Doe' },
-  ];
 
   return (
     <div style={containerStyle}>
@@ -124,18 +138,28 @@ function DoctorsAndStaffManagement() {
           </tr>
         </thead>
         <tbody>
-          {data.map((row, index) => (
-            <tr key={index}>
-              <td style={tableCellStyle}>{row.doctorId}</td>
-              <td style={tableCellStyle}>{row.date}</td>
-              <td style={tableCellStyle}>{row.doctorName}</td>
-              <td style={tableCellStyle}>
-                <Link to={`/admin/doctor/${row.doctorId}`} style={buttonStyle}>
-                  View
-                </Link>
-              </td>
+          {loading ? (
+            <tr>
+              <td colSpan={4} style={tableCellStyle}>Loading...</td>
             </tr>
-          ))}
+          ) : error ? (
+            <tr>
+              <td colSpan={4} style={tableCellStyle}>{error}</td>
+            </tr>
+          ) : (
+            doctors.map((row, index) => (
+              <tr key={index}>
+                <td style={tableCellStyle}>{row.id}</td>
+                <td style={tableCellStyle}>{row.updated_at.split('T')[0]}</td>
+                <td style={tableCellStyle}>{row.first_name + " " + row.last_name}</td>
+                <td style={tableCellStyle}>
+                  <Link to={`/admin/doctor/${row.id}`} style={buttonStyle}>
+                    View
+                  </Link>
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
     </div>

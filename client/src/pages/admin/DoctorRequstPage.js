@@ -3,22 +3,23 @@ import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 
 function DoctorRequestPage() {
-  const [requests, setRequests] = useState([
-    { id: 'DOC001', date: '2023-06-15', name: 'Dr. Jane Smith', status: 'Pending' },
-    { id: 'DOC002', date: '2023-06-16', name: 'Dr. John Doe', status: 'Pending' },
-    { id: 'DOC003', date: '2023-06-17', name: 'Dr. Sarah Johnson', status: 'Pending' },
-  ]);
-
+  const [pendingDoctors, setPendingDoctors] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
     // Fetch doctor requests from backend
     const fetchRequests = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/admin/doctor-requests');
-        setRequests(response.data);
+        const response = await axios.get('http://localhost:5000/admin/loadpendingdoctors');
+        console.log(response.data)
+        setPendingDoctors(response.data);
+        setLoading(false);
       } catch (error) {
         console.error('Error fetching doctor requests:', error);
+        setError('Failed to fetch pending doctors');
+        setLoading(false);
       }
     };
 
@@ -82,12 +83,13 @@ function DoctorRequestPage() {
   const handleAccept = async (id) => {
     console.log(`Accepting request for doctor ID: ${id}`);
     // Update status in UI
-    setRequests(requests.map(request => 
+    setPendingDoctors(pendingDoctors.map(request => 
       request.id === id ? { ...request, status: 'Accepted' } : request
     ));
     // Implement API call to backend
     try {
-      await axios.put(`http://localhost:5000/admin/doctor-requests/${id}/accept`);
+      await axios.put(`http://localhost:5000/admin/doctor/approve/${id}`);
+      window.location.reload();
     } catch (error) {
       console.error('Error accepting doctor request:', error);
     }
@@ -96,12 +98,13 @@ function DoctorRequestPage() {
   const handleReject = async (id) => {
     console.log(`Rejecting request for doctor ID: ${id}`);
     // Update status in UI
-    setRequests(requests.map(request => 
+    setPendingDoctors(pendingDoctors.map(request => 
       request.id === id ? { ...request, status: 'Rejected' } : request
     ));
     // Implement API call to backend
     try {
-      await axios.put(`http://localhost:5000/admin/doctor-requests/${id}/reject`);
+      await axios.put(`http://localhost:5000/admin/doctor/suspend/${id}`);
+      window.location.reload();
     } catch (error) {
       console.error('Error rejecting doctor request:', error);
     }
@@ -137,11 +140,11 @@ function DoctorRequestPage() {
           </tr>
         </thead>
         <tbody>
-          {requests.map((request) => (
+          {pendingDoctors.map((request) => (
             <tr key={request.id}>
               <td style={tableCellStyle}>{request.id}</td>
-              <td style={tableCellStyle}>{request.date}</td>
-              <td style={tableCellStyle}>{request.name}</td>
+              <td style={tableCellStyle}>{request.updated_at.split('T')[0]}</td>
+              <td style={tableCellStyle}>{request.first_name + " " + request.last_name}</td>
               <td style={tableCellStyle}>{request.status}</td>
               <td style={tableCellStyle}>
                 <Link to={`/admin/doctor/${request.id}`} style={buttonStyle}>View Profile</Link>
@@ -150,14 +153,12 @@ function DoctorRequestPage() {
                 <button 
                   style={acceptButtonStyle}
                   onClick={() => handleAccept(request.id)}
-                  disabled={request.status !== 'Pending'}
                 >
                   Accept
                 </button>
                 <button 
                   style={rejectButtonStyle}
                   onClick={() => handleReject(request.id)}
-                  disabled={request.status !== 'Pending'}
                 >
                   Reject
                 </button>
