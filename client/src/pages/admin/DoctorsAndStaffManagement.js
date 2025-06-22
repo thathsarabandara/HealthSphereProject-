@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 function DoctorsAndStaffManagement() {
 
@@ -130,19 +130,9 @@ function DoctorsAndStaffManagement() {
               <td style={tableCellStyle}>{row.date}</td>
               <td style={tableCellStyle}>{row.doctorName}</td>
               <td style={tableCellStyle}>
-                <a
-                  style={{
-                    padding: "5px 10px",
-                    backgroundColor: "#17a2b8",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "4px",
-                    textDecoration: "none"
-                  }}
-                  href="/admin/doctorrequests"
-                >
+                <Link to={`/admin/doctor/${row.doctorId}`} style={buttonStyle}>
                   View
-                </a>
+                </Link>
               </td>
             </tr>
           ))}
