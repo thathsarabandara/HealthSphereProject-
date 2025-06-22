@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import '../../styles/Navbar.css';
 import banner from '../../assets/images/banner-img.png';
@@ -11,6 +11,7 @@ function PatientNavbar() {
   const [user, setUser] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const [loading, setLoading] = useState(true);
+  const dropdownRef = useRef(null);
 
   const formatUserName = (name) => {
     if (!name) return 'User';
@@ -68,6 +69,22 @@ function PatientNavbar() {
 
     // Clean up event listener on unmount
     return () => window.removeEventListener("userLogin", handleLoginEvent);
+  }, []);
+
+  // Function to handle outside clicks
+  const handleClickOutside = (event) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      setShowDropdown(false);
+    }
+  };
+
+  useEffect(() => {
+    // Add event listener for clicks
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      // Clean up event listener
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, []);
 
   const toggleDropdown = () => {
@@ -149,7 +166,7 @@ function PatientNavbar() {
                     onClick={toggleDropdown}
                   />
                   {showDropdown && (
-                    <div className='profile-dropdown'>
+                    <div className='profile-dropdown' ref={dropdownRef}>
                       <Link to='/userprofile' className='dropdown-item'>Profile</Link>
                       <Link to='/medicalcondions' className='dropdown-item'>Conditions</Link>
                       <Link to='/prescriptionhistory' className='dropdown-item'>Prescriptions</Link>
