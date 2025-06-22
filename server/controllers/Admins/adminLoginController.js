@@ -83,3 +83,15 @@ exports.logout = async (req, res) => {
         return res.status(500).json({ message: 'Internal server error.' });
     }
 };
+
+exports.home = (req, res) => {
+    try {
+        if(req.userID){
+            return res.status(200).json({ message: "Welcome to the admin dashboard" });
+        }
+        return res.status(401).json({ message: 'Unauthorized.' });
+    } catch (error) {
+        console.error('Error:', error);
+        return res.status(500).json({ message: 'Internal server error.' });
+    }
+}
