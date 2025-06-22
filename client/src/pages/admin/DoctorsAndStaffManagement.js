@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useNavigate, Link } from 'react-router-dom';
 
 function DoctorsAndStaffManagement() {
+
+  const navigate = useNavigate();
 
   const [dateTime, setDateTime] = useState(new Date().toLocaleString());
 
@@ -10,6 +14,26 @@ function DoctorsAndStaffManagement() {
     }, 1000); // Update every second
 
     return () => clearInterval(interval); // Cleanup on component unmount
+  }, []);
+
+  const [doctors, setDoctors] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/admin/loaddoctors');
+        console.log(response.data)
+        setDoctors(response.data);
+        setLoading(false);
+      } catch (err) {
+        setError('Failed to fetch doctors');
+        setLoading(false);
+      }
+    };
+
+    fetchDoctors();
   }, []);
 
   const containerStyle = {
@@ -53,12 +77,6 @@ function DoctorsAndStaffManagement() {
     borderRadius: '4px',
   };
 
-  const data = [
-    { doctorId: 'D001', date: '2022.09.19', doctorName: 'John' },
-    { doctorId: 'D002', date: '2022.09.20', doctorName: 'Jane' },
-    { doctorId: 'D003', date: '2022.09.21', doctorName: 'Doe' },
-  ];
-
   return (
     <div style={containerStyle}>
       <div style={headerStyle}>
@@ -75,18 +93,19 @@ function DoctorsAndStaffManagement() {
               <div style={{width: '100%', height: '100%', background: '#786262'}} />
             </div>
             <button
-                  style={{
-                    marginTop: "10px",
-                    padding: "10px 20px",
-                    backgroundColor: "#7B61FF",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "5px",
-                    cursor: "pointer",
-                  }}
-                >
-                  View
-                </button>
+              style={{
+                marginTop: "10px",
+                padding: "10px 20px",
+                backgroundColor: "#7B61FF",
+                color: "white",
+                border: "none",
+                borderRadius: "5px",
+                cursor: "pointer",
+              }}
+              onClick={() => navigate('/admin/doctorrequests')}
+            >
+              View
+            </button>
           </div>
         </div>
 
@@ -119,16 +138,28 @@ function DoctorsAndStaffManagement() {
           </tr>
         </thead>
         <tbody>
-          {data.map((row, index) => (
-            <tr key={index}>
-              <td style={tableCellStyle}>{row.doctorId}</td>
-              <td style={tableCellStyle}>{row.date}</td>
-              <td style={tableCellStyle}>{row.doctorName}</td>
-              <td style={tableCellStyle}>
-                <button style={buttonStyle}>View</button>
-              </td>
+          {loading ? (
+            <tr>
+              <td colSpan={4} style={tableCellStyle}>Loading...</td>
             </tr>
-          ))}
+          ) : error ? (
+            <tr>
+              <td colSpan={4} style={tableCellStyle}>{error}</td>
+            </tr>
+          ) : (
+            doctors.map((row, index) => (
+              <tr key={index}>
+                <td style={tableCellStyle}>{row.id}</td>
+                <td style={tableCellStyle}>{row.updated_at.split('T')[0]}</td>
+                <td style={tableCellStyle}>{row.first_name + " " + row.last_name}</td>
+                <td style={tableCellStyle}>
+                  <Link to={`/admin/doctor/${row.id}`} style={buttonStyle}>
+                    View
+                  </Link>
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
     </div>

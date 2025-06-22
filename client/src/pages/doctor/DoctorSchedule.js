@@ -3,6 +3,8 @@ import { FaCalendarAlt, FaClock, FaLeaf } from 'react-icons/fa';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Loader from '../../components/common/Loader';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function ScheduleRequest() {
   const [schedules, setSchedules] = useState([]);
@@ -55,14 +57,36 @@ function ScheduleRequest() {
 
     try {
       await axios.post('http://localhost:5000/doctor/schedule', { date, time, comment, fees }, { withCredentials: true });
-      alert('Schedule requested successfully');
+      toast.success('Schedule requested successfully!',{
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
       setDate('');
       setTime('');
       setComment('');
       setFees('');
+      window.location.reload();
     } catch (error) {
       setError('Error sending schedule request. Please try again.');
       console.error('Error sending schedule request:', error);
+      toast.error('Failed to send schedule request',
+        {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        }
+      );
     }
   };
 
@@ -89,6 +113,7 @@ function ScheduleRequest() {
 
   return (
     <div className="container my-5">
+      <ToastContainer />
       <h3 className="mb-4">Request for Schedule</h3>
 
       {error && <div className="alert alert-danger">{error}</div>}

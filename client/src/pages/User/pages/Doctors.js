@@ -113,7 +113,7 @@ function Doctors() {
       image: Ellipse1,
       title: 'Channel a Dermatologist',
       description: 'Specializes in the treatment of skin, hair, and nail conditions like acne, eczema, and psoriasis.',
-      link: '"/finddoctors/Dermatologist'
+      link: '/finddoctors/Dermatologist'
     }
   ];
   const doctorCards1 = [

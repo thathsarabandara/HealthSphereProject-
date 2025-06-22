@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Loader from '../../../components/common/Loader';
 
 function Reservations() {
@@ -47,15 +49,48 @@ function Reservations() {
     try {
       const response = await axios.post(`http://localhost:5000/reservation/${scheduleid}`, formData, {withCredentials: true});
       if (response.status === 200 || response.status === 201) {
-        alert('Reservation submitted successfully!');
+        toast.success('Reservation submitted successfully!',
+          {
+            position: "bottom-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+          }
+        );
         setFormData({ name: '', address: '', phone_number: '', email: '' });
         navigate('/'); // Navigate back to the home page after successful submission
       } else {
-        alert('Failed to submit the reservation. Please try again.');
+        toast.error('Failed to submit the reservation. Please try again.',
+          {
+            position: "bottom-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+          }
+        );
       }
     } catch (error) {
       console.error('Error submitting reservation:', error);
-      alert('An error occurred while submitting the reservation.');
+      toast.error('An error occurred while submitting the reservation.',
+        {
+          position: "bottom-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        }
+      );
     }
   };
 
@@ -84,6 +119,7 @@ function Reservations() {
 
   return (
     <div>
+      <ToastContainer />
       {/* Background color for the header */}
       <div className="container-fluid" style={{ padding: 0, margin: 0 }}>
         <div style={{ width: '100%', height: '100px', background: '#756A6A' }} />

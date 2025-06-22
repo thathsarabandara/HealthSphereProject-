@@ -3,18 +3,14 @@ import axios from 'axios';
 import '../../../styles/user/Payment.css';
 import Loader from '../../../components/common/Loader';
 import { useNavigate, useParams } from 'react-router-dom';
-import SuccessPopup from '../../../components/common/success popup/SuccessPopup';
-import ErrorPopup from '../../../components/common/error popup/ErrorPopup';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Checkout() {
-  const { id }= useParams();
+  const { id } = useParams();
   const [paymentMethod, setPaymentMethod] = useState('Online Payment');
   const [isLoading, setIsLoading] = useState(true);
   const [checkoutAmount, setCheckoutAmount] = useState(null);
-  const [errorVisible, setErrorVisible] = useState(false);
-  const [successVisible, setSuccessVisible] = useState(false);
-  const handleErrorClose = () => setErrorVisible(false);
-  const handleSuccessClose = () => setSuccessVisible(false);
   const navigate = useNavigate();
 
   const [billingDetails, setBillingDetails] = useState({
@@ -31,11 +27,56 @@ function Checkout() {
     paymentProof: null,
   });
 
+  const [errors, setErrors] = useState({
+    cardNumber: '',
+    cardHolder: '',
+    expiryDate: '',
+    csv: ''
+  });
+
+  const validateCardNumber = (cardNumber) => {
+    if (!/^\d+$/.test(cardNumber)) {
+      return 'Card number must contain only digits';
+    }
+    if (cardNumber.length < 14 || cardNumber.length > 15) {
+      return 'Card number must be 14 or 15 digits';
+    }
+    return '';
+  };
+
+  const validateCardHolder = (cardHolder) => {
+    if (cardHolder.trim().length < 10) {
+      return 'Card holder name must be at least 10 characters';
+    }
+    return '';
+  };
+
+  const validateExpiryDate = (expiryDate) => {
+    if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(expiryDate)) {
+      return 'Invalid date format. Use MM/YY';
+    }
+    const [month, year] = expiryDate.split('/');
+    const currentYear = new Date().getFullYear() % 100; // Last two digits of current year
+    const currentMonth = new Date().getMonth() + 1; // Current month (1-12)
+    
+    if (parseInt(year) < currentYear || (parseInt(year) === currentYear && parseInt(month) < currentMonth)) {
+      return 'Card has expired';
+    }
+    return '';
+  };
+
+  const validateCsv = (csv) => {
+    if (!/^\d{3}$/.test(csv)) {
+      return 'CSV must be 3 digits';
+    }
+    return '';
+  };
+
   // Fetch checkout amount on component mount
   useEffect(() => {
     async function fetchCheckoutAmount() {
       try {
-        const response = await axios.get(`http://localhost:5000/checkout/${id}`, {withCredentials: true}); // Replace with your API endpoint
+        const response = await axios.get(`http://localhost:5000/checkout/${id}`, { withCredentials: true }); // Replace with your API endpoint
         console.log(response.data);
         setCheckoutAmount(response.data.amount);
       } catch (error) {
@@ -56,16 +97,33 @@ function Checkout() {
   };
 
   const handlePaymentChange = (e) => {
-    if (e.target.name === 'paymentProof') {
-      setPaymentDetails({
-        ...paymentDetails,
-        paymentProof: e.target.files[0],
-      });
-    } else {
-      setPaymentDetails({
-        ...paymentDetails,
-        [e.target.name]: e.target.value,
-      });
+    const { name, value } = e.target;
+    setPaymentDetails(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    
+    // Real-time validation
+    if (name === 'cardNumber') {
+      setErrors(prev => ({
+        ...prev,
+        cardNumber: validateCardNumber(value)
+      }));
+    } else if (name === 'cardHolder') {
+      setErrors(prev => ({
+        ...prev,
+        cardHolder: validateCardHolder(value)
+      }));
+    } else if (name === 'expiryDate') {
+      setErrors(prev => ({
+        ...prev,
+        expiryDate: validateExpiryDate(value)
+      }));
+    } else if (name === 'csv') {
+      setErrors(prev => ({
+        ...prev,
+        csv: validateCsv(value)
+      }));
     }
   };
 
@@ -75,8 +133,22 @@ function Checkout() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
-  
+    
+    // Validate all fields again in case the user didn't type (e.g., pasted and didn't change)
+    const newErrors = {
+      cardNumber: validateCardNumber(paymentDetails.cardNumber),
+      cardHolder: validateCardHolder(paymentDetails.cardHolder),
+      expiryDate: validateExpiryDate(paymentDetails.expiryDate),
+      csv: validateCsv(paymentDetails.csv)
+    };
+    
+    setErrors(newErrors);
+    
+    // Check if there are any errors
+    if (Object.values(newErrors).some(error => error !== '')) {
+      return;
+    }
+    
     try {
       const formData = new FormData();
         formData.append('fullName', billingDetails.fullName);
@@ -99,11 +171,33 @@ function Checkout() {
           withCredentials: true,
         });
 
-      setSuccessVisible(true);
+      toast.success('Payment successful!',
+        {
+          position: "bottom-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        }
+      );
       navigate('/')
     } catch (error) {
       console.error('Error submitting payment:', error);
-      setErrorVisible(true)
+      toast.error('Failed to make payment',
+        {
+          position: "bottom-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        }
+      );
     } finally {
       setIsLoading(false);
     }
@@ -133,8 +227,7 @@ function Checkout() {
 
   return (
     <div className="billing-container">
-      <ErrorPopup show={errorVisible} onClose={handleErrorClose} title="Something Went Wrong!" message="Payment Failed Try again!" button='Okay' />
-      <SuccessPopup show={successVisible} onClose={handleSuccessClose} title="Updated Success Fully " message="Payment Successfull!" button='Okay' />
+      <ToastContainer />
       <div className="billing-details ms-5 mt-5 mb-5">
         <h3>
           <span className="icon">▣</span> Billing Details
@@ -212,41 +305,50 @@ function Checkout() {
         {paymentMethod === 'Online Payment' ? (
           <div className="card-details">
             <form onSubmit={handleSubmit}>
-              <label>Card Number:</label>
-              <input
-                type="text"
-                name="cardNumber"
-                value={paymentDetails.cardNumber}
-                onChange={handlePaymentChange}
-                placeholder="Enter card number"
-              />
-
-              <label>Card Holder's Name:</label>
-              <input
-                type="text"
-                name="cardHolder"
-                value={paymentDetails.cardHolder}
-                onChange={handlePaymentChange}
-                placeholder="Enter card holder's name"
-              />
-
-              <label>Card Valid Date:</label>
-              <input
-                type="text"
-                name="expiryDate"
-                value={paymentDetails.expiryDate}
-                onChange={handlePaymentChange}
-                placeholder="MM/YY"
-              />
-
-              <label>CSV:</label>
-              <input
-                type="text"
-                name="csv"
-                value={paymentDetails.csv}
-                onChange={handlePaymentChange}
-                placeholder="CSV"
-              />
+              <div className="form-group">
+                <label>Card Number:</label>
+                <input
+                  type="text"
+                  name="cardNumber"
+                  value={paymentDetails.cardNumber}
+                  onChange={handlePaymentChange}
+                  placeholder="Enter card number"
+                />
+                {errors.cardNumber && <div className="text-danger">{errors.cardNumber}</div>}
+              </div>
+              <div className="form-group">
+                <label>Card Holder's Name:</label>
+                <input
+                  type="text"
+                  name="cardHolder"
+                  value={paymentDetails.cardHolder}
+                  onChange={handlePaymentChange}
+                  placeholder="Enter card holder's name"
+                />
+                {errors.cardHolder && <div className="text-danger">{errors.cardHolder}</div>}
+              </div>
+              <div className="form-group">
+                <label>Card Valid Date:</label>
+                <input
+                  type="text"
+                  name="expiryDate"
+                  value={paymentDetails.expiryDate}
+                  onChange={handlePaymentChange}
+                  placeholder="MM/YY"
+                />
+                {errors.expiryDate && <div className="text-danger">{errors.expiryDate}</div>}
+              </div>
+              <div className="form-group">
+                <label>CSV:</label>
+                <input
+                  type="text"
+                  name="csv"
+                  value={paymentDetails.csv}
+                  onChange={handlePaymentChange}
+                  placeholder="CSV"
+                />
+                {errors.csv && <div className="text-danger">{errors.csv}</div>}
+              </div>
 
               <button type="submit" className="pay-btn">
                 Pay Now
@@ -260,7 +362,7 @@ function Checkout() {
               <input
                 type="file"
                 name="paymentProof"
-                onChange={handlePaymentChange}
+                onChange={(e) => setPaymentDetails({ ...paymentDetails, paymentProof: e.target.files[0] })}
               />
 
               <button className="btn1 btn-outline mt-3" type="submit">
