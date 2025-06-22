@@ -392,7 +392,8 @@ function PatientHome() {
             <h4 className="mb-0"><FaClinicMedical /> Medical Conditions</h4>
           </div>
           <div className="card-body">
-            <table className="table table-hover">
+            <div style={{ overflowX: 'auto' }}>
+              <table className="table table-hover" style={{ minWidth: 600 }}>
               <thead>
                 <tr>
                   <th>Condition</th>
@@ -431,15 +432,17 @@ function PatientHome() {
                 )}
               </tbody>
             </table>
+            </div>
+            </div>
           </div>
-        </div>
         {/* Allergies List */}
         <div className="card mb-4 shadow-sm">
           <div className="card-header text-white" style={{ background: '#2A5D9C', color: 'white' }}>
             <h4 className="mb-0"><FaClinicMedical /> Allergies</h4>
           </div>
           <div className="card-body">
-            <table className="table table-hover">
+            <div style={{ overflowX: 'auto' }}>
+              <table className="table table-hover" style={{ minWidth: 600 }}>
               <thead>
                 <tr>
                   <th>Allergy</th>
@@ -482,8 +485,9 @@ function PatientHome() {
                 )}
               </tbody>
             </table>
+            </div>
+            </div>
           </div>
-        </div>
         <div className="newsletter-section my-4">
                 <h3>HealthSphere NewsLetter</h3>
                 <div className="row">

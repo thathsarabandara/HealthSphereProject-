@@ -1,10 +1,9 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Rectangle57 from '../../../assets/images/Rectangle 57.svg';
 import Loader from '../../../components/common/Loader';
 
 function Packages() {
-
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -15,22 +14,15 @@ function Packages() {
   if (isLoading) {
     return (
       <div style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100vw',
-        height: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#f0f4f8',
-        zIndex: 9999
+        position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        backgroundColor: '#f0f4f8', zIndex: 9999
       }}>
         <Loader />
       </div>
     );
-  };
-  // Function to handle adding items to cart
+  }
+
   const addItems = async (id) => {
     try {
       const response = await axios.post(`http://localhost:5000/package/${id}`, {}, { withCredentials: true });
@@ -41,11 +33,21 @@ function Packages() {
     }
   };
 
-  // Package Card Component
-  const PackageCard = ({ id, title, description, price }) => (
+  const PackageCard = ({ id, title, description, price, imageUrl }) => (
     <div className='col-12 col-md-4 mb-4 mt-4'>
       <div style={{ backgroundColor: '#C8D8F6', borderRadius: 11, border: '2px solid #2A5D9C', padding: '10px' }}>
-        <div style={{ backgroundColor: '#504E4E', borderRadius: 9, height: '150px' }}></div>
+      <div style={{
+          borderRadius: 9,height: '150px',display: 'flex',alignItems: 'center',justifyContent: 'center',overflow: 'hidden',
+        }}>
+          {imageUrl && (
+            <img
+              src={imageUrl}
+              alt={title}
+              style={{height: '100%',width: '100%',objectFit: 'cover',borderRadius: 9 
+              }}
+            />
+          )}
+        </div>
         <div style={{ color: 'black', fontSize: 19, fontFamily: 'Sansation', fontWeight: '700', marginTop: '10px' }}>
           {title}
         </div>
@@ -54,7 +56,7 @@ function Packages() {
         </div>
         <div className='row mt-3'>
           <div className='col'>
-            <div style={{ textAlign: 'center', color: 'black', fontSize: 18, fontFamily: 'Sans Serif Collection' }}>Rs. {price}</div>
+            <div style={{ textAlign: 'center', color: 'black', fontSize: 18 }}>Rs. {price}</div>
           </div>
           <div className='col'>
             <button
@@ -71,21 +73,17 @@ function Packages() {
 
   return (
     <div>
-      {/* Banner Image */}
       <section className='section1'>
         <div className="img-container">
           <img src={Rectangle57} className="img-fluid w-100" alt="Home" style={{ objectFit: 'cover', height: 'auto', maxHeight: '100vh' }} />
         </div>
       </section>
 
-      {/* Packages Section */}
       <section className='section2' style={{ background: '#C8D8F6' }}>
         <div className='container mb-5 mt-0'>
           <div className='row text-center'>
             <div className='col-12 mt-4'>
-              <div style={{ color: 'black', fontSize: 22, fontFamily: 'Sansation', fontWeight: '700' }}>
-                HealthCare Packages
-              </div>
+              <div style={{ color: 'black', fontSize: 22, fontFamily: 'Sansation', fontWeight: '700' }}>HealthCare Packages</div>
             </div>
           </div>
 
@@ -97,10 +95,13 @@ function Packages() {
               </div>
             </div>
           </div>
-          <div className='row mt-0 mb-3' style={{ background: '#5E85CD', marginBottom: '1rem !important' }}>
-            <PackageCard id={1} title="Essential Health Checkup" description="Comprehensive basic health screening including blood tests, cholesterol check, blood pressure monitoring, and BMI assessment." price="2500" />
-            <PackageCard id={2} title="Advanced Wellness Package" description="Includes all tests from the Essential Health Checkup plus additional screenings like liver function tests, kidney function tests, and ECG." price="3500" />
-            <PackageCard id={3} title="Executive Health Package" description="Comprehensive health assessment including advanced blood tests, cardiac stress test, full-body MRI, and consultations with specialists." price="5000" />
+          <div className='row mt-0 mb-3' style={{ background: '#5E85CD', marginBottom: '1rem' }}>
+            <PackageCard id={1} title="Essential Health Checkup" description="Basic screening: blood tests, cholesterol, BP & BMI check." price="2500"
+              imageUrl="https://images.unsplash.com/photo-1588776814546-0cf3f32bdec2?auto=format&fit=crop&w=800&q=80" />
+            <PackageCard id={2} title="Advanced Wellness Package" description="Includes essential checkup + liver, kidney tests & ECG." price="3500"
+              imageUrl="https://images.unsplash.com/photo-1588774069262-4cf0d6ef8a77?auto=format&fit=crop&w=800&q=80" />
+            <PackageCard id={3} title="Executive Health Package" description="Full assessment: blood work, stress test, MRI, specialist consults." price="5000"
+              imageUrl="https://images.unsplash.com/photo-1601049670936-7042f382c7db?auto=format&fit=crop&w=800&q=80" />
           </div>
 
           {/* Child Packs */}
@@ -111,10 +112,13 @@ function Packages() {
               </div>
             </div>
           </div>
-          <div className='row mt-0 mb-3' style={{ background: '#5E85CD', marginBottom: '1rem !important' }}>
-            <PackageCard id={4} title="Basic Pediatric Checkup" description="Routine health checkup including growth and development assessment, vaccination review, and general pediatric examination." price="3000" />
-            <PackageCard id={5} title="Comprehensive Child Package" description="Includes all services from the Basic Pediatric Checkup plus vision and hearing screening, nutritional assessment, and dental check." price="4500" />
-            <PackageCard id={6} title="Child Wellness Package" description="Extensive health and development assessment including psychological evaluation, allergy testing, and specialized consultations." price="7000" />
+          <div className='row mt-0 mb-3' style={{ background: '#5E85CD', marginBottom: '1rem' }}>
+            <PackageCard id={4} title="Basic Pediatric Checkup" description="Routine child checkup, growth review & vaccination updates." price="3000"
+              imageUrl="https://images.unsplash.com/photo-1606312619141-1acdf93a5888?auto=format&fit=crop&w=800&q=80" />
+            <PackageCard id={5} title="Comprehensive Child Package" description="Adds vision, hearing, dental & nutrition screening." price="4500"
+              imageUrl="https://images.unsplash.com/photo-1626345144583-cfa55d1ecaa4?auto=format&fit=crop&w=800&q=80" />
+            <PackageCard id={6} title="Child Wellness Package" description="Full developmental & allergy assessments + psychologist review." price="7000"
+              imageUrl="https://images.unsplash.com/photo-1626247126207-bbdc1f2fd56a?auto=format&fit=crop&w=800&q=80" />
           </div>
 
           {/* Couple Packs */}
@@ -125,10 +129,13 @@ function Packages() {
               </div>
             </div>
           </div>
-          <div className='row mt-0 mb-3' style={{ background: '#5E85CD', marginBottom: '1rem !important' }}>
-            <PackageCard id={7} title="Couples Basic Health Check" description="Basic health screening for both partners including blood tests, cholesterol check, and BMI assessment." price="7000" />
-            <PackageCard id={8} title="Couples Comprehensive Package" description="In-depth health assessment for both partners including liver and kidney function tests, ECG, and consultations with general practitioners." price="9500" />
-            <PackageCard id={9} title="Wellness and Fitness Package" description="Complete wellness package including advanced health screenings, fitness assessments, nutrition counseling, and stress management sessions." price="15500" />
+          <div className='row mt-0 mb-5' style={{ background: '#5E85CD' }}>
+            <PackageCard id={7} title="Couples Basic Health Check" description="Screenings: blood, cholesterol, BMI for both partners." price="7000"
+              imageUrl="https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&w=800&q=80" />
+            <PackageCard id={8} title="Couples Comprehensive Package" description="Adds liver, kidney tests & ECG for both." price="9500"
+              imageUrl="https://images.unsplash.com/photo-1579154204601-b974f2e3c2a4?auto=format&fit=crop&w=800&q=80" />
+            <PackageCard id={9} title="Wellness and Fitness Package" description="Full health, fitness, nutrition & stress management program." price="15500"
+              imageUrl="https://images.unsplash.com/photo-1597764692433-2977c79b2890?auto=format&fit=crop&w=800&q=80" />
           </div>
         </div>
       </section>
