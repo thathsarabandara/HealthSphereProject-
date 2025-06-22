@@ -2,6 +2,15 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Rectangle57 from '../../../assets/images/Rectangle 57.svg';
 import Loader from '../../../components/common/Loader';
+import image1 from '../../../assets/images/packages/1.png';
+import image2 from '../../../assets/images/packages/2.png';
+import image3 from '../../../assets/images/packages/3.png';
+import image4 from '../../../assets/images/packages/4.png';
+import image5 from '../../../assets/images/packages/5.png';
+import image6 from '../../../assets/images/packages/6.png';
+import image7 from '../../../assets/images/packages/7.png';
+import image8 from '../../../assets/images/packages/8.png';
+import image9 from '../../../assets/images/packages/9.png';
 
 function Packages() {
   const [isLoading, setIsLoading] = useState(true);
@@ -97,11 +106,11 @@ function Packages() {
           </div>
           <div className='row mt-0 mb-3' style={{ background: '#5E85CD', marginBottom: '1rem' }}>
             <PackageCard id={1} title="Essential Health Checkup" description="Basic screening: blood tests, cholesterol, BP & BMI check." price="2500"
-              imageUrl="https://images.unsplash.com/photo-1588776814546-0cf3f32bdec2?auto=format&fit=crop&w=800&q=80" />
+              imageUrl={image1} />
             <PackageCard id={2} title="Advanced Wellness Package" description="Includes essential checkup + liver, kidney tests & ECG." price="3500"
-              imageUrl="https://images.unsplash.com/photo-1588774069262-4cf0d6ef8a77?auto=format&fit=crop&w=800&q=80" />
+              imageUrl={image2} />
             <PackageCard id={3} title="Executive Health Package" description="Full assessment: blood work, stress test, MRI, specialist consults." price="5000"
-              imageUrl="https://images.unsplash.com/photo-1601049670936-7042f382c7db?auto=format&fit=crop&w=800&q=80" />
+              imageUrl={image3} />
           </div>
 
           {/* Child Packs */}
@@ -114,11 +123,11 @@ function Packages() {
           </div>
           <div className='row mt-0 mb-3' style={{ background: '#5E85CD', marginBottom: '1rem' }}>
             <PackageCard id={4} title="Basic Pediatric Checkup" description="Routine child checkup, growth review & vaccination updates." price="3000"
-              imageUrl="https://images.unsplash.com/photo-1606312619141-1acdf93a5888?auto=format&fit=crop&w=800&q=80" />
+              imageUrl={image4} />
             <PackageCard id={5} title="Comprehensive Child Package" description="Adds vision, hearing, dental & nutrition screening." price="4500"
-              imageUrl="https://images.unsplash.com/photo-1626345144583-cfa55d1ecaa4?auto=format&fit=crop&w=800&q=80" />
+              imageUrl={image5} />
             <PackageCard id={6} title="Child Wellness Package" description="Full developmental & allergy assessments + psychologist review." price="7000"
-              imageUrl="https://images.unsplash.com/photo-1626247126207-bbdc1f2fd56a?auto=format&fit=crop&w=800&q=80" />
+              imageUrl={image6} />
           </div>
 
           {/* Couple Packs */}
@@ -131,11 +140,11 @@ function Packages() {
           </div>
           <div className='row mt-0 mb-5' style={{ background: '#5E85CD' }}>
             <PackageCard id={7} title="Couples Basic Health Check" description="Screenings: blood, cholesterol, BMI for both partners." price="7000"
-              imageUrl="https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&w=800&q=80" />
+              imageUrl={image7} />
             <PackageCard id={8} title="Couples Comprehensive Package" description="Adds liver, kidney tests & ECG for both." price="9500"
-              imageUrl="https://images.unsplash.com/photo-1579154204601-b974f2e3c2a4?auto=format&fit=crop&w=800&q=80" />
+              imageUrl={image8} />
             <PackageCard id={9} title="Wellness and Fitness Package" description="Full health, fitness, nutrition & stress management program." price="15500"
-              imageUrl="https://images.unsplash.com/photo-1597764692433-2977c79b2890?auto=format&fit=crop&w=800&q=80" />
+              imageUrl={image9} />
           </div>
         </div>
       </section>
