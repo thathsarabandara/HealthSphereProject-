@@ -26,7 +26,7 @@ const AuditLog = sequelize.define('AuditLog', {
         allowNull: false,
     },
     endpoint: {
-        type: DataTypes.STRING(255),
+        type: DataTypes.TEXT,
         allowNull: false,
     },
     method: {

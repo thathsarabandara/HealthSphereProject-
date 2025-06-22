@@ -3,6 +3,7 @@ const app = express();
 const patientRoutes = require('./routes/patients');
 const doctorRoutes = require('./routes/doctors');
 const adminRoutes = require('./routes/admins');
+const auth = require('./routes/auth');
 const bodyParser = require('body-parser');
 const helmet = require('helmet');
 const cors = require('cors');
@@ -12,6 +13,8 @@ const {ipapiCorsOptions ,corsOptions} = require('./middleware/cors/corsMiddlewar
 const auditLogMiddleware = require('./middleware/logging/auditLogMiddleware');
 const path = require('path');
 const { rateLimiterMiddleware } = require('./middleware/rateLimit/rateLimiter');
+const passport = require('passport')
+require('./config/passport')
 
 // portNumber for the server
 const PORT = process.env.PORT || 5000;
@@ -19,6 +22,7 @@ const PORT = process.env.PORT || 5000;
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Middleware Setup
+app.use(passport.initialize());
 app.use(helmet()); // Security middleware
 app.use(cookieParser()); // Cookie parser middleware
 app.use(auditLogMiddleware);
@@ -34,7 +38,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/', patientRoutes);
 app.use('/doctor', doctorRoutes);
 app.use('/admin', adminRoutes);
-
+app.use('/auth', auth)
 // Start server
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

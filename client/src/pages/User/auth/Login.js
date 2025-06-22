@@ -6,12 +6,18 @@ import '../../../styles/temp.css';
 import { Link } from 'react-router-dom';
 import signin from '../../../assets/images/Rectangle 84 (1).svg'
 import Loader from '../../../components/common/Loader';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Login() {
-    const [email, setEmail] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  
+  // Remove these states since we'll use toast notifications
+  const [showError, setShowError] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
 
@@ -43,16 +49,27 @@ function Login() {
         e.preventDefault();
         try {
             const response = await axios.post('http://localhost:5000/login', { email, password }, { withCredentials: true });
-            setSuccess(response.data.message);
-            setError('');
+            toast.success(response.data.message, 
+              {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+              }
+            );
             setEmail('');
             setPassword('');
             sessionStorage.setItem('isAuthenticated', 'true'); 
             triggerLoginEvent()
             navigate('/'); 
         } catch (err) {
-            setError(err.response?.data?.error || 'Login failed. Please try again.');
-            setSuccess('');
+            toast.error(err.response?.data?.error || 'Login failed. Please try again.');
+            setEmail('');
+            setPassword('');
         }
   };
 
@@ -74,8 +91,7 @@ function Login() {
             <p className="lead fw-normal mb-0 me-3">Sign in </p>
         </div>
         <p className='mt-3'>Please enter your email and password to login</p>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-        {success && <p style={{ color: 'green' }}>{success}</p>}
+        {/* Remove inline messages since we're using toast notifications */}
 
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
@@ -132,14 +148,11 @@ function Login() {
               <div className="text-center my-3">
                   <small>or login with</small>
               </div>
-              <button className="btn btn-outline-primary btn-block social-btn ms-5">
-                  <i className="fab fa-facebook-f"></i> Login with Facebook
-              </button>
-              <button className="btn btn-outline-danger btn-block social-btn ms-3">
-                  <i className="fab fa-google"></i> Login with Google
-              </button>
-
-              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px', alignItems: 'center' }}>
+                <a href="http://localhost:5000/auth/google?group=patient" target='_blank' rel='noopener noreferrer' style={{ textDecoration: 'none' }}>
+                  <button type="button" style={{ background: '#4285F4', color: '#fff', border: 'none', borderRadius: 4, padding: '10px 20px', fontWeight: 'bold', width: 250 }}>Login with Google</button>
+                </a>
+              </div>
               <p className="small fw-bold mt-2 pt-1 mb-2 mb-4">
                 Don't have an account? <Link to="/signup" className="link-danger">Register</Link>
               </p>

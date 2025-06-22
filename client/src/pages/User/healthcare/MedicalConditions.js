@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Loader from '../../../components/common/Loader';
-import ErrorPopup from '../../../components/common/error popup/ErrorPopup';
-import SuccessPopup from '../../../components/common/success popup/SuccessPopup';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function MedicalConditions() {
   const [allergies, setAllergies] = useState([]);
@@ -11,38 +11,44 @@ function MedicalConditions() {
   const [conditions, setConditions] = useState([]);
   const [heartRates, setHeartRates] = useState([]);
   const [isLoading, setLoading] = useState(true);
-  const [errorVisible, setErrorVisible] = useState(false);
-  const [successVisible, setSuccessVisible] = useState(false);
-  const [deleteerrorVisible, setdeleteErrorVisible] = useState(false);
-  const [deletesuccessVisible, setdeleteSuccessVisible] = useState(false);
-  const handledeleteErrorClose = () => setdeleteErrorVisible(false);
-  const handledeleteSuccessClose = () => setdeleteSuccessVisible(false);
-  const handleErrorClose = () => setErrorVisible(false);
-  const handleSuccessClose = () => setSuccessVisible(false);
+  const showToast = (type, message) => {
+    if (type === 'success') {
+      toast.success(message, {
+        position: 'bottom-right',
+        autoClose: 3000,
+        theme: 'colored',
+      });
+    } else if (type === 'error') {
+      toast.error(message, {
+        position: "bottom-right",
+        autoClose: 3000,
+        theme: 'colored',
+      });
+    }
+  };
 
   // Generic fetch data function
   const fetchData = async (endpoint, setter) => {
     try {
       const response = await axios.get(endpoint, {withCredentials:true});
       const data = response.data.map((item) => {
+        // Convert dates only if they exist
         if (item.measurement_date) {
-          // Convert date to YYYY-MM-DD
-          item.measurement_date = new Date(item.measurement_date).toISOString().split('T')[0];
+          item.measurement_date = new Date(item.measurement_date).toLocaleDateString();
         }
         if (item.measurement_time) {
-          // Convert datetime to YYYY-MM-DDTHH:MM
-          item.measurement_time = new Date(item.measurement_time).toISOString().slice(0, 16);
+          item.measurement_time = new Date(item.measurement_time).toLocaleString();
         }
         if (item.diagnosis_date) {
-          // Convert to YYYY-MM-DD
-          item.diagnosis_date = new Date(item.diagnosis_date).toISOString().split('T')[0];
-        }  
+          item.diagnosis_date = new Date(item.diagnosis_date).toLocaleDateString();
+        }
         return item;
-      });  
-      setter(response.data);
+      });
+      setter(data);
       setLoading(false);
     } catch (error) {
       console.error(`Error fetching data from ${endpoint}:`, error);
+      showToast('error', `Failed to fetch ${endpoint.split('/').pop()} data`);
     }
   };
 
@@ -63,28 +69,60 @@ function MedicalConditions() {
   // Handle row update
   const handleRowChange = (index, field, value, setter, data) => {
     const updatedData = [...data];
-    updatedData[index][field] = value;
-    setter(updatedData);
+    const row = updatedData[index];
+    
+    // Only update if the value has actually changed
+    if (row[field] !== value) {
+      updatedData[index][field] = value;
+      setter(updatedData);
+    }
   };
 
   // Handle save section using PUT to a specific endpoint
   const handleSaveSection = async (endpoint, data, setter) => {
-    console.log(endpoint, data, setter);
     try {
       const newRows = data.filter((row) => !row.id); // New rows
       const existingRows = data.filter((row) => row.id); // Existing rows
-      console.log(newRows);
+      
       // Create new rows
       if (newRows.length > 0) {
-        console.log('hi');
-        await axios.post(endpoint, newRows, {withCredentials: true}); // POST for new rows
+        const response = await axios.post(endpoint, newRows, {withCredentials: true});
+        const createdData = response.data;
+        
+        // Update local state with new data
+        const updatedData = [...existingRows, ...createdData];
+        setter(updatedData);
+        
+        showToast('success', `${newRows.length} record(s) created successfully!`);
       }
-  
-      alert('Data saved successfully!');
-      fetchData(endpoint, setter); // Refresh data
+
+      // Update existing rows
+      if (existingRows.length > 0) {
+        const updates = existingRows.map(row => ({
+          id: row.id,
+          ...Object.fromEntries(
+            Object.entries(row).filter(([key]) => 
+              key !== 'id' && key !== 'patient_id' && key !== 'status' && key !== 'createdAt' && key !== 'updatedAt'
+            )
+          )
+        }));
+        
+        const response = await axios.put(endpoint, updates, {withCredentials: true});
+        const updatedData = response.data;
+        
+        // Update local state with updated data
+        const finalData = data.map(row => 
+          row.id ? 
+            updatedData.find(updated => updated.id === row.id) || row : 
+            row
+        );
+        setter(finalData);
+        
+        showToast('success', `${existingRows.length} record(s) updated successfully!`);
+      }
     } catch (error) {
       console.error(`Error saving data to ${endpoint}:`, error);
-      alert('Failed to save data.');
+      showToast('error', error.response?.data?.message || 'Failed to save data.');
     }
   };
   
@@ -93,18 +131,19 @@ function MedicalConditions() {
   const handleDeleteRow = async (index, setter, data, endpoint) => {
     const rowToDelete = data[index];
     try {
-      // Sending the ID and status update to the backend
-      await axios.put(endpoint, { id: rowToDelete.id, status: 'deleted' });
-  
-      // Update frontend state after successful backend update
-      const updatedData = [...data];
-      updatedData[index].status = 'deleted';
+      // Optimistically update local state first
+      const updatedData = data.filter((_, i) => i !== index);
       setter(updatedData);
-  
-      setdeleteSuccessVisible(true);
+      
+      // Then send delete request to backend
+      await axios.put(endpoint, { id: rowToDelete.id, status: 'delete' }, {withCredentials: true});
+      
+      showToast('success', 'Record deleted successfully!');
     } catch (error) {
+      // If delete fails, restore the deleted row
+      setter(data);
       console.error('Error deleting row:', error);
-      setdeleteErrorVisible(true);
+      showToast('error', error.response?.data?.message || 'Failed to delete record');
     }
   };
   
@@ -187,11 +226,8 @@ function MedicalConditions() {
 
   return (
     <div className="container mt-5 mb-5">
-      <ErrorPopup show={errorVisible} onClose={handleErrorClose} title="Something Went Wrong!" message="Failed to save data." button='Okay' />
-      <SuccessPopup show={successVisible} onClose={handleSuccessClose} title="Updated Success Fully " message="Data saved successfully!" button='Okay' />
-      <ErrorPopup show={deleteerrorVisible} onClose={handledeleteErrorClose} title="Something Went Wrong!" message="Failed to delete row!" button='Okay' />
-      <SuccessPopup show={deletesuccessVisible} onClose={handledeleteSuccessClose} title="Updated Success Fully " message="Row deleted successfully!" button='Okay' />
       <div className="card">
+        <ToastContainer />
         <div className="card-body">
           <h3 className="text-center">Health Records</h3>
           {renderDynamicTable(

@@ -5,6 +5,8 @@ import emptyImage from '../../assets/images/emptyProfile.png';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate } from 'react-router-dom';
 import Loader from '../../components/common/Loader';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function DoctorFullRegister() {
   const { id } = useParams();
@@ -77,16 +79,42 @@ function DoctorFullRegister() {
     }
   };
 
+  const notifySuccess = (message) => {
+    toast.success(message, {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
+  };
+
+  const notifyError = (message) => {
+    toast.error(message, {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-  
+    
     const doctorData = new FormData();
     Object.keys(formData).forEach((key) => {
       if (formData[key]) {  // Ensure you're not appending null/undefined values
         doctorData.append(key, formData[key]);
       }
     });
-  
+    
     // Axios POST request wrapped in a Promise
     axios.post(`http://localhost:5000/doctor/fullregister/${id}`, doctorData, {
       headers: {
@@ -96,52 +124,92 @@ function DoctorFullRegister() {
     })
     .then((response) => {
       console.log('Registration request submitted successfully:', response);
-      alert('Registration request submitted successfully!');
+      notifySuccess('Registration request submitted successfully!');
       navigate('/doctor/login'); // Navigate to another page after submission
     })
     .catch((err) => {
       console.log(formData)
       console.error('Error submitting registration request:', err);
-      alert('There was an error while submitting your registration. Please try again later.');
+      notifyError('There was an error while submitting your registration. Please try again later.');
     });
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="container p-4 mt-5 mb-5"
-      style={{ maxWidth: '800px', borderRadius: '8px', backgroundColor: '#f5f5f5' }}
-    >
+    <div>
+      <form
+        onSubmit={handleSubmit}
+        className="container p-4 mt-5 mb-5"
+        style={{ maxWidth: '800px', borderRadius: '8px', backgroundColor: '#f5f5f5' }}
+      >
       <div className="row mb-4">
         {/* Profile Picture and Edit Button */}
         <div className="col-12 col-md-4 text-center">
-          <img
-            className="d-inline-block"
-            style={{ width: '180px', height: '180px', borderRadius: '50%' }}
-            src={profilePicturePreview}
-            alt="profile"
-          />
-          <div className="mt-2">
-            <input
-              type="file"
-              id="profile-picture-upload"
-              accept="image/*"
-              style={{ display: 'none' }}
-              name="profilePicture"
-              onChange={handleFileChange}
-            />
-            <label
-              htmlFor="profile-picture-upload"
-              className="btn w-100"
-              style={{
-                background: '#112D4E',
-                color: 'white',
-                cursor: 'pointer',
-                textAlign: 'center',
-              }}
-            >
-              Edit Profile Picture
-            </label>
+          <div style={{
+            width: '100%',
+            padding: '20px'
+          }}>
+            <div style={{
+              width: '200px',
+              height: '200px',
+              borderRadius: '50%',
+              overflow: 'hidden',
+              position: 'relative',
+              margin: '0 auto',
+              border: '3px solid #112D4E',
+              transition: 'all 0.3s ease',
+              cursor: 'pointer'
+            }}>
+              <img
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover'
+                }}
+                src={profilePicturePreview}
+                alt="profile"
+              />
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                background: 'rgba(0, 0, 0, 0.5)',
+                opacity: 0,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.3s ease',
+                cursor: 'pointer'
+              }}>
+                <input
+                  type="file"
+                  id="profile-picture-upload"
+                  accept="image/*"
+                  name="profilePicture"
+                  onChange={handleFileChange}
+                  style={{
+                    display: 'none'
+                  }}
+                />
+                <label htmlFor="profile-picture-upload" style={{
+                  color: 'white',
+                  textAlign: 'center',
+                  fontSize: '14px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px'
+                }}>
+                  <i className="fas fa-camera" style={{
+                    fontSize: '24px'
+                  }}></i>
+                  <span>Change Photo</span>
+                </label>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -353,6 +421,19 @@ function DoctorFullRegister() {
         </button>
       </div>
     </form>
+    <ToastContainer
+      position="top-right"
+      autoClose={3000}
+      hideProgressBar={false}
+      newestOnTop={false}
+      closeOnClick
+      rtl={false}
+      pauseOnFocusLoss
+      draggable
+      pauseOnHover
+      theme="light"
+    />
+  </div>
   );
 }
 

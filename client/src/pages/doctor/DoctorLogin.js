@@ -131,13 +131,11 @@ return (
             <div className="text-center my-3">
                 <small>or login with</small>
             </div>
-            <button className="btn btn-outline-primary btn-block social-btn ms-5">
-                <i className="fab fa-facebook-f"></i> Login with Facebook
-            </button>
-            <button className="btn btn-outline-danger btn-block social-btn ms-3">
-                <i className="fab fa-google"></i> Login with Google
-            </button>
-
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px', alignItems: 'center' }}>
+              <a href="http://localhost:5000/auth/google?group=doctor" target='_blank' rel='noopener noreferrer' style={{ textDecoration: 'none' }}>
+                <button type="button" style={{ background: '#4285F4', color: '#fff', border: 'none', borderRadius: 4, padding: '10px 20px', fontWeight: 'bold', width: 250 }}>Login with Google</button>
+              </a>
+            </div>
             
             <p className="small fw-bold mt-2 pt-1 mb-2 mb-4">
               Don't have an account? <Link to="/signup" className="link-danger">Register</Link>

@@ -102,7 +102,6 @@ function AdminPanel() {
       {/* Main Content */}
       <div style={mainContentStyle}>
         <Routes>
-          <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/doctorsandstaffManagement" element={<DoctorsAndStaffManagement />} />
           <Route path="/admin/appointmentmanagement" element={<AppointmentManagement />} />
