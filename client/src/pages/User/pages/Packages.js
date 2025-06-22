@@ -11,6 +11,8 @@ import image6 from '../../../assets/images/packages/6.png';
 import image7 from '../../../assets/images/packages/7.png';
 import image8 from '../../../assets/images/packages/8.png';
 import image9 from '../../../assets/images/packages/9.png';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Packages() {
   const [isLoading, setIsLoading] = useState(true);
@@ -35,10 +37,18 @@ function Packages() {
   const addItems = async (id) => {
     try {
       const response = await axios.post(`http://localhost:5000/package/${id}`, {}, { withCredentials: true });
-      alert(response.data.message || 'Item added to cart successfully!');
+      toast.success(response.data.message || 'Item added to cart successfully!', {
+        position: "bottom-right",
+        autoClose: 5000,
+        theme: "colored"
+      });
     } catch (error) {
       console.error(error);
-      alert(error.response?.data?.message || 'Failed to add item to cart');
+      toast.error(error.response?.data?.message || 'Failed to add item to cart', {
+        position: "bottom-right",
+        autoClose: 5000,
+        theme: "colored"
+      });
     }
   };
 

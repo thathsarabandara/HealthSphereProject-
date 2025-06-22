@@ -1,5 +1,7 @@
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 import PatientNavbar from './components/user/PatientNavbar';
 import DoctorNavbar from './components/doctor/DoctorNavbar';
@@ -147,7 +149,19 @@ function App() {
             <Route path="/doctor/fullregister/:id" element={<DoctorFullRegister/>} />
 
           </Routes>
-          <WebBot/>
+           <WebBot/>
+           <ToastContainer
+             position="top-right"
+             autoClose={3000}
+             hideProgressBar={false}
+             newestOnTop={false}
+             closeOnClick
+             rtl={false}
+             pauseOnFocusLoss
+             draggable
+             pauseOnHover
+             theme="colored"
+           />
           {FooterComponent && <FooterComponent />}
         </>
       )}

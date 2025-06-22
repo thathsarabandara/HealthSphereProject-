@@ -30,6 +30,7 @@
     "react-slick": "^0.30.3",
     "react-spring": "^9.7.5",
     "react-table": "^7.8.0",
+    "react-toastify": "^11.0.5",
     "recharts": "^2.15.4",
     "slick-carousel": "^1.8.1",
     "socket.io-client": "^4.8.1",

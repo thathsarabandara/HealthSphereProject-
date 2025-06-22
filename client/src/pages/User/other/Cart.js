@@ -2,18 +2,14 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Loader from '../../../components/common/Loader';
 import { useNavigate } from 'react-router-dom';
-import ErrorPopup from '../../../components/common/error popup/ErrorPopup';
-import SuccessPopup from '../../../components/common/success popup/SuccessPopup';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Cart() {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [couponDiscount, setCouponDiscount] = useState(0); // Assuming coupon discount is Rs. 500.00
-  const [errorVisible, setErrorVisible] = useState(false);
-  const [successVisible, setSuccessVisible] = useState(false);
-  const handleErrorClose = () => setErrorVisible(false);
-  const handleSuccessClose = () => setSuccessVisible(false);
+  const [couponDiscount, setCouponDiscount] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -62,35 +58,49 @@ function Cart() {
   // Delete item function
   const handleDelete = async (id) => {
     try {
-      await axios.post(`http://localhost:5000/cart/${id}`, {}, { withCredentials: true });
+      await axios.put(`http://localhost:5000/cart/${id}`, {}, { withCredentials: true });
       setCartItems((prevItems) => prevItems.filter((item) => item.id !== id)); // Remove item from state
-      setSuccessVisible(true);
+      toast.success('Item removed successfully!', {
+        position: "bottom-right",
+        autoClose: 3000,
+        theme: "colored"
+      });
     } catch (error) {
       console.error('Failed to delete item:', error);
-      setErrorVisible(true)
+      toast.error('Failed to remove item', {
+        position: "bottom-right",
+        autoClose: 3000,
+        theme: "colored"
+      });
     }
   };
 
   const handleCheckout = async () => {
     try {
-      console.log('hi');
       const totalAmount = subTotal - discountAmount;
-      console.log(totalAmount)
       const response = await axios.post(
         `http://localhost:5000/checkout/amount/${totalAmount}`,
         {},
         { withCredentials: true }
       );
+      toast.success('Redirecting to checkout...', {
+        position: "bottom-right",
+        autoClose: 3000,
+        theme: "colored"
+      });
       navigate(`/checkout/${response.data.paymentId}`);
     } catch (error) {
       console.error('Failed to proceed with checkout:', error);
+      toast.error('Failed to proceed with checkout', {
+        position: "bottom-right",
+        autoClose: 3000,
+        theme: "colored"
+      });
     }
   };
 
   return (
     <div style={{ backgroundColor: '#D8E8FA', minHeight: '100vh', padding: '20px' }}>
-      <ErrorPopup show={errorVisible} onClose={handleErrorClose} title="Something Went Wrong!" message="Item Removing failed" button='Okay' />
-      <SuccessPopup show={successVisible} onClose={handleSuccessClose} title="Updated SuccessFully " message="Item Removed " button='Okay' />
       <div className="container">
         <div className="row">
           {/* Cart Items Section */}

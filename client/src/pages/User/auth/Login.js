@@ -6,12 +6,18 @@ import '../../../styles/temp.css';
 import { Link } from 'react-router-dom';
 import signin from '../../../assets/images/Rectangle 84 (1).svg'
 import Loader from '../../../components/common/Loader';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  
+  // Remove these states since we'll use toast notifications
+  const [showError, setShowError] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
 
@@ -43,16 +49,16 @@ function Login() {
         e.preventDefault();
         try {
             const response = await axios.post('http://localhost:5000/login', { email, password }, { withCredentials: true });
-            setSuccess(response.data.message);
-            setError('');
+            toast.success(response.data.message);
             setEmail('');
             setPassword('');
             sessionStorage.setItem('isAuthenticated', 'true'); 
             triggerLoginEvent()
             navigate('/'); 
         } catch (err) {
-            setError(err.response?.data?.error || 'Login failed. Please try again.');
-            setSuccess('');
+            toast.error(err.response?.data?.error || 'Login failed. Please try again.');
+            setEmail('');
+            setPassword('');
         }
   };
 
@@ -74,8 +80,7 @@ function Login() {
             <p className="lead fw-normal mb-0 me-3">Sign in </p>
         </div>
         <p className='mt-3'>Please enter your email and password to login</p>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-        {success && <p style={{ color: 'green' }}>{success}</p>}
+        {/* Remove inline messages since we're using toast notifications */}
 
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
