@@ -5,7 +5,7 @@ const { UserGroup } = require('../../models/auth/UserGroup');
 
 const adminAuthMiddleware = async (req, res, next) => {
   const token = req.cookies['adminToken'];
-
+  console.log(token)
   // Check if token exists in the request
   if (!token) {
     return res.status(401).json({ message: 'No Valid Token Found ,Please Login first!' });
@@ -39,12 +39,13 @@ const adminAuthMiddleware = async (req, res, next) => {
     const userGroup = await UserGroup.findOne({where:{
         user_id: user.id
     }})
+
     if(userGroup.group_id != 3){
         return res.status(401).json({ message: 'User is not verified Doctor' });
     }
     
     req.userID = user.id;
-    
+
     next();
   } catch (err) {
     console.log(err);

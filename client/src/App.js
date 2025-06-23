@@ -51,7 +51,6 @@ import WebBot from './components/Web Assistant/WebBot';
 import MedicalConditions from './pages/User/healthcare/MedicalConditions';
 import Bookings from './pages/User/other/Bookings';
 import DoctorPatientProfile from './pages/doctor/DoctorPatientProfile';
-import PrescriptionView from './pages/doctor/PrescriptionView';
 import PatientPrescriptionView from './pages/User/healthcare/PrescriptionView';
 import Checkout from './pages/User/payment/Checkout';
 import DoctorDashboard from './pages/doctor/DoctorDashboard';
@@ -97,6 +96,7 @@ function App() {
     <div>
       {SidebarComponent === null ? (
         <AdminLogin/>
+        
       ) : SidebarComponent ?(  
         <SidebarComponent/> 
       ) : (
@@ -151,6 +151,7 @@ function App() {
             <Route path="/doctor/videoconsultation" element={<DoctorVideoConsultation/>} />
             <Route path="/doctor/clinic" element={<DoctorClinic/>} />
             <Route path="/doctor/prescription" element={<DoctorPrescription/>} />
+            <Route path="/doctor/clinic/:reservationid/prescription/:patientid" element={<DoctorPrescription/>} />
             <Route path="/doctor/fullregister/:id" element={<DoctorFullRegister/>} />
 
           </Routes>

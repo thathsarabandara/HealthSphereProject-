@@ -10,31 +10,27 @@ const staffManagement = require('../controllers/Admins/staffManagementController
 // Admin Authentication Routes
 router.post('/login', adminLoginController.login);
 router.post('/logout', adminLoginController.logout);
-router.get('/loaddoctors',DoctorController.loadApprovedDoctors);
-router.get('/loadpendingdoctors',DoctorController.loadPendingDoctors);
-router.get('/doctor/:id', DoctorController.loadDoctorById);
-router.put('/doctor/approve/:id', DoctorController.approveDoctor);
-router.put('/doctor/suspend/:id', DoctorController.suspendDoctor);
+router.get('/home', [adminAuthMiddleware], adminLoginController.home);
+// Manage Doctors
+router.get('/loaddoctors', [adminAuthMiddleware], DoctorController.loadApprovedDoctors);
+router.get('/loadpendingdoctors', [adminAuthMiddleware], DoctorController.loadPendingDoctors);
+router.get('/doctor/:id', [adminAuthMiddleware], DoctorController.loadDoctorById);
+router.put('/doctor/approve/:id', [adminAuthMiddleware], DoctorController.approveDoctor);
+router.put('/doctor/suspend/:id', [adminAuthMiddleware], DoctorController.suspendDoctor);
 // Schedule Management Routes
-router.get('/schedules', scheduleController.getScheduleRequest);
-router.post('/acceptschedule/:id',scheduleController.makeAcceptScheduleRequest);
-router.post('/rejectschedule/:id',scheduleController.makeRejectScheduleRequest);
-
-// Admin Dashboard (You need a controller function for dashboard)
-// router.get('/admin/dashboard', adminAuthMiddleware);
-
-// // Manage Patients (You need a controller function for managing patients)
-router.put('/patientmanagement',adminAuthMiddleware, patientmanagement.saveProfile);
-router.get('/patientmanagement/viewpatient',adminAuthMiddleware, patientmanagement.patientDetails);
-router.get('/patientmanagement/viewdoctor/:id',adminAuthMiddleware, patientmanagement.loadDoctortProfile);
-router.get('/patientmanagement/loadprescription/:reservationid',adminAuthMiddleware, patientmanagement.loadPrescription);
-
-router.get('/staff/requests', adminAuthMiddleware, staffManagement.getSignupRequests);
-router.get('/staff/counts', adminAuthMiddleware, staffManagement.getStaffCounts);
-router.get('/staff', adminAuthMiddleware, staffManagement.getAllStaff);
-router.put('/staff/:userId/status', adminAuthMiddleware, staffManagement.updateStaffStatus);
-
-// // Refund Management (You need a controller function for handling refunds)
-// router.get('/admin/refund', adminAuthMiddleware);
+router.get('/schedules', [adminAuthMiddleware], scheduleController.getScheduleRequest);
+router.post('/acceptschedule/:id', [adminAuthMiddleware], scheduleController.makeAcceptScheduleRequest);
+router.post('/rejectschedule/:id', [adminAuthMiddleware], scheduleController.makeRejectScheduleRequest);
+// Manage Patients (You need a controller function for managing patients)
+router.put('/patientmanagement', [adminAuthMiddleware], patientmanagement.saveProfile);
+router.post('/patientmanagement/viewpatient', [adminAuthMiddleware], patientmanagement.patientDetails);
+router.get('/patientmanagement/viewdoctor/:id', [adminAuthMiddleware], patientmanagement.loadDoctortProfile);
+router.get('/patientmanagement/loadprescription/:reservationid',
+     [adminAuthMiddleware], patientmanagement.loadPrescription);
+// Manage Staff
+router.get('/staff/requests', [adminAuthMiddleware], staffManagement.getSignupRequests);
+router.get('/staff/counts', [adminAuthMiddleware], staffManagement.getStaffCounts);
+router.get('/staff', [adminAuthMiddleware], staffManagement.getAllStaff);
+router.put('/staff/:userId/status', [adminAuthMiddleware], staffManagement.updateStaffStatus);
 
 module.exports = router;

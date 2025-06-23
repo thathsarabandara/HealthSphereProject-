@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Loader from '../../components/common/Loader';
 
 function AdminDoctorProfilePage() {
   const { doctorId } = useParams();
@@ -12,12 +13,15 @@ function AdminDoctorProfilePage() {
   useEffect(() => {
     const fetchDoctor = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/admin/doctor/${doctorId}`);
+        const response = await axios.get(`http://localhost:5000/admin/doctor/${doctorId}`, {withCredentials:true});
         console.log(response.data)
         setDoctor(response.data);
         setLoading(false);
       } catch (err) {
-        setError('Failed to fetch doctor data');
+        console.log(err)
+        setLoading(false);
+        navigate('/admin/login')
+      } finally {
         setLoading(false);
       }
     };
@@ -25,7 +29,24 @@ function AdminDoctorProfilePage() {
     fetchDoctor();
   }, [doctorId]);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) {
+    return (
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#f0f4f8',
+        zIndex: 9999
+      }}>
+        <Loader />
+      </div>
+    );
+  };
   if (error) return <div>{error}</div>;
   if (!doctor) return <div>Doctor not found</div>;
 
