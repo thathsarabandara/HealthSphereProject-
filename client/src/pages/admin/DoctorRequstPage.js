@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
+import Loader from '../../components/common/Loader';
 
 function DoctorRequestPage() {
   const [pendingDoctors, setPendingDoctors] = useState([]);
@@ -12,7 +13,7 @@ function DoctorRequestPage() {
     // Fetch doctor requests from backend
     const fetchRequests = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/admin/loadpendingdoctors');
+        const response = await axios.get('http://localhost:5000/admin/loadpendingdoctors', {withCredentials:true});
         console.log(response.data)
         setPendingDoctors(response.data);
         setLoading(false);
@@ -26,6 +27,24 @@ function DoctorRequestPage() {
     fetchRequests();
   }, []);
 
+  if (loading) {
+      return (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#f0f4f8',
+          zIndex: 9999
+        }}>
+          <Loader />
+        </div>
+      );
+    };
   // Styles
   const containerStyle = {
     padding: '20px',
@@ -88,7 +107,7 @@ function DoctorRequestPage() {
     ));
     // Implement API call to backend
     try {
-      await axios.put(`http://localhost:5000/admin/doctor/approve/${id}`);
+      await axios.put(`http://localhost:5000/admin/doctor/approve/${id}`, {}, {withCredentials:true});
       window.location.reload();
     } catch (error) {
       console.error('Error accepting doctor request:', error);
@@ -103,7 +122,7 @@ function DoctorRequestPage() {
     ));
     // Implement API call to backend
     try {
-      await axios.put(`http://localhost:5000/admin/doctor/suspend/${id}`);
+      await axios.put(`http://localhost:5000/admin/doctor/suspend/${id}`, {}, {withCredentials:true} );
       window.location.reload();
     } catch (error) {
       console.error('Error rejecting doctor request:', error);

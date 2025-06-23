@@ -5,7 +5,7 @@ const { UserGroup } = require('../../models/auth/UserGroup');
 
 const adminAuthMiddleware = async (req, res, next) => {
   const token = req.cookies['adminToken'];
-  
+
   // Check if token exists in the request
   if (!token) {
     return res.status(401).json({ message: 'No Valid Token Found ,Please Login first!' });
