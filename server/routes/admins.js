@@ -23,9 +23,10 @@ router.post('/acceptschedule/:id', [adminAuthMiddleware], scheduleController.mak
 router.post('/rejectschedule/:id', [adminAuthMiddleware], scheduleController.makeRejectScheduleRequest);
 // Manage Patients (You need a controller function for managing patients)
 router.put('/patientmanagement', [adminAuthMiddleware], patientmanagement.saveProfile);
-router.get('/patientmanagement/viewpatient', [adminAuthMiddleware], patientmanagement.patientDetails);
+router.post('/patientmanagement/viewpatient', [adminAuthMiddleware], patientmanagement.patientDetails);
 router.get('/patientmanagement/viewdoctor/:id', [adminAuthMiddleware], patientmanagement.loadDoctortProfile);
-router.get('/patientmanagement/loadprescription/:reservationid', [adminAuthMiddleware], patientmanagement.loadPrescription);
+router.get('/patientmanagement/loadprescription/:reservationid',
+     [adminAuthMiddleware], patientmanagement.loadPrescription);
 // Manage Staff
 router.get('/staff/requests', [adminAuthMiddleware], staffManagement.getSignupRequests);
 router.get('/staff/counts', [adminAuthMiddleware], staffManagement.getStaffCounts);
