@@ -13,21 +13,14 @@ function AdminDoctorProfilePage() {
   useEffect(() => {
     const fetchDoctor = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/admin/doctor/${doctorId}`);
+        const response = await axios.get(`http://localhost:5000/admin/doctor/${doctorId}`, {withCredentials:true});
         console.log(response.data)
         setDoctor(response.data);
         setLoading(false);
       } catch (err) {
-        const errorCode = error.response?.status;
-        setError(errorCode);
-  
-        if (errorCode === 401) {
-          navigate('/admin/login');
-        } else if (errorCode) {
-          navigate(`/error/${errorCode}`);
-        } else {
-          navigate('/error/500');  // Fallback for unknown/network errors
-        }
+        console.log(err)
+        setLoading(false);
+        navigate('/admin/login')
       } finally {
         setLoading(false);
       }
