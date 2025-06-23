@@ -48,7 +48,7 @@ function AppointmentManagement() {
 
   const handleAcceptClick = async (requestId) => {
     try {
-      await axios.post(`http://localhost:5000/admin/acceptschedule/${requestId}`);
+      await axios.post(`http://localhost:5000/admin/acceptschedule/${requestId}`, {} , {withCredentials: true});
       setDoctorRequests((prevRequests) => prevRequests.filter((req) => req.id !== requestId));
       toast.success('Appointment accepted successfully!',
         {
@@ -88,7 +88,7 @@ function AppointmentManagement() {
     try {
       await axios.post(`http://localhost:5000/admin/rejectschedule/${selectedRequest.id}`, {
         reason: rejectReason,
-      });
+      }, {withCredentials:true});
 
       setDoctorRequests((prevRequests) => prevRequests.filter((req) => req.id !== selectedRequest.id));
       setCancelledRequests((prev) => [...prev, { ...selectedRequest, reason: rejectReason }]);

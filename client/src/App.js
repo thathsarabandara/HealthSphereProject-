@@ -151,6 +151,7 @@ function App() {
             <Route path="/doctor/videoconsultation" element={<DoctorVideoConsultation/>} />
             <Route path="/doctor/clinic" element={<DoctorClinic/>} />
             <Route path="/doctor/prescription" element={<DoctorPrescription/>} />
+            <Route path="/doctor/clinic/:reservationid/prescription/:patientid" element={<DoctorPrescription/>} />
             <Route path="/doctor/fullregister/:id" element={<DoctorFullRegister/>} />
 
           </Routes>
