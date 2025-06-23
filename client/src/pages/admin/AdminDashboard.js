@@ -29,16 +29,8 @@ function AdminDashboard() {
           setIsLoading(false);
         }
       } catch (error) {
-        const errorCode = error.response?.status;
-        setError(errorCode);
-  
-        if (errorCode === 401) {
-          navigate('/admin/login');
-        } else if (errorCode) {
-          navigate(`/error/${errorCode}`);
-        } else {
-          navigate('/error/500');  // Fallback for unknown/network errors
-        }
+        console.log(error)
+        navigate('/admin/login')
       } finally {
         setIsLoading(false);
       }

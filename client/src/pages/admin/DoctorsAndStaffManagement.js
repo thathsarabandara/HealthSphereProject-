@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
+import Loader from '../../components/common/Loader';
 
 function DoctorsAndStaffManagement() {
 
@@ -23,18 +24,41 @@ function DoctorsAndStaffManagement() {
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/admin/loaddoctors');
+        const response = await axios.get('http://localhost:5000/admin/loaddoctors', {withCredentials:true});
         console.log(response.data)
         setDoctors(response.data);
         setLoading(false);
       } catch (err) {
-        setError('Failed to fetch doctors');
+        console.log(err)
+        setLoading(false)
+        navigate('/admin/login')
+      } finally {
         setLoading(false);
       }
     };
 
     fetchDoctors();
   }, []);
+
+  if (loading) {
+    return (
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#f0f4f8',
+        zIndex: 9999
+      }}>
+        <Loader />
+      </div>
+    );
+  };
+  if (!doctors) return <div>Doctors not found</div>;
 
   const containerStyle = {
     marginTop: '20px',
