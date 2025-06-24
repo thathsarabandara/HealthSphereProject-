@@ -121,7 +121,7 @@ return (
                 Remember me
               </label>
             </div>
-            <a href="!#">Forgot password?</a>
+            <a href="/doctor/resetpasswordRequest">Forgot password?</a>
           </div>
 
           <div className="text-center text-md-start mt-4 pt-2">
