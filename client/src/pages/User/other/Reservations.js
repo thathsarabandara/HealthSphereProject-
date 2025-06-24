@@ -103,34 +103,18 @@ function Reservations() {
   return (
     <div>
       <ToastContainer position="top-right" autoClose={3000} />
-      {/* Background color for the header */}
-      <div className="container-fluid" style={{ padding: 0, margin: 0 }}>
-        <div style={{ width: '100%', height: '100px', background: '#756A6A' }} />
-      </div>
-
-      {/* Form container */}
-      <div
-        className="container mt-5 mb-5"
-        style={{
-          marginTop: '-50px',
-          padding: '20px',
-          background: '#F4F4F4',
-          borderRadius: '8px',
-          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-        }}
-      >
-        <div className="row">
-          <h4>
-            <input type="checkbox" style={{ marginRight: '10px' }} />
-            Reservations Details
-          </h4>
+      <div className="container mt-4" style={{ minHeight: '70vh' }}>
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <h2>Your Reservations</h2>
+          <button className="btn btn-primary" onClick={() => navigate(-1)}>
+            Back to Doctors
+          </button>
         </div>
 
-        {/* Form fields */}
-        <form onSubmit={handleSubmit}>
-          <div className="row" style={{ marginTop: '20px' }}>
-            <div className="col-9">
-              <div style={{ marginBottom: '15px' }}>
+        <div className="card shadow-sm">
+          <div className="card-body">
+            <form onSubmit={handleSubmit}>
+              <div className="mb-3">
                 <label>Full Name</label>
                 <input
                   type="text"
@@ -138,18 +122,11 @@ function Reservations() {
                   placeholder="Enter your full name"
                   value={formData.name}
                   onChange={handleChange}
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    marginTop: '5px',
-                    borderRadius: '4px',
-                    border: '1px solid #ccc',
-                    background: '#ECECEC',
-                  }}
+                  className="form-control"
                 />
               </div>
 
-              <div style={{ marginBottom: '15px' }}>
+              <div className="mb-3">
                 <label>Address</label>
                 <input
                   type="text"
@@ -157,18 +134,11 @@ function Reservations() {
                   placeholder="Enter your address"
                   value={formData.address}
                   onChange={handleChange}
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    marginTop: '5px',
-                    borderRadius: '4px',
-                    border: '1px solid #ccc',
-                    background: '#ECECEC',
-                  }}
+                  className="form-control"
                 />
               </div>
 
-              <div style={{ marginBottom: '15px' }}>
+              <div className="mb-3">
                 <label>Phone Number</label>
                 <input
                   type="tel"
@@ -176,18 +146,11 @@ function Reservations() {
                   placeholder="Enter your phone number"
                   value={formData.phone_number}
                   onChange={handleChange}
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    marginTop: '5px',
-                    borderRadius: '4px',
-                    border: '1px solid #ccc',
-                    background: '#ECECEC',
-                  }}
+                  className="form-control"
                 />
               </div>
 
-              <div style={{ marginBottom: '15px' }}>
+              <div className="mb-3">
                 <label>Email Address</label>
                 <input
                   type="email"
@@ -195,36 +158,16 @@ function Reservations() {
                   placeholder="Enter your email address"
                   value={formData.email}
                   onChange={handleChange}
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    marginTop: '5px',
-                    borderRadius: '4px',
-                    border: '1px solid #ccc',
-                    background: '#ECECEC',
-                  }}
+                  className="form-control"
                 />
               </div>
-            </div>
 
-            {/* Button column */}
-            <div className="col-3" style={{ display: 'flex', alignItems: 'flex-end' }}>
-              <button
-                type="submit"
-                className="btn"
-                style={{
-                  width: '100%',
-                  background: '#007802',
-                  color: 'white',
-                  borderRadius: '6px',
-                  padding: '10px',
-                }}
-              >
+              <button type="submit" className="btn btn-primary">
                 Book
               </button>
-            </div>
+            </form>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );
