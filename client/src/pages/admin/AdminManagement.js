@@ -3,9 +3,12 @@ import axios from 'axios';
 import { Table, Form, Button } from 'react-bootstrap';
 import { toast , ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { FaExclamationTriangle } from 'react-icons/fa';
 
 const AdminManagement = () => {
   const [admins, setAdmins] = useState([]);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -13,22 +16,41 @@ const AdminManagement = () => {
     role: 'admin' 
   });
 
-  // Fetch existing admins
   useEffect(() => {
     const fetchAdmins = async () => {
       try {
         const response = await axios.get('http://localhost:5000/admin/admins', {withCredentials: true});
         setAdmins(response.data);
+        setIsSuperAdmin(true);
+        setIsLoading(false);
       } catch (err) {
         if (err.response && err.response.status === 401) {
           toast.error('This page is only accessible by super admins');
+          setIsSuperAdmin(false);
         } else {
           toast.error('Failed to fetch admins');
         }
+        setIsLoading(false);
       }
     };
     fetchAdmins();
   }, []);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!isSuperAdmin) {
+    return (
+      <div className="container d-flex justify-content-center align-items-center" style={{ minHeight: '80vh' }}>
+        <div className="text-center">
+          <FaExclamationTriangle size={64} className="text-danger mb-4" />
+          <h3>This page is only accessible by super admins</h3>
+          <p>You do not have permission to view this content.</p>
+        </div>
+      </div>
+    );
+  }
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
