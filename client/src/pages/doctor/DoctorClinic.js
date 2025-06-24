@@ -10,6 +10,8 @@ function DoctorClinic() {
   const [pastSchedules, setPastSchedules] = useState([]);
   const [error, setError] = useState('');
   const [selectedTab, setSelectedTab] = useState('upcoming'); // For tab control
+  const [currentPage, setCurrentPage] = useState(1);
+  const [schedulesPerPage] = useState(5);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -81,9 +83,13 @@ function DoctorClinic() {
   }
 
   const renderScheduleTable = (schedules) => {
+    const indexOfLastSchedule = currentPage * schedulesPerPage;
+    const indexOfFirstSchedule = indexOfLastSchedule - schedulesPerPage;
+    const currentSchedules = schedules.slice(indexOfFirstSchedule, indexOfLastSchedule);
+
     return (
-      schedules.length > 0 ? (
-        schedules.map((schedule, index) => (
+      currentSchedules.length > 0 ? (
+        currentSchedules.map((schedule, index) => (
           <div key={index} className="table-responsive mt-3" style={{ maxHeight: '400px', overflowY: 'auto' }}>
             <table className="table table-bordered">
               <thead className="text-white" style={{ backgroundColor: '#012A5C' }}>
@@ -166,10 +172,11 @@ function DoctorClinic() {
       )
     );
   };
-  
+
+  const paginate = pageNumber => setCurrentPage(pageNumber);
 
   return (
-    <div className="container">
+    <div className="container mt-5" style={{ minHeight: '70vh' }}>
       <h3 className="mt-5">Doctor Clinic Schedules</h3>
 
       <div className="mt-3">
@@ -188,12 +195,26 @@ function DoctorClinic() {
       {selectedTab === 'upcoming' ? (
         <div>
           <h4 className="mt-5">Upcoming Clinics</h4>
-          {renderScheduleTable(upcomingSchedules, true)}
+          {renderScheduleTable(upcomingSchedules)}
+          <div className="pagination">
+            {[...Array(Math.ceil(upcomingSchedules.length / schedulesPerPage))].map((e, i) => (
+              <button key={i} onClick={() => paginate(i + 1)} className={currentPage === i + 1 ? 'active' : ''}>
+                {i + 1}
+              </button>
+            ))}
+          </div>
         </div>
       ) : (
         <div>
           <h4 className="mt-5">Past Clinics</h4>
-          {renderScheduleTable(pastSchedules, false)}
+          {renderScheduleTable(pastSchedules)}
+          <div className="pagination">
+            {[...Array(Math.ceil(pastSchedules.length / schedulesPerPage))].map((e, i) => (
+              <button key={i} onClick={() => paginate(i + 1)} className={currentPage === i + 1 ? 'active' : ''}>
+                {i + 1}
+              </button>
+            ))}
+          </div>
         </div>
       )}
     </div>
