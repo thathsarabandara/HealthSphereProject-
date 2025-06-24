@@ -1,5 +1,5 @@
 import React, { useState ,useEffect } from 'react';
-import signup from '../../../assets/images/Rectangle 84.svg';
+import signup from '../../../assets/images/patient/register.jpg';
 import '../../../styles/temp.css';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -132,17 +132,17 @@ function Register() {
 
   return (
     <div className="container p-3 my-5 h-custom">
-      <div className="row mt-3 mb-3" style={{ background: '#C8D8F6', borderRadius: 12 }}>
-        <div className="col-md-1" />
-        <div className="col-md-5">
+      <div className="row mt-3 mb-3" style={{ background: '#C8D8F6', borderRadius: 12, overflow: 'hidden' }}>
+        <div className="col-md-6 p-0">
           <img 
-            src={signup} className="img-fluid" 
+            src={signup} 
+            className="img-fluid" 
             alt="Sample image"
-            style={{ marginTop: '150px' , borderRadius: '15px'}}
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
           />
         </div>
 
-        <div className="col-md-5">
+        <div className="col-md-6 mx-auto px-5">
           <div className="d-flex flex-column align-items-center justify-content-center mb-4">
             <p className="lead fw-bold mb-0 me-3 mt-4">Register</p>
             <p
@@ -260,11 +260,8 @@ function Register() {
           <div className="text-center my-3">
             <small>or register with</small>
           </div>
-          <button className="btn btn-outline-primary btn-block social-btn ms-5">
-            <i className="fab fa-facebook-f"></i> Register with Facebook
-          </button>
-          <button className="btn btn-outline-danger btn-block social-btn ms-3">
-            <i className="fab fa-google"></i> Register with Google
+          <button className="btn btn-outline-secondary w-100" style={{ border: '1px solid #ddd', background: 'white', color: '#333' }}>
+            <i className="fab fa-google me-2"></i> Continue with Google
           </button>
 
           {/* Footer Links */}
@@ -274,11 +271,9 @@ function Register() {
             </p>
           </div>
         </div>
-        <div className="col-md-1" />
       </div>
     </div>
   );
 }
 
 export default Register;
-
