@@ -69,7 +69,16 @@ function Doctors() {
     setIsLoading(true);
     fetchSearchResults(searchCriteria);
   };
-    
+
+  // Add pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(5);
+
+  // Calculate pagination variables
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = doctorData.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(doctorData.length / itemsPerPage);
 
   if (isLoading) {
     return (
@@ -191,7 +200,37 @@ function Doctors() {
           {doctorData.length === 0 ? (
             <div className="text-center text-danger">No results found</div>
           ) : (
-            <div className='' style={{paddingTop: '136px'}}>
+            <div className='mx-auto' style={{paddingTop: '136px', maxWidth: '95%'}}>
+              <div className="d-flex justify-content-between align-items-center mb-3">
+                <button 
+                  className="btn btn-secondary" 
+                  onClick={() => setIsCardViewVisible(true)}
+                >
+                  Back to Doctors
+                </button>
+                
+                {/* Pagination controls */}
+                {totalPages > 1 && (
+                  <div className="d-flex align-items-center">
+                    <button 
+                      className="btn btn-outline-primary me-2" 
+                      disabled={currentPage === 1}
+                      onClick={() => setCurrentPage(currentPage - 1)}
+                    >
+                      Previous
+                    </button>
+                    <p className="mx-2">Page {currentPage} of {totalPages}</p>
+                    <button 
+                      className="btn btn-outline-primary ms-2" 
+                      disabled={currentPage === totalPages}
+                      onClick={() => setCurrentPage(currentPage + 1)}
+                    >
+                      Next
+                    </button>
+                  </div>
+                )}
+              </div>
+              
               <table className="table">
                 <thead>
                   <tr>
@@ -206,7 +245,7 @@ function Doctors() {
                   </tr>
                 </thead>
                 <tbody>
-                  {doctorData.map((schedule, index) => (
+                  {currentItems.map((schedule, index) => (
                     <tr key={index}>
                       <td>{schedule.schedule_id}</td>
                       <td>{schedule.doctor_id}</td>
