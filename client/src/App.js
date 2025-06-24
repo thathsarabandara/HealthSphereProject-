@@ -56,6 +56,8 @@ import Checkout from './pages/User/payment/Checkout';
 import DoctorDashboard from './pages/doctor/DoctorDashboard';
 import AdminPanel from './components/admin/AdminPanel';
 import AdminLogin from './pages/admin/Login';
+import DoctorPasswordReset from './pages/doctor/auth/PasswordReset';
+import DoctorResetPassword from './pages/doctor/auth/ResetPassword';
 
 const getNavbarAndFooter = (path) => {
   let NavbarComponent, FooterComponent, SidebarComponent;
@@ -144,6 +146,8 @@ function App() {
             <Route path="/doctor/register" element={<DoctorRegister/>} />
             <Route path="/doctor/patientProfile/:id" element={<DoctorPatientProfile/>} />
             <Route path="/doctor/verifyuser" element={<DoctorVerify/>} />
+            <Route path="/doctor/resetpassword" element={<DoctorPasswordReset />} />
+            <Route path="/doctor/resetpasswordRequest" element={<DoctorResetPassword />} />
             <Route path="/doctor/about" element={<DoctorAbout/>} />
             <Route path="/doctor/" element={<DoctorHome/>} />
             <Route path="/doctor/dashboard" element={<DoctorDashboard/>} />

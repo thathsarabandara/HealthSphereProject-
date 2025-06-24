@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FaClinicMedical } from 'react-icons/fa'; // Ensure react-icons is installed
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import Loader from '../../components/common/Loader';
 
 function DoctorPatientProfile() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [patientData, setPatientData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -90,6 +91,9 @@ function DoctorPatientProfile() {
 
   return (
     <div className="container mt-5">
+      <button className="btn btn-outline-secondary mb-4" onClick={() => navigate(-1)}>
+        Back
+      </button>
       <div className="row">
         {/* Patient Profile Section */}
         <div className="col-lg-3 col-md-12 mb-4">
@@ -228,29 +232,29 @@ function DoctorPatientProfile() {
       {/* Health Metrics */}
       <div className="row mt-4 mb-4">
         <div className="col-md-4">
-          <div className="card text-white bg-secondary text-center">
+          <div className="card text-black bg-light text-center">
             <div className="card-body">
               <h5>Blood Sugar</h5>
-              <h3>{blood_sugar_levels[0]?.blood_sugar_level || 'N/A'}</h3>
-              <small>{blood_sugar_levels[0]?.measurement_time.split('T')[0] || 'N/A'}</small>
+              <h3>{blood_sugar_levels.length > 0 ? blood_sugar_levels[0].blood_sugar_level : 'N/A'}</h3>
+              <small>{blood_sugar_levels.length > 0 ? blood_sugar_levels[0].measurement_time.split('T')[0] : 'N/A'}</small>
             </div>
           </div>
         </div>
         <div className="col-md-4">
-          <div className="card text-white bg-secondary text-center">
+          <div className="card text-black bg-light text-center">
             <div className="card-body">
               <h5>Heart Rate</h5>
-              <h3>{heart_rate[0]?.heart_rate || 'N/A'}</h3>
-              <small>{heart_rate[0]?.measurement_time.split('T')[0] || 'N/A'}</small>
+              <h3>{heart_rate.length > 0 ? heart_rate[0].heart_rate : 'N/A'}</h3>
+              <small>{heart_rate.length > 0 ? heart_rate[0].measurement_time.split('T')[0] : 'N/A'}</small>
             </div>
           </div>
         </div>
         <div className="col-md-4">
-          <div className="card text-white bg-secondary text-center">
+          <div className="card text-black bg-light text-center">
             <div className="card-body">
               <h5>BMI</h5>
-              <h3>{bmi[0].bmi_value || 'N/A'}</h3>
-              <small>{bmi[0].measurement_date.split('T')[0] || 'N/A'}</small>
+              <h3>{bmi.length > 0 ? bmi[0].bmi_value : 'N/A'}</h3>
+              <small>{bmi.length > 0 ? bmi[0].measurement_date.split('T')[0] : 'N/A'}</small>
             </div>
           </div>
         </div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import debounce from 'lodash.debounce'; // import lodash.debounce
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 import Rectangle56 from '../../../assets/images/Rectangle 56.svg'
 import Ellipse1 from '../../../assets/images/Ellipse 1.svg'
@@ -10,6 +11,7 @@ import SearchForm from '../../../components/user/Doctors/SearchForm';
 import DoctorCard from '../../../components/user/Doctors/DoctorCard';
 
 function Doctors() {
+  const navigate = useNavigate(); // Initialize navigate
   const [doctorData, setDoctorData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isCardViewVisible, setIsCardViewVisible] = useState(true);
@@ -44,6 +46,7 @@ function Doctors() {
     try {
       const response = await axios.post('http://localhost:5000/finddoctor', criteria);
       setDoctorData(response.data);
+      console.log(response.data);
       setIsCardViewVisible(false);
       setIsLoading(false);
     } catch (error) {
@@ -58,10 +61,7 @@ function Doctors() {
     const { name, value } = e.target;
     const updatedCriteria = { ...searchCriteria, [name]: value };
     setSearchCriteria(updatedCriteria);
-
-    if (name === 'doctorName') {
-      debouncedFetch(updatedCriteria);
-    }
+    debouncedFetch(updatedCriteria);
   };
 
   const handleSearchButton = (e) => {
@@ -69,7 +69,16 @@ function Doctors() {
     setIsLoading(true);
     fetchSearchResults(searchCriteria);
   };
-    
+
+  // Add pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(5);
+
+  // Calculate pagination variables
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = doctorData.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(doctorData.length / itemsPerPage);
 
   if (isLoading) {
     return (
@@ -191,7 +200,37 @@ function Doctors() {
           {doctorData.length === 0 ? (
             <div className="text-center text-danger">No results found</div>
           ) : (
-            <div className='' style={{paddingTop: '136px'}}>
+            <div className='mx-auto' style={{paddingTop: '136px', maxWidth: '95%'}}>
+              <div className="d-flex justify-content-between align-items-center mb-3">
+                <button 
+                  className="btn btn-secondary" 
+                  onClick={() => setIsCardViewVisible(true)}
+                >
+                  Back to Doctors
+                </button>
+                
+                {/* Pagination controls */}
+                {totalPages > 1 && (
+                  <div className="d-flex align-items-center">
+                    <button 
+                      className="btn btn-outline-primary me-2" 
+                      disabled={currentPage === 1}
+                      onClick={() => setCurrentPage(currentPage - 1)}
+                    >
+                      Previous
+                    </button>
+                    <p className="mx-2">Page {currentPage} of {totalPages}</p>
+                    <button 
+                      className="btn btn-outline-primary ms-2" 
+                      disabled={currentPage === totalPages}
+                      onClick={() => setCurrentPage(currentPage + 1)}
+                    >
+                      Next
+                    </button>
+                  </div>
+                )}
+              </div>
+              
               <table className="table">
                 <thead>
                   <tr>
@@ -206,7 +245,7 @@ function Doctors() {
                   </tr>
                 </thead>
                 <tbody>
-                  {doctorData.map((schedule, index) => (
+                  {currentItems.map((schedule, index) => (
                     <tr key={index}>
                       <td>{schedule.schedule_id}</td>
                       <td>{schedule.doctor_id}</td>
@@ -214,12 +253,21 @@ function Doctors() {
                       <td>{schedule.date}</td>
                       <td>{schedule.time}</td>
                       <td>
-                        <button className="btn btn-primary">View</button>
+                        <button 
+                          className="btn btn-primary"
+                          onClick={() => navigate(`/profileDoctor/${schedule.doctor_id}`)}
+                        >
+                          View
+                        </button>
                       </td>
                       <td>{schedule.consultationFee.toFixed(2)}</td>
                       <td>
-                        {/* Book button: you can implement booking functionality here */}
-                        <button className="btn btn-primary">Book</button>
+                        <button 
+                          className="btn btn-primary"
+                          onClick={() => navigate(`/finddoctors/${schedule.specialization}/reservation/${schedule.schedule_id}`)}
+                        >
+                          Book
+                        </button>
                       </td>
                     </tr>
                   ))}

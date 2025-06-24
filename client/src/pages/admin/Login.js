@@ -1,11 +1,9 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import '../../styles/temp.css';
-import signin from '../../assets/images/Rectangle 84 (1).svg'
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { toast, ToastContainer } from 'react-toastify';
+import signin from '../../assets/images/patient/login.webp';
 
 const AdminLogin = () => {
   const [email, setEmail] = useState("");
@@ -54,32 +52,36 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="container d-flex justify-content-center align-items-center" style={{ minHeight: '100vh' }}>
-      <ToastContainer />
-      <div className="row w-100 g-0" style={{ background: '#C8D8F6', borderRadius: 12, maxWidth: '1000px' }}>
-        
-        <div className="col-lg-6 col-md-6 d-none d-md-block p-4">
+    <div className="container p-3 my-5 h-custom" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div className="row mt-3 mb-3" style={{background: '#C8D8F6', borderRadius: 12, overflow: 'hidden', width: '100%', maxWidth: '1000px', height: '600px' }}>
+        <div className="col-md-6 p-0">
           <img
             src={signin}
             className="img-fluid"
-            alt="Sample"
-            style={{ maxHeight: '100%', objectFit: 'cover' }}
+            alt="Sample image"
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              borderRadius: '12px 0 0 12px'
+            }}
           />
         </div>
 
-        <div className="col-lg-6 col-md-6 col-sm-12 p-4">
-          <div className="text-center">
-            <p className="lead fw-normal mb-2">Admin Login</p>
-            <p>Please enter your email and password to login</p>
+        <div className="col-md-6 mx-auto px-5 d-flex flex-column justify-content-center align-items-center">
+          <div className="d-flex flex-row align-items-center justify-content-center mt-4">
+            <p className="lead fw-normal mb-0 me-3">Admin Sign in </p>
           </div>
-
+          <p className='mt-3'>Please enter your email and password to login</p>
           <form onSubmit={handleSubmit}>
-            <div className="mb-3">
-              <label htmlFor="email" className="form-label">Email address</label>
+            <div className="mb-4">
+              <label htmlFor="email" className="form-label">
+                Email address
+              </label>
               <input
                 type="email"
                 id="email"
-                className="form-control"
+                className="form-control w-100"
                 placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -87,8 +89,10 @@ const AdminLogin = () => {
               />
             </div>
 
-            <div className="mb-3">
-              <label htmlFor="password" className="form-label">Password</label>
+            <div className="mb-4">
+              <label htmlFor="password" className="form-label">
+                Password
+              </label>
               <input
                 type="password"
                 id="password"
@@ -100,24 +104,32 @@ const AdminLogin = () => {
               />
             </div>
 
-            <div className="d-flex justify-content-between mb-3">
+            <div className="d-flex justify-content-between mb-4">
               <div className="form-check">
-                <input className="form-check-input" type="checkbox" id="rememberMe" />
-                <label className="form-check-label" htmlFor="rememberMe">Remember me</label>
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  id="rememberMe"
+                />
+                <label className="form-check-label" htmlFor="rememberMe">
+                  Remember me
+                </label>
               </div>
-              <a href="!#">Forgot password?</a>
+              <a href="/admin/resetpasswordRequest">Forgot password?</a>
             </div>
 
-            <button type="submit" className="btn w-100 text-white" style={{ background: '#112D4E', borderRadius: 10 }}>
-              Sign In
-            </button>
-
-            
+            <div className="text-center text-md-start mt-4 pt-2">
+              <button className="btn mt-1 w-100" style={{ background: '#112D4E', borderRadius: 10 }}>
+                <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
+                  Sign In
+                </span>
+              </button>
+            </div>
           </form>
         </div>
       </div>
+      <ToastContainer />
     </div>
-
   );
 };
 

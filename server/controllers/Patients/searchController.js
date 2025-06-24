@@ -38,7 +38,7 @@ exports.loadDoctors = async (req, res) => {
                 status: 'available' // Only approved schedules
             } 
         });
-
+        
         const response = doctors.map(doctor => {
             const doctorSchedules = schedules.filter(schedule => schedule.doctor_id === doctor.id);
             
@@ -46,6 +46,7 @@ exports.loadDoctors = async (req, res) => {
                 doctor_id: doctor.id,
                 schedule_id: schedule.id,
                 doctorname: doctor.first_name +' '+ doctor.last_name,
+                specialization: specialization.name,
                 date: schedule.schedule_date,
                 time: schedule.schedule_time,
                 consultationFee: parseInt(schedule.fees) + 500.00
@@ -91,7 +92,6 @@ exports.searchDoctors = async (req, res) => {
 
         // Extract doctor IDs for schedule search
         const doctorIds = doctors.map(doc => doc.id);
-        console.log(doctorIds);
 
         // Prepare the schedule search filters
         let scheduleFilters = { doctor_id: { [Op.in]: doctorIds } };
@@ -104,19 +104,31 @@ exports.searchDoctors = async (req, res) => {
             return res.status(404).json({ message: 'No schedules found matching the criteria' });
         }
 
+        // Get the specialization names for the doctors
+        const specializationIds = [...new Set(doctors.map(doc => doc.specialization_id))];
+        const specializations = await Specialization.findAll({
+            where: { id: specializationIds }
+        });
+        const specializationMap = {};
+        specializations.forEach(spec => {
+            specializationMap[spec.id] = spec.name;
+        });
+
         // Construct and send the response
         const response = schedules.map(schedule => {
             const doctor = doctors.find(doc => doc.id === schedule.doctor_id);
-            if (!doctor) return null; // If doctor is not found, skip this entry
+            if (!doctor) return null;
 
             return {
+                schedule_id: schedule.id,
                 doctor_id: doctor.id,
                 doctorName: doctor.first_name + ' ' + doctor.last_name,
+                specialization: specializationMap[doctor.specialization_id],
                 date: schedule.schedule_date,
                 time: schedule.schedule_time,
-                consultationFee: parseFloat(schedule.fees) + 500.00 // Adding hospital charges
+                consultationFee: parseFloat(schedule.fees) + 500.00
             };
-        }); // Filter out any null entries
+        }).filter(Boolean);
 
         res.status(200).json(response);
     } catch (err) {

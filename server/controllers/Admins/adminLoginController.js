@@ -13,6 +13,7 @@ exports.login = async (req, res) => {
         const user = await User.findOne({ where: { email } });
 
         if (!user) {
+            console.log("User not found");
             return res.status(400).json({ message: "Incorrect Credentials" });
         }
 
@@ -20,18 +21,20 @@ exports.login = async (req, res) => {
         const userPassword = await UserPassword.findOne({ where: { user_id: user.id } });
 
         if (!userPassword) {
+            console.log("User password not found");
             return res.status(400).json({ message: "Incorrect Credentials" });
         }
 
         const isValidPassword = await comparePassword(password, userPassword.password_hash);
 
         if (!isValidPassword) {
+            console.log("Incorrect password");
             return res.status(400).json({ message: "Incorrect Credentials" });
         }
         // Fetch user's group
         const userGroup = await UserGroup.findOne({ where: { user_id: user.id } });
 
-        if (!userGroup || userGroup.group_id !== 3) {
+        if (!userGroup || (userGroup.group_id !== 3 && userGroup.group_id !== 4)) {
             return res.status(400).json({ message: "Access Denied" });
         }
 

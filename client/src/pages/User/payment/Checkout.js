@@ -171,33 +171,13 @@ function Checkout() {
           withCredentials: true,
         });
 
-      toast.success('Payment successful!',
-        {
-          position: "bottom-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        }
-      );
-      navigate('/')
+      toast.success('Payment successful!');
+      setTimeout(() => {
+        navigate('/');
+      }, 4000);
     } catch (error) {
-      console.error('Error submitting payment:', error);
-      toast.error('Failed to make payment',
-        {
-          position: "bottom-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        }
-      );
+      toast.error('Payment failed. Please try again.');
+      console.error('Error processing payment:', error);
     } finally {
       setIsLoading(false);
     }
@@ -226,151 +206,172 @@ function Checkout() {
   }
 
   return (
-    <div className="billing-container">
+    <div className="container mt-4" style={{ minHeight: '70vh' }}>
       <ToastContainer />
-      <div className="billing-details ms-5 mt-5 mb-5">
-        <h3>
-          <span className="icon">▣</span> Billing Details
-        </h3>
-        <form>
-          <label>Full Name</label>
-          <input
-            type="text"
-            name="fullName"
-            value={billingDetails.fullName}
-            onChange={handleBillingChange}
-            placeholder="Enter your full name"
-          />
-
-          <label>Address</label>
-          <textarea
-            name="address"
-            value={billingDetails.address}
-            onChange={handleBillingChange}
-            placeholder="Enter your address"
-          ></textarea>
-
-          <label>Phone Number</label>
-          <input
-            type="tel"
-            name="phoneNumber"
-            value={billingDetails.phoneNumber}
-            onChange={handleBillingChange}
-            placeholder="Enter your phone number"
-          />
-
-          <label>Email Address</label>
-          <input
-            type="email"
-            name="email"
-            value={billingDetails.email}
-            onChange={handleBillingChange}
-            placeholder="Enter your email address"
-          />
-        </form>
-      </div>
-
-      <div className="payment-details me-5 mt-5 mb-5">
-        <div className="subtotal">
-          <h5>
-            <b>Sub Total:</b>
-          </h5>
-          <strong>Rs. {checkoutAmount ? checkoutAmount : '0.00'}</strong>
-        </div>
-
-        <div className="payment-methods">
-          <label>Payment Methods</label>
-          <div>
-            <label>
-              <input
-                type="radio"
-                value="Online Payment"
-                checked={paymentMethod === 'Online Payment'}
-                onChange={handlePaymentMethodChange}
-              />
-              Online Payment
-            </label>
-            <label>
-              <input
-                type="radio"
-                value="Bank Deposit"
-                checked={paymentMethod === 'Bank Deposit'}
-                onChange={handlePaymentMethodChange}
-              />
-              Bank Deposit
-            </label>
+      <h2 className="mb-4">Checkout</h2>
+      <div className="row">
+        {/* Billing Details */}
+        <div className="col-md-6">
+          <div className="card shadow-sm mb-4">
+            <div className="card-body">
+              <h4 className="card-title">Billing Details</h4>
+              <form>
+                <div className="mb-3">
+                  <label className="form-label">Full Name</label>
+                  <input
+                    type="text"
+                    name="fullName"
+                    className="form-control"
+                    value={billingDetails.fullName}
+                    onChange={handleBillingChange}
+                    placeholder="Enter your full name"
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Address</label>
+                  <textarea
+                    name="address"
+                    className="form-control"
+                    value={billingDetails.address}
+                    onChange={handleBillingChange}
+                    placeholder="Enter your address"
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Phone Number</label>
+                  <input
+                    type="tel"
+                    name="phoneNumber"
+                    className="form-control"
+                    value={billingDetails.phoneNumber}
+                    onChange={handleBillingChange}
+                    placeholder="Enter your phone number"
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Email Address</label>
+                  <input
+                    type="email"
+                    name="email"
+                    className="form-control"
+                    value={billingDetails.email}
+                    onChange={handleBillingChange}
+                    placeholder="Enter your email address"
+                  />
+                </div>
+              </form>
+            </div>
           </div>
         </div>
 
-        {paymentMethod === 'Online Payment' ? (
-          <div className="card-details">
-            <form onSubmit={handleSubmit}>
-              <div className="form-group">
-                <label>Card Number:</label>
-                <input
-                  type="text"
-                  name="cardNumber"
-                  value={paymentDetails.cardNumber}
-                  onChange={handlePaymentChange}
-                  placeholder="Enter card number"
-                />
-                {errors.cardNumber && <div className="text-danger">{errors.cardNumber}</div>}
-              </div>
-              <div className="form-group">
-                <label>Card Holder's Name:</label>
-                <input
-                  type="text"
-                  name="cardHolder"
-                  value={paymentDetails.cardHolder}
-                  onChange={handlePaymentChange}
-                  placeholder="Enter card holder's name"
-                />
-                {errors.cardHolder && <div className="text-danger">{errors.cardHolder}</div>}
-              </div>
-              <div className="form-group">
-                <label>Card Valid Date:</label>
-                <input
-                  type="text"
-                  name="expiryDate"
-                  value={paymentDetails.expiryDate}
-                  onChange={handlePaymentChange}
-                  placeholder="MM/YY"
-                />
-                {errors.expiryDate && <div className="text-danger">{errors.expiryDate}</div>}
-              </div>
-              <div className="form-group">
-                <label>CSV:</label>
-                <input
-                  type="text"
-                  name="csv"
-                  value={paymentDetails.csv}
-                  onChange={handlePaymentChange}
-                  placeholder="CSV"
-                />
-                {errors.csv && <div className="text-danger">{errors.csv}</div>}
+        {/* Payment Details */}
+        <div className="col-md-6">
+          <div className="card shadow-sm">
+            <div className="card-body">
+              <h4 className="card-title">Payment Details</h4>
+              <div className="mb-3">
+                <label className="form-label">Payment Methods</label>
+                <div className="d-flex gap-3">
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      value="Online Payment"
+                      checked={paymentMethod === 'Online Payment'}
+                      onChange={handlePaymentMethodChange}
+                      id="onlinePayment"
+                    />
+                    <label className="form-check-label" htmlFor="onlinePayment">
+                      Online Payment
+                    </label>
+                  </div>
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      value="Bank Deposit"
+                      checked={paymentMethod === 'Bank Deposit'}
+                      onChange={handlePaymentMethodChange}
+                      id="bankDeposit"
+                    />
+                    <label className="form-check-label" htmlFor="bankDeposit">
+                      Bank Deposit
+                    </label>
+                  </div>
+                </div>
               </div>
 
-              <button type="submit" className="pay-btn">
-                Pay Now
-              </button>
-            </form>
+              {paymentMethod === 'Online Payment' ? (
+                <form onSubmit={handleSubmit}>
+                  <div className="mb-3">
+                    <label className="form-label">Card Number</label>
+                    <input
+                      type="text"
+                      name="cardNumber"
+                      className="form-control"
+                      value={paymentDetails.cardNumber}
+                      onChange={handlePaymentChange}
+                      placeholder="Enter card number"
+                    />
+                    {errors.cardNumber && <div className="text-danger">{errors.cardNumber}</div>}
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">Card Holder's Name</label>
+                    <input
+                      type="text"
+                      name="cardHolder"
+                      className="form-control"
+                      value={paymentDetails.cardHolder}
+                      onChange={handlePaymentChange}
+                      placeholder="Enter card holder's name"
+                    />
+                    {errors.cardHolder && <div className="text-danger">{errors.cardHolder}</div>}
+                  </div>
+                  <div className="row mb-3">
+                    <div className="col">
+                      <label className="form-label">Expiry Date</label>
+                      <input
+                        type="text"
+                        name="expiryDate"
+                        className="form-control"
+                        value={paymentDetails.expiryDate}
+                        onChange={handlePaymentChange}
+                        placeholder="MM/YY"
+                      />
+                      {errors.expiryDate && <div className="text-danger">{errors.expiryDate}</div>}
+                    </div>
+                    <div className="col">
+                      <label className="form-label">CSV</label>
+                      <input
+                        type="text"
+                        name="csv"
+                        className="form-control"
+                        value={paymentDetails.csv}
+                        onChange={handlePaymentChange}
+                        placeholder="CSV"
+                      />
+                      {errors.csv && <div className="text-danger">{errors.csv}</div>}
+                    </div>
+                  </div>
+                  <button type="submit" className="btn btn-primary w-100">Pay Now</button>
+                </form>
+              ) : (
+                <form onSubmit={handleSubmit}>
+                  <div className="mb-3">
+                    <label className="form-label">Upload Payment Proof</label>
+                    <input
+                      type="file"
+                      name="paymentProof"
+                      className="form-control"
+                      onChange={(e) => setPaymentDetails({ ...paymentDetails, paymentProof: e.target.files[0] })}
+                    />
+                  </div>
+                  <button type="submit" className="btn btn-primary w-100">Submit</button>
+                </form>
+              )}
+            </div>
           </div>
-        ) : (
-          <div className="file-upload">
-            <form onSubmit={handleSubmit}>
-              <label>Upload Payment Proof:</label>
-              <input
-                type="file"
-                name="paymentProof"
-                onChange={(e) => setPaymentDetails({ ...paymentDetails, paymentProof: e.target.files[0] })}
-              />
-
-              <button className="btn1 btn-outline mt-3" type="submit">
-                Submit
-              </button>
-            </form>
-          </div>
-        )}
+        </div>
       </div>
     </div>
   );

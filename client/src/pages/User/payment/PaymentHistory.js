@@ -16,6 +16,9 @@ import TextField from '@mui/material/TextField';
 import Loader from '../../../components/common/Loader';
 import ErrorPopup from '../../../components/common/error popup/ErrorPopup';
 import SuccessPopup from '../../../components/common/success popup/SuccessPopup';
+import { useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -39,6 +42,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 export default function CustomizedTable() {
+  const navigate = useNavigate();
   const [data, setData] = useState([]); // State for table data
   const [isLoading, setIsLoading] = useState(true); // Loading state
   const [open, setOpen] = useState(false); // Dialog state
@@ -46,6 +50,9 @@ export default function CustomizedTable() {
   const [selectedRow, setSelectedRow] = useState(null); // Selected row
   const [errorVisible, setErrorVisible] = useState(false);
   const [successVisible, setSuccessVisible] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(5);
+
   const handleErrorClose = () => setErrorVisible(false);
   const handleSuccessClose = () => setSuccessVisible(false);
 
@@ -74,7 +81,7 @@ export default function CustomizedTable() {
     setReason('');
   };
 
-  const handleSend = async () => {
+  const handleSubmitRefund = async () => {
     if (!reason.trim()) {
       alert('Reason cannot be empty!');
       return;
@@ -89,12 +96,20 @@ export default function CustomizedTable() {
       console.log('Refund request sent successfully:', response.data);
       setOpen(false);
       setReason('');
-      setSuccessVisible(true)
+      toast.success('Refund requested successfully!');
     } catch (error) {
       console.error('Error sending refund request:', error);
-      setErrorVisible(true);
+      toast.error('Failed to request refund.');
     }
   };
+
+  // Get current items
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(data.length / itemsPerPage);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   if (isLoading) {
     return (
@@ -118,7 +133,14 @@ export default function CustomizedTable() {
   }
 
   return (
-    <div className="container mt-5 mb-5">
+    <div className="container mt-4" style={{ minHeight: '70vh' }}>
+      <ToastContainer />
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <h2>Payment History</h2>
+        <button className="btn btn-outline-secondary" onClick={() => navigate('/')}>
+          Back to Home
+        </button>
+      </div>
       <ErrorPopup show={errorVisible} onClose={handleErrorClose} title="Something Went Wrong!" message="Refund Request Failed!" button='Okay' />
       <SuccessPopup show={successVisible} onClose={handleSuccessClose} title="Updated Success Fully " message="Refund Request Sent Successfully!" button='Okay' />
       <TableContainer component={Paper}>
@@ -136,7 +158,7 @@ export default function CustomizedTable() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.map((row, index) => (
+            {currentItems.map((row, index) => (
               <StyledTableRow key={index}>
                 <StyledTableCell>{row.paymentID}</StyledTableCell>
                 <StyledTableCell>{row.amount}</StyledTableCell>
@@ -172,6 +194,29 @@ export default function CustomizedTable() {
         </Table>
       </TableContainer>
 
+      {/* Pagination */}
+      <nav>
+        <ul className="pagination">
+          <li className="page-item">
+            <button className="page-link" onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1}>
+              Previous
+            </button>
+          </li>
+          {[...Array(totalPages).keys()].map((pageNumber) => (
+            <li key={pageNumber} className="page-item">
+              <button className="page-link" onClick={() => paginate(pageNumber + 1)}>
+                {pageNumber + 1}
+              </button>
+            </li>
+          ))}
+          <li className="page-item">
+            <button className="page-link" onClick={() => paginate(currentPage + 1)} disabled={currentPage === totalPages}>
+              Next
+            </button>
+          </li>
+        </ul>
+      </nav>
+
       {/* Refund Request Dialog */}
       <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
         <DialogTitle style={{ fontWeight: 'bold', fontSize: '24px' }}>Refund Request</DialogTitle>
@@ -191,7 +236,7 @@ export default function CustomizedTable() {
           <button
             className="btn2 btn-outline text-white"
             style={{ textDecoration: 'none', color: 'inherit' }}
-            onClick={handleSend}
+            onClick={handleSubmitRefund}
           >
             Send
           </button>

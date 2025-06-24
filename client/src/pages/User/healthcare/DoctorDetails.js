@@ -9,6 +9,8 @@ function DoctorDetails() {
   const [isLoading, setLoading] = useState(false); // Correct initial state to boolean
   const [error, setError] = useState(null); // State to handle errors
   const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(5); // Items per page
 
   useEffect(() => {
     if (category) {
@@ -42,6 +44,14 @@ function DoctorDetails() {
     navigate(`/profileDoctor/${id}`);
   };
 
+  // Calculate pagination
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentDoctors = doctors.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(doctors.length / itemsPerPage);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
   // Loader and error display
   if (isLoading) {
     return (
@@ -64,47 +74,94 @@ function DoctorDetails() {
     );
   }
 
+  const formattedCategory = category.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+
   // Main return block
   return (
-    <div className="container" style={{minHeight: '70vh'}}>
-      <h2 className="title">Channel A {category}</h2>
-      {error && <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>} {/* Display error if any */}
-      <table className="table">
-        <thead>
-          <tr>
-            <th>Doctor ID</th>
-            <th>Doctor Name</th>
-            <th>Date</th>
-            <th>Time</th>
-            <th>Doctor Profile</th>
-            <th>Consultation Fee</th>
-            <th>Book</th>
-          </tr>
-        </thead>
-        <tbody>
-          {doctors.length > 0 ? (
-            doctors.map((doctor) => (
-              <tr key={doctor.id}> {/* Assuming each doctor has a unique 'id' */}
-                <td>{doctor.doctor_id}</td>
-                <td>{doctor.doctorname}</td>
-                <td>{doctor.date}</td>
-                <td>{doctor.time}</td>
-                <td>
-                  <button onClick={() => handleProfileView(doctor.doctor_id)}>View</button>
-                </td>
-                <td>Rs. {doctor.consultationFee}</td>
-                <td>
-                  <button onClick={() => handleReservation(doctor.schedule_id)}>Book</button>
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="7" style={{ textAlign: 'center' }}>No doctors available</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+    <div className="container mt-4" style={{ minHeight: '70vh' }}>
+      <h2 className="mb-3">Channel a {formattedCategory}</h2>
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <button onClick={() => navigate(-1)} className="btn btn-outline-secondary">
+          Back to Doctors
+        </button>
+        <div>
+          <nav>
+            <ul className="pagination mb-0">
+              <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                <button className="page-link" onClick={() => paginate(currentPage - 1)}>
+                  Previous
+                </button>
+              </li>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(number => (
+                <li key={number} className={`page-item ${currentPage === number ? 'active' : ''}`}>
+                  <button className="page-link" onClick={() => paginate(number)}>
+                    {number}
+                  </button>
+                </li>
+              ))}
+              <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                <button className="page-link" onClick={() => paginate(currentPage + 1)}>
+                  Next
+                </button>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+
+      {error ? (
+        <div className="alert alert-danger" role="alert">
+          {error}
+        </div>
+      ) : (
+        <div className="card shadow-sm">
+          <div className="card-body">
+            <table className="table table-striped table-hover">
+              <thead>
+                <tr>
+                  <th>Doctor ID</th>
+                  <th>Doctor Name</th>
+                  <th>Date</th>
+                  <th>Time</th>
+                  <th>Doctor Profile</th>
+                  <th>Consultation Fee</th>
+                  <th>Book</th>
+                </tr>
+              </thead>
+              <tbody>
+                {currentDoctors.map((doctor) => (
+                  <tr key={doctor.id}> {/* Assuming each doctor has a unique 'id' */}
+                    <td>{doctor.doctor_id}</td>
+                    <td>{doctor.doctorname}</td>
+                    <td>{doctor.date}</td>
+                    <td>{doctor.time}</td>
+                    <td>
+                      <button 
+                        className="btn btn-outline-primary btn-sm"
+                        onClick={() => handleProfileView(doctor.doctor_id)}
+                      >
+                        View
+                      </button>
+                    </td>
+                    <td>Rs. {doctor.consultationFee}</td>
+                    <td>
+                      <button 
+                        className="btn btn-primary btn-sm"
+                        onClick={() => handleReservation(doctor.schedule_id)}
+                      >
+                        Book
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            {/* Pagination */}
+            
+          </div>
+        </div>
+      )}
     </div>
   );
 }
