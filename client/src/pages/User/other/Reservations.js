@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import { toast, ToastContainer } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Loader from '../../../components/common/Loader';
 
@@ -25,14 +25,25 @@ function Reservations() {
         const response = await axios.get('http://localhost:5000/reservation', { withCredentials: true });
         if (response.status === 200) {
           setFormData(response.data.data);
+          toast.success('Reservation data loaded successfully!');
         } else {
-          setError('Failed to fetch default data.');
+          toast.error('Failed to fetch reservation data');
+          if (response.status === 401) {
+            navigate('/login');
+          } else {
+            navigate(`/error/${response.status}`);
+          }
         }
       } catch (error) {
-        setError('An error occurred while fetching default data.');
-        console.error(error);
+        const status = error.response?.status || 500;
+        toast.error(`An error occurred: ${error.message}`);
+        if (status === 401) {
+          navigate('/login');
+        } else {
+          navigate(`/error/${status}`);
+        }
       } finally {
-        setLoading(false); // Stop loading in both success and error cases
+        setLoading(false);
       }
     };
 
@@ -49,48 +60,20 @@ function Reservations() {
     try {
       const response = await axios.post(`http://localhost:5000/reservation/${scheduleid}`, formData, {withCredentials: true});
       if (response.status === 200 || response.status === 201) {
-        toast.success('Reservation submitted successfully!',
-          {
-            position: "bottom-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "colored",
-          }
-        );
+        toast.success('Reservation submitted successfully!');
         setFormData({ name: '', address: '', phone_number: '', email: '' });
         navigate('/'); // Navigate back to the home page after successful submission
       } else {
-        toast.error('Failed to submit the reservation. Please try again.',
-          {
-            position: "bottom-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "colored",
-          }
-        );
+        toast.error('Failed to submit the reservation. Please try again.');
       }
     } catch (error) {
-      console.error('Error submitting reservation:', error);
-      toast.error('An error occurred while submitting the reservation.',
-        {
-          position: "bottom-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        }
-      );
+      const status = error.response?.status || 500;
+      toast.error(`An error occurred: ${error.message}`);
+      if (status === 401) {
+        navigate('/login');
+      } else {
+        navigate(`/error/${status}`);
+      }
     }
   };
 
@@ -119,7 +102,7 @@ function Reservations() {
 
   return (
     <div>
-      <ToastContainer />
+      <ToastContainer position="top-right" autoClose={3000} />
       {/* Background color for the header */}
       <div className="container-fluid" style={{ padding: 0, margin: 0 }}>
         <div style={{ width: '100%', height: '100px', background: '#756A6A' }} />
