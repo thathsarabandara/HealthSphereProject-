@@ -9,6 +9,20 @@ const { CartPayments } = require("../../models/transactions/CartPayment");
 const { Payment } = require("../../models/transactions/Payment");
 const { ReservationPayment } = require("../../models/transactions/ReservationPayment");
 
+// Helper function to mask card number
+function maskCardNumber(cardNumber) {
+    if (typeof cardNumber !== 'string' && typeof cardNumber !== 'number') {
+        return cardNumber;
+    }
+    const cardStr = cardNumber.toString();
+    const cleaned = cardStr.replace(/\D/g, ''); // Remove non-digits
+    if (cleaned.length < 7) {
+        return cardStr; // Not enough digits, return original
+    }
+    const last6 = cleaned.slice(-6);
+    return '*'.repeat(cleaned.length - 6) + last6;
+}
+
 exports.makePaymentId = async (req, res) => {
     try {
         const { reservationId} = req.params;
@@ -133,6 +147,10 @@ exports.makePayment = async (req, res) => {
     const { id } = req.params;
     const bankReceipt = req.bankrecipt;
     const { fullName, address, phoneNumber, email, paymentMethod, cardNumber, cardHolder, expiryDate, csv } = req.body;
+    
+    // Mask the card number
+    const maskedCardNumber = maskCardNumber(cardNumber);
+    
     let patient; 
     let payment; 
 
@@ -161,7 +179,7 @@ exports.makePayment = async (req, res) => {
         if (paymentMethod === 'Online Payment') {
             await CardDetails.create({
                 payment_id: payment.id,
-                cardNumber,
+                cardNumber: maskedCardNumber, // Use masked card number
                 cardHolderName: cardHolder,
                 validDate: expiryDate,
                 csv,
@@ -210,6 +228,10 @@ exports.makePayments = async (req, res) => {
     console.log(id)
     const bankReceipt = req.bankrecipt;
     const { fullName, address, phoneNumber, email, paymentMethod, cardNumber, cardHolder, expiryDate, csv } = req.body;
+    
+    // Mask the card number
+    const maskedCardNumber = maskCardNumber(cardNumber);
+    
     let reservation ; 
     let payment; 
 
@@ -250,7 +272,7 @@ exports.makePayments = async (req, res) => {
         if (paymentMethod === 'Online Payment') {
             await CardDetails.create({
                 payment_id: payment.id,
-                cardNumber,
+                cardNumber: maskedCardNumber, // Use masked card number
                 cardHolderName: cardHolder,
                 validDate: expiryDate,
                 csv,
@@ -378,4 +400,3 @@ exports.loadPayment = async (req, res) => {
     }
   };
   
-
