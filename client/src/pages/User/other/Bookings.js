@@ -79,7 +79,7 @@ const Bookings = () => {
   }
 
   return (
-    <div className="container mt-5 d-flex">
+    <div className="container mt-5 d-flex" style={{ minHeight: '70vh' }}>
       {/* Sidebar or Navigation for Filtering */}
       <div className="list-group me-3" style={{ width: '200px' }}>
         <button
