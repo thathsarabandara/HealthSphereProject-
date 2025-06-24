@@ -6,6 +6,7 @@ import { MdAccountCircle } from "react-icons/md";
 import emptyImage from '../../assets/images/emptyProfile.png';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import Breadcrumb from '../common/Breadcrumb';
 
 function DoctorNavbar() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -74,72 +75,77 @@ function DoctorNavbar() {
   }, []);
 
   return (
-    <nav className="navbar navbar-expand-lg">
-      <div className="container">
-        <img src={banner} className='logo' alt="Logo" />
+    <div>
+      {/* Breadcrumb */}
+      <Breadcrumb />
 
-        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span className="navbar-toggler-icon"></span>
-        </button>
+      <nav className="navbar navbar-expand-lg">
+        <div className="container">
+          <img src={banner} className='logo' alt="Logo" />
 
-        <div className="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
-            <li className="nav-item">
-              <Link to="/doctor/" className='nav-link active'>Home</Link>
-            </li>
-            <li className='nav-item'>
-              <Link to="/doctor/schedule" className='nav-link active'>Schedule</Link>
-            </li>
-            <li className='nav-item'>
-              <Link to="/doctor/videoconsultation" className='nav-link active'>Video Consultation</Link>
-            </li>
-            <li className='nav-item'>
-              <Link to="/doctor/clinic" className='nav-link active'>Clinic</Link>
-            </li>
-            <li className="nav-item">
-              <Link to="/doctor/about" className='nav-link active'>About Us</Link>
-            </li>
-          </ul>
+          <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span className="navbar-toggler-icon"></span>
+          </button>
 
-          <div className='header'>
-            {isAuthenticated ? (
-                <div className='user-section'>
-                  <div className='profile-name d-flex flex-column'>
-                    <h4 className='hello'>Welcome to the Healthsphere,</h4>
-                    <h5 className='name'>Dear, {user ? user.name : 'User'}</h5> {/* Added check here */}
+          <div className="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
+              <li className="nav-item">
+                <Link to="/doctor/" className='nav-link active'>Home</Link>
+              </li>
+              <li className='nav-item'>
+                <Link to="/doctor/schedule" className='nav-link active'>Schedule</Link>
+              </li>
+              <li className='nav-item'>
+                <Link to="/doctor/videoconsultation" className='nav-link active'>Video Consultation</Link>
+              </li>
+              <li className='nav-item'>
+                <Link to="/doctor/clinic" className='nav-link active'>Clinic</Link>
+              </li>
+              <li className="nav-item">
+                <Link to="/doctor/about" className='nav-link active'>About Us</Link>
+              </li>
+            </ul>
+
+            <div className='header'>
+              {isAuthenticated ? (
+                  <div className='user-section'>
+                    <div className='profile-name d-flex flex-column'>
+                      <h4 className='hello'>Welcome to the Healthsphere,</h4>
+                      <h5 className='name'>Dear, {user ? user.name : 'User'}</h5> {/* Added check here */}
+                    </div>
+                    <div className='profile-container'>
+                        <img
+                          src={user?.profilePicture || emptyImage} // Use optional chaining here
+                          alt='Profile'
+                          className='profile-photo'
+                          onClick={toggleDropdown}
+                        />
+                        {showDropdown && (
+                          <div className='profile-dropdown'>
+                            <Link to='/doctor' className='dropdown-item'>Profile</Link>
+                            <Link to="#" className='dropdown-item' onClick={handleLogout}>Logout</Link>
+                          </div>
+                        )}
+                    </div>
                   </div>
-                  <div className='profile-container'>
-                      <img
-                        src={user?.profilePicture || emptyImage} // Use optional chaining here
-                        alt='Profile'
-                        className='profile-photo'
-                        onClick={toggleDropdown}
-                      />
-                      {showDropdown && (
-                        <div className='profile-dropdown'>
-                          <Link to='/doctor' className='dropdown-item'>Profile</Link>
-                          <Link to="#" className='dropdown-item' onClick={handleLogout}>Logout</Link>
-                        </div>
-                      )}
+              ) : (
+                  <div className='btn-container ms-5'>
+                    <button className='btn1 btn-outline'>
+                      <Link to='/doctor/register' style={{ textDecoration: 'none', color: 'inherit' }}>Register</Link>
+                    </button>
+                    <button className='btn2 btn-outline'>
+                      <Link to='/doctor/login' style={{ textDecoration: 'none', color: 'inherit' }}>Log in</Link>
+                    </button>
+                    <div className='icon'>
+                      <MdAccountCircle className='account-icon' />
+                    </div>
                   </div>
-                </div>
-            ) : (
-                <div className='btn-container ms-5'>
-                  <button className='btn1 btn-outline'>
-                    <Link to='/doctor/register' style={{ textDecoration: 'none', color: 'inherit' }}>Register</Link>
-                  </button>
-                  <button className='btn2 btn-outline'>
-                    <Link to='/doctor/login' style={{ textDecoration: 'none', color: 'inherit' }}>Log in</Link>
-                  </button>
-                  <div className='icon'>
-                    <MdAccountCircle className='account-icon' />
-                  </div>
-                </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+    </div>
   );
 }
 
