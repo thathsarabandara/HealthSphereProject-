@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import debounce from 'lodash.debounce'; // import lodash.debounce
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 import Rectangle56 from '../../../assets/images/Rectangle 56.svg'
 import Ellipse1 from '../../../assets/images/Ellipse 1.svg'
@@ -10,6 +11,7 @@ import SearchForm from '../../../components/user/Doctors/SearchForm';
 import DoctorCard from '../../../components/user/Doctors/DoctorCard';
 
 function Doctors() {
+  const navigate = useNavigate(); // Initialize navigate
   const [doctorData, setDoctorData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isCardViewVisible, setIsCardViewVisible] = useState(true);
@@ -44,6 +46,7 @@ function Doctors() {
     try {
       const response = await axios.post('http://localhost:5000/finddoctor', criteria);
       setDoctorData(response.data);
+      console.log(response.data);
       setIsCardViewVisible(false);
       setIsLoading(false);
     } catch (error) {
@@ -58,10 +61,7 @@ function Doctors() {
     const { name, value } = e.target;
     const updatedCriteria = { ...searchCriteria, [name]: value };
     setSearchCriteria(updatedCriteria);
-
-    if (name === 'doctorName') {
-      debouncedFetch(updatedCriteria);
-    }
+    debouncedFetch(updatedCriteria);
   };
 
   const handleSearchButton = (e) => {
@@ -214,12 +214,21 @@ function Doctors() {
                       <td>{schedule.date}</td>
                       <td>{schedule.time}</td>
                       <td>
-                        <button className="btn btn-primary">View</button>
+                        <button 
+                          className="btn btn-primary"
+                          onClick={() => navigate(`/profileDoctor/${schedule.doctor_id}`)}
+                        >
+                          View
+                        </button>
                       </td>
                       <td>{schedule.consultationFee.toFixed(2)}</td>
                       <td>
-                        {/* Book button: you can implement booking functionality here */}
-                        <button className="btn btn-primary">Book</button>
+                        <button 
+                          className="btn btn-primary"
+                          onClick={() => navigate(`/finddoctors/${schedule.specialization}/reservation/${schedule.schedule_id}`)}
+                        >
+                          Book
+                        </button>
                       </td>
                     </tr>
                   ))}
