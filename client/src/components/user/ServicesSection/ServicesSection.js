@@ -26,7 +26,7 @@ const ServicesSection = () => {
           <div className="col-md-4 services" data-aos="fade-up">
             <div className="d-block d-flex">
               <div className="icon d-flex justify-content-center align-items-center">
-                <span className="flaticon-chiropractic"></span>
+                <i className="fas fa-hands-helping"></i>
               </div>
               <div className="media-body pl-3">
                 <h3 className="heading">Spinal Manipulation</h3>
@@ -36,7 +36,7 @@ const ServicesSection = () => {
             </div>
             <div className="d-block d-flex" data-aos="fade-up">
               <div className="icon d-flex justify-content-center align-items-center">
-                <span className="flaticon-acupuncture"></span>
+                <i className="fas fa-syringe"></i>
               </div>
               <div className="media-body pl-3">
                 <h3 className="heading">Medical Acupuncture</h3>
@@ -50,7 +50,7 @@ const ServicesSection = () => {
           <div className="col-md-4 services" data-aos="fade-up">
             <div className="d-block d-flex">
               <div className="icon d-flex justify-content-center align-items-center">
-                <span className="flaticon-electrotherapy"></span>
+                <i className="fas fa-bolt"></i>
               </div>
               <div className="media-body pl-3">
                 <h3 className="heading">Electrotherapy</h3>
@@ -60,7 +60,7 @@ const ServicesSection = () => {
             </div> 
             <div className="d-block d-flex" data-aos="fade-up">
               <div className="icon d-flex justify-content-center align-items-center">
-                <span className="flaticon-examination"></span>
+                <i className="fas fa-dumbbell"></i>
               </div>
               <div className="media-body pl-3">
                 <h3 className="heading">Therapeutic Exercise</h3>
@@ -74,7 +74,7 @@ const ServicesSection = () => {
           <div className="col-md-4 services" data-aos="fade-up">
             <div className="d-block d-flex">
               <div className="icon d-flex justify-content-center align-items-center">
-                <span className="flaticon-lymph-nodes"></span>
+                <i className="fas fa-heart"></i>
               </div>
               <div className="media-body pl-3">
                 <h3 className="heading">Manual Lymphatic Drainage</h3>
@@ -84,7 +84,7 @@ const ServicesSection = () => {
             </div>
             <div className="d-block d-flex" data-aos="fade-up">
               <div className="icon d-flex justify-content-center align-items-center">
-                <span className="flaticon-bone"></span>
+                <i className="fas fa-bone"></i>
               </div>
               <div className="media-body pl-3">
                 <h3 className="heading">Joint Mobilization</h3>

@@ -4,6 +4,7 @@ import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import "./CustomerReviews.css";
 
 const CustomerReviews = () => {
   const reviews = [
@@ -47,7 +48,7 @@ const CustomerReviews = () => {
       name: "David Johnson",
       profession: "Business Consultant",
       review:
-        "I never believed in chiropractic treatments until I visited this clinic. My chronic lower back pain has disappeared! Worth every visit.Actually good Service",
+        "I never believed in chiropractic treatments until I visited this clinic. My chronic lower back pain has disappeared! Worth every visit.",
       image: "https://i.pravatar.cc/100?img=5",
       rating: 5,
       date: "November 28, 2024",
@@ -56,7 +57,7 @@ const CustomerReviews = () => {
       name: "Sophia Lee",
       profession: "Graphic Designer",
       review:
-        "From the moment I walked in, I felt welcomed. The treatment was smooth, and the results were amazing. A 10/10 experience! Actually good Service",
+        "From the moment I walked in, I felt welcomed. The treatment was smooth, and the results were amazing. A 10/10 experience!",
       image: "https://i.pravatar.cc/100?img=6",
       rating: 4.8,
       date: "October 5, 2024",
@@ -91,23 +92,22 @@ const CustomerReviews = () => {
         >
           {reviews.map((review, index) => (
             <SwiperSlide key={index}>
-              <div className="p-4 shadow-lg rounded bg-white text-center">
+              <div className="review-card">
                 <img
                   src={review.image}
                   alt={review.name}
-                  className="rounded-circle mb-3"
-                  style={{ width: "90px", height: "90px", border: "4px solid #007bff" }}
+                  className="rounded-circle"
                 />
-                <h5 className="fw-bold">{review.name}</h5>
+                <h5>{review.name}</h5>
                 <p className="text-muted">{review.profession}</p>
-                <div className="mb-2">
+                <div className="rating">
                   {Array.from({ length: Math.floor(review.rating) }, (_, i) => (
-                    <span key={i} className="text-warning fs-5">&#9733;</span>
+                    <span key={i}>&#9733;</span>
                   ))}
-                  {review.rating % 1 !== 0 && <span className="text-warning fs-5">&#9734;</span>}
+                  {review.rating % 1 !== 0 && <span>&#9734;</span>}
                 </div>
-                <p className="text-muted">"{review.review}"</p>
-                <small className="text-secondary">{review.date}</small>
+                <p className="review-text">"{review.review}"</p>
+                <small>{review.date}</small>
               </div>
             </SwiperSlide>
           ))}

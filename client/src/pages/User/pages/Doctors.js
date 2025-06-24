@@ -109,20 +109,21 @@ function Doctors() {
     {
       image: Ellipse1,
       title: 'Channel a Pediatrician',
-      description: 'Focuses on the health of children from birth to adolescence, including preventive healthcare and chronic disease management.',
+      description: 'Focuses on childrens health from birth to adolescence, including preventive healthcare and disease management. Offers expert guidance on growth, nutrition, immunization, and developmental milestones for childre',
       link: '/finddoctors/Pediatrician'
     },
     {
       image: Ellipse1,
       title: 'Channel a Cardiologist',
-      description: 'Diagnoses and treats heart conditions such as heart attacks, hypertension, and arrhythmias, and provides preventive care.',
+      description: 'Diagnoses and treats heart conditions such as heart attacks, hypertension, and arrhythmias, and provides preventive care. Offers expert guidance on growth, nutrition, immunization, and developmental milestones for childre',
       link: '/finddoctors/Cardiologist'
     },
     {
       image: Ellipse1,
       title: 'Channel a Dermatologist',
-      description: 'Specializes in the treatment of skin, hair, and nail conditions like acne, eczema, and psoriasis.',
-      link: '/finddoctors/Dermatologist'
+      description: 'Specializes in the treatment of skin, hair, and nail conditions like acne, eczema, and psoriasis. Offers expert guidance on growth, nutrition, milestones for childre',
+      link: '"/finddoctors/Dermatologist'
+
     }
   ];
   const doctorCards1 = [
@@ -141,13 +142,13 @@ function Doctors() {
     {
       image: Ellipse1,
       title: 'Channel a Psychiatrist',
-      description: 'Diagnoses, treats, and helps prevent mental, emotional, and behavioral disorders, using a combination of medication, psychotherapy, and other treatments tailored to individual patient needs.',
+      description: 'Diagnoses, treats, and helps prevent mental, and behavioral disorders, using a combination of medication, psychotherapy, and other treatments tailored to individual patient needs.',
       link: '/finddoctors/Psychiatrist'
     },
     {
       image: Ellipse1,
       title: 'Channel a Endocrinologist',
-      description: 'Focuses on hormone-related diseases and disorders, including diabetes, thyroid diseases, metabolic disorders, osteoporosis, and reproductive health issues.',
+      description: 'Focuses on hormone-related diseases and thyroid diseases, metabolic disorders, and reproductive health issues.',
       link: '"/finddoctors/Endocrinologist'
     }];
   const doctorCards2 = [
@@ -172,7 +173,7 @@ function Doctors() {
     {
       image: Ellipse1,
       title: 'Channel a Pulmonologist',
-      description: 'Diagnoses and treats diseases of the respiratory system, including chronic conditions like asthma, COPD, lung infections, and sleep-related breathing disorders.',
+      description: 'Diagnoses and treats diseases of the respiratory system, including chronic conditions like asthma, COPD, and sleep-related breathing disorders.',
       link: '"/finddoctors/Pulmonologist'
     }
   ];
