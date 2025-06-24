@@ -1,11 +1,11 @@
-import React, { useState , useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { triggerLoginEvent } from './authEvents'; // Make sure to adjust the import path
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import '../../../styles/temp.css';
-import signin from '../../../assets/images/patient/login.webp'
+import signin from '../../../assets/images/patient/login.webp';
 import Loader from '../../../components/common/Loader';
-import { toast } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function Login() {
@@ -73,8 +73,8 @@ function Login() {
   };
 
   return (
-    <div className="container p-3 my-5 h-custom">
-      <div className="row mt-3 mb-3" style={{background: '#C8D8F6', borderRadius: 12, overflow: 'hidden'}}>
+    <div className="container p-3 my-5 h-custom" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div className="row mt-3 mb-3" style={{background: '#C8D8F6', borderRadius: 12, overflow: 'hidden', width: '100%', maxWidth: '1000px' }}>
         <div className="col-md-6 p-0">
           <img
             src={signin}
@@ -164,6 +164,7 @@ function Login() {
           </form>
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
 }
