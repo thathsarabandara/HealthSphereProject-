@@ -9,7 +9,11 @@ import PatientManagement from '../../pages/admin/PatientManagement';
 import BillinAndFinancial from '../../pages/admin/BillingAndFinancialManagement';
 import InventoryAndResource from '../../pages/admin/InventoryAndResourcesManagement';
 import ICU from '../../pages/admin/IntensiveCareUnit';
-import AdminLogin from '../../pages/admin/AdminLogin';
+import DoctorRequestPage from '../../pages/admin/DoctorRequstPage'
+import AdminDoctorProfilePage from '../../pages/admin/AdminDoctorProfilePage'; 
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+
 function AdminPanel() {
   const sidebarStyle = {
     width: '250px',
@@ -48,8 +52,15 @@ function AdminPanel() {
     overflowY: 'auto',
   };
 
+  const contentStyle = {
+    marginLeft: '250px',
+    minHeight: '100vh',
+    backgroundColor: '#f8f9fa',
+    padding: '20px',
+  };
+
   return (
-    <div style={{ display: 'flex', height: '100vh' }}>
+    <div style={{ display: 'flex' }}>
       {/* Sidebar */}
       <div style={sidebarStyle}>
         {/* Logo */}
@@ -100,7 +111,11 @@ function AdminPanel() {
         </div>
       </div>
       {/* Main Content */}
-      <div style={mainContentStyle}>
+      <div style={contentStyle}>
+        {/* Breadcrumb */}
+        <Breadcrumb />
+
+        {/* Routes */}
         <Routes>
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin" element={<AdminDashboard />} />
