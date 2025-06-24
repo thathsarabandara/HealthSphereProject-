@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Table, Form, Button, Alert } from 'react-bootstrap';
+import { Table, Form, Button } from 'react-bootstrap';
+import { toast , ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const AdminManagement = () => {
   const [admins, setAdmins] = useState([]);
@@ -10,17 +12,19 @@ const AdminManagement = () => {
     password: '',
     role: 'admin' 
   });
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
 
   // Fetch existing admins
   useEffect(() => {
     const fetchAdmins = async () => {
       try {
-        const response = await axios.get('/api/admins');
+        const response = await axios.get('http://localhost:5000/admin/admins', {withCredentials: true});
         setAdmins(response.data);
       } catch (err) {
-        setError('Failed to fetch admins');
+        if (err.response && err.response.status === 401) {
+          toast.error('This page is only accessible by super admins');
+        } else {
+          toast.error('Failed to fetch admins');
+        }
       }
     };
     fetchAdmins();
@@ -34,47 +38,32 @@ const AdminManagement = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('/api/admins', formData);
+      const response = await axios.post('http://localhost:5000/admin/admins', formData, {withCredentials: true});
       setAdmins([...admins, response.data]);
-      setSuccess('Admin created successfully');
+      toast.success('Admin created successfully');
+      window.location.reload();
       setFormData({ username: '', email: '', password: '', role: 'admin' });
     } catch (err) {
-      setError('Failed to create admin');
+      toast.error('Failed to create admin');
     }
   };
 
-  const handleBlock = async (id) => {
+  const handleToggleBlock = async (id) => {
     try {
-      await axios.put(`/api/admins/${id}/block`);
-      setAdmins(admins.map(admin => 
-        admin.id === id ? { ...admin, isBlocked: true } : admin
-      ));
-      setSuccess('Admin blocked successfully');
+      await axios.put(`http://localhost:5000/admin/admins/${id}/block`,{}, {withCredentials: true});
+      // Refetch the admins to get the updated status
+      const response = await axios.get('http://localhost:5000/admin/admins', {withCredentials: true});
+      setAdmins(response.data);
+      toast.success('Admin block status toggled successfully');
     } catch (err) {
-      setError('Failed to block admin');
-    }
-  };
-
-  const handleUnblock = async (id) => {
-    try {
-      await axios.put(`/api/admins/${id}/unblock`);
-      setAdmins(admins.map(admin => 
-        admin.id === id ? { ...admin, isBlocked: false } : admin
-      ));
-      setSuccess('Admin unblocked successfully');
-    } catch (err) {
-      setError('Failed to unblock admin');
+      toast.error('Failed to toggle block status');
     }
   };
 
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold mb-6">Admin Management</h1>
-      
-      {/* Success and Error Alerts */}
-      {success && <Alert variant="success">{success}</Alert>}
-      {error && <Alert variant="danger">{error}</Alert>}
-
+      <ToastContainer />
       {/* Create Admin Form */}
       <div className="mb-8 pb-5">
         <h2 className="text-xl font-semibold mb-4">Create New Admin</h2>
@@ -146,22 +135,19 @@ const AdminManagement = () => {
                 <td>{admin.username}</td>
                 <td>{admin.email}</td>
                 <td>
-                  {admin.isBlocked ? (
-                    <span className="badge bg-danger">Blocked</span>
-                  ) : (
+                  {admin.isVerified ? (
                     <span className="badge bg-success">Active</span>
+                  ) : (
+                    <span className="badge bg-danger">Block</span>
                   )}
                 </td>
                 <td>
-                  {admin.isBlocked ? (
-                    <Button variant="outline-success" onClick={() => handleUnblock(admin.id)}>
-                      Unblock
-                    </Button>
-                  ) : (
-                    <Button variant="outline-danger" onClick={() => handleBlock(admin.id)}>
-                      Block
-                    </Button>
-                  )}
+                  <Button 
+                    variant={!admin.isVerified ? 'success' : 'danger'} 
+                    onClick={() => handleToggleBlock(admin.id)}
+                  >
+                    {!admin.isVerified ? 'Unblock' : 'Block'}
+                  </Button>
                 </td>
               </tr>
             ))}
