@@ -13,6 +13,7 @@ import DoctorRequestPage from '../../pages/admin/DoctorRequstPage'
 import AdminDoctorProfilePage from '../../pages/admin/AdminDoctorProfilePage'; 
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import AdminManagement from '../../pages/admin/AdminManagement';
 
 function AdminPanel() {
   const navigate = useNavigate();
@@ -129,6 +130,7 @@ function AdminPanel() {
           <Route path="/admin/icu" element={<ICU />} />
           <Route path="/admin/doctorrequests" element={<DoctorRequestPage />} />
           <Route path="/admin/doctor/:doctorId" element={<AdminDoctorProfilePage />} />
+          <Route path="/admin/management" element={<AdminManagement />} />
           {/* Add other routes as needed */}
         </Routes>
       </div>
