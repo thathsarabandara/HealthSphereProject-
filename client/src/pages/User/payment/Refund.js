@@ -9,6 +9,8 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Loader from '../../../components/common/Loader';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -50,6 +52,17 @@ export default function CustomizedTable() {
     fetchData();
   }, []);
 
+  const handleRequestRefund = async (bookingId) => {
+    try {
+      // Assuming you have an API endpoint to request refund
+      const response = await axios.post(`http://localhost:5000/refund/${bookingId}`, {withCredentials: true});
+      toast.success('Refund requested successfully!');
+    } catch (error) {
+      toast.error('Failed to request refund.');
+      console.error('Error requesting refund:', error);
+    }
+  };
+
   if (isLoading) {
     return (
       <div
@@ -72,7 +85,8 @@ export default function CustomizedTable() {
   }
 
   return (
-    <div className="container mt-5 mb-5">
+    <div className="container mt-4" style={{ minHeight: '70vh' }}>
+      <ToastContainer />
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 700 }} aria-label="customized table">
           <TableHead>
@@ -100,6 +114,9 @@ export default function CustomizedTable() {
                 <StyledTableCell>{row.refundRequestTime}</StyledTableCell>
                 <StyledTableCell>{row.refundReason}</StyledTableCell>
                 <StyledTableCell>{row.refundStatus}</StyledTableCell>
+                <StyledTableCell>
+                  <button onClick={() => handleRequestRefund(row.paymentId)}>Request Refund</button>
+                </StyledTableCell>
               </StyledTableRow>
             ))}
           </TableBody>
