@@ -1,10 +1,9 @@
 import React, { useState , useEffect } from 'react';
 import { triggerLoginEvent } from './authEvents'; // Make sure to adjust the import path
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import '../../../styles/temp.css';
-import { Link } from 'react-router-dom';
-import signin from '../../../assets/images/Rectangle 84 (1).svg'
+import signin from '../../../assets/images/patient/login.webp'
 import Loader from '../../../components/common/Loader';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -75,23 +74,27 @@ function Login() {
 
   return (
     <div className="container p-3 my-5 h-custom">
-      <div className="row g-0" style={{background: '#C8D8F6', borderRadius: 12}}>
-        <div className='col-md-1'/>
-        <div className="col-md-5 no-gap" >
+      <div className="row mt-3 mb-3" style={{background: '#C8D8F6', borderRadius: 12, overflow: 'hidden'}}>
+        <div className="col-md-6 p-0">
           <img
             src={signin}
             className="img-fluid"
-            alt="Sample image"
-            style={{ marginTop: '100px' , maxWidth: '450px', maxHeight: '450px', objectFit: 'contain', borderRadius: '15px'}}
+            alt="Sample"
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              borderRadius: '12px 0 0 12px'
+            }}
           />
         </div>
 
-        <div className="col-md-5 no-gap ">
+        <div className="col-md-6 mx-auto px-5">
           <div className="d-flex flex-row align-items-center justify-content-center mt-4">
             <p className="lead fw-normal mb-0 me-3">Sign in </p>
-        </div>
-        <p className='mt-3'>Please enter your email and password to login</p>
-        {/* Remove inline messages since we're using toast notifications */}
+          </div>
+          <p className='mt-3'>Please enter your email and password to login</p>
+          {/* Remove inline messages since we're using toast notifications */}
 
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
@@ -148,19 +151,18 @@ function Login() {
               <div className="text-center my-3">
                   <small>or login with</small>
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px', alignItems: 'center' }}>
-                <a href="http://localhost:5000/auth/google?group=patient" target='_blank' rel='noopener noreferrer' style={{ textDecoration: 'none' }}>
-                  <button type="button" style={{ background: '#4285F4', color: '#fff', border: 'none', borderRadius: 4, padding: '10px 20px', fontWeight: 'bold', width: 250 }}>Login with Google</button>
-                </a>
-              </div>
+              <a href="http://localhost:5000/auth/google?group=patient" target='_blank' rel='noopener noreferrer' className="d-block text-decoration-none mb-4">
+                <button className="btn btn-outline-secondary w-100" style={{ border: '1px solid #ddd', background: 'white', color: '#333' }}>
+                  <i className="fab fa-google me-2"></i> Continue with Google
+                </button>
+              </a>
               <p className="small fw-bold mt-2 pt-1 mb-2 mb-4">
-                Don't have an account? <Link to="/signup" className="link-danger">Register</Link>
+                Don't have an account? <Link to="/register" className="link-danger">Register</Link>
               </p>
             </div>
             
           </form>
         </div>
-        <div className='col-md-1'/>
       </div>
     </div>
   );
