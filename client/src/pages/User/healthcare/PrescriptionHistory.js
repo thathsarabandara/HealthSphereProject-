@@ -37,6 +37,8 @@ export default function CustomizedTable() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(5);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -87,8 +89,22 @@ export default function CustomizedTable() {
     navigate(`/prescriptionhistory/${patientId}/viewprescription/${reservationId}`);
   };
 
+  // Get current items
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = rows.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(rows.length / itemsPerPage);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
   return (
-    <div className="container mt-5 mb-5">
+    <div className="container mt-4" style={{ minHeight: '70vh' }}>
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <h2>Prescription History</h2>
+        <button className="btn btn-outline-secondary" onClick={() => navigate('/')}>
+          Back to Home
+        </button>
+      </div>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 700 }} aria-label="customized table">
           <TableHead>
@@ -104,7 +120,7 @@ export default function CustomizedTable() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row, index) => (
+            {currentItems.map((row, index) => (
               <StyledTableRow key={index}>
                 <StyledTableCell>{row.reservation_id}</StyledTableCell>
                 <StyledTableCell>{row.date}</StyledTableCell>
@@ -161,6 +177,28 @@ export default function CustomizedTable() {
           </TableBody>
         </Table>
       </TableContainer>
+      {/* Pagination */}
+      <nav>
+        <ul className="pagination">
+          <li className="page-item">
+            <button className="page-link" onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1}>
+              Previous
+            </button>
+          </li>
+          {[...Array(totalPages).keys()].map((pageNumber) => (
+            <li key={pageNumber} className="page-item">
+              <button className="page-link" onClick={() => paginate(pageNumber + 1)}>
+                {pageNumber + 1}
+              </button>
+            </li>
+          ))}
+          <li className="page-item">
+            <button className="page-link" onClick={() => paginate(currentPage + 1)} disabled={currentPage === totalPages}>
+              Next
+            </button>
+          </li>
+        </ul>
+      </nav>
     </div>
   );
 }

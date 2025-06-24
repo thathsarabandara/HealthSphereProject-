@@ -1,6 +1,6 @@
 import React, { useState , useEffect } from 'react';
 import axios from 'axios';
-import signup from '../../assets/images/Rectangle 84.svg';
+import signup from '../../assets/images/patient/register.jpg';
 import { useNavigate } from 'react-router-dom';
 import Loader from '../../components/common/Loader';
 import { ToastContainer, toast } from 'react-toastify';
@@ -158,13 +158,22 @@ function App() {
 
   return (
     <div className="container p-3 my-5 h-custom">
-      <div className="row" style={{ background: '#C8D8F6', borderRadius: 12 }}>
-        <div className="col-md-1" />
-        <div className="col-md-5 mt-5">
-          <img src={signup} className="img-fluid" alt="Sample" />
+      <div className="row mt-3 mb-3" style={{background: '#C8D8F6', borderRadius: 12, overflow: 'hidden'}}>
+        <div className="col-md-6 p-0">
+          <img
+            src={signup}
+            className="img-fluid"
+            alt="Sample image"
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              borderRadius: '12px 0 0 12px'
+            }}
+          />
         </div>
 
-        <div className="col-md-5">
+        <div className="col-md-6 mx-auto px-5">
           <div className="d-flex flex-column align-items-center justify-content-center mb-4">
             <p className="lead fw-bold mb-0 me-3 mt-4">Sign Up</p>
             <p
@@ -262,8 +271,7 @@ function App() {
               />
             </div>
 
-            <div className="d-flex justify-content-between mb-4">
-              <p style={{ color: 'red', fontSize: '12px', marginBottom: '8px' }}>{termsError}</p>
+            <div className="mb-4">
               <div className="form-check">
                 <input
                   className="form-check-input"
@@ -280,6 +288,7 @@ function App() {
                   Agree to Our Terms of use and Privacy Policy
                 </label>
               </div>
+              {termsError && <p style={{ color: 'red', fontSize: '12px', marginTop: '8px' }}>{termsError}</p>}
             </div>
 
             <div className="text-center text-md-start mt-4 pt-2">
@@ -313,8 +322,20 @@ function App() {
               />
             </div>
           </form>
+          <div className="text-center my-3">
+            <small>or register with</small>
+          </div>
+          <button className="btn btn-outline-secondary w-100" style={{ border: '1px solid #ddd', background: 'white', color: '#333' }}>
+            <i className="fab fa-google me-2"></i> Continue with Google
+          </button>
+
+          {/* Footer Links */}
+          <div className="footer-link">
+            <p>
+              <a href="/doctor/login">Already have an account? Log in here</a>
+            </p>
+          </div>
         </div>
-        <div className="col-md-1" />
       </div>
     </div>
   );

@@ -10,7 +10,7 @@ const seedUsers = async () => {
     const users = [
       { id: 1, username: 'johnydoe', email: 'johnydoe@example.com', isVerified: true },
       { id: 2, username: 'janedoe', email: 'janedoe@example.com', isVerified: true },
-      { id: 3, username: 'bobsmith', email: 'bobsmith@example.com', isVerified: true },
+      { id: 3, username: 'Admin', email: 'stromprojects47@gmail.com', isVerified: true },
       { id: 4, username: 'alicejohnson', email: 'alicej@example.com', isVerified: true },
       { id: 5, username: 'michaelclark', email: 'mclark@example.com', isVerified: true },
       { id: 6, username: 'JohnDoe', email: 'johndoe@example.com', isVerified: true },

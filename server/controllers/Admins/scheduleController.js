@@ -34,31 +34,44 @@ exports.getScheduleRequest = async (req, res) => {
       feedbackMap[cancel.schedule_id] = cancel.admin_feedback;
     });
 
-    // Get doctor names by querying Doctor model separately
-    const doctorIds = rejectedSchedules.map(schedule => schedule.doctor_id);
+    // Get doctor names by querying Doctor model separately for pending schedules
+    const pendingDoctorIds = pendingSchedules.map(schedule => schedule.doctor_id);
+    const rejectedDoctorIds = rejectedSchedules.map(schedule => schedule.doctor_id);
+    const allDoctorIds = [...new Set([...pendingDoctorIds, ...rejectedDoctorIds])];
+    
     const doctors = await Doctor.findAll({
       where: {
-        id: doctorIds,
+        id: allDoctorIds,
       },
-      attributes: ['id', 'first_name'], // Only fetching id and first_name
+      attributes: ['id', 'first_name', 'last_name'],
     });
 
     // Create a map for doctor names
     const doctorMap = {};
     doctors.forEach(doctor => {
-      doctorMap[doctor.id] = doctor.first_name;
+      doctorMap[doctor.id] = {
+        first_name: doctor.first_name,
+        last_name: doctor.last_name
+      };
     });
 
     // Merge schedules with feedback and doctor names
+    const pendingSchedulesWithDoctors = pendingSchedules.map(schedule => ({
+      ...schedule.toJSON(),
+      doctor_first_name: doctorMap[schedule.doctor_id] ? doctorMap[schedule.doctor_id].first_name : null,
+      doctor_last_name: doctorMap[schedule.doctor_id] ? doctorMap[schedule.doctor_id].last_name : null
+    }));
+
     const rejectedSchedulesWithFeedbackAndDoctors = rejectedSchedules.map(schedule => ({
       ...schedule.toJSON(),
       admin_feedback: feedbackMap[schedule.id] || null,
-      doctor_first_name: doctorMap[schedule.doctor_id] || null, // Add doctor first name
+      doctor_first_name: doctorMap[schedule.doctor_id] ? doctorMap[schedule.doctor_id].first_name : null,
+      doctor_last_name: doctorMap[schedule.doctor_id] ? doctorMap[schedule.doctor_id].last_name : null
     }));
 
     // Return the schedules and merged data
     return res.status(200).json({
-      requests: pendingSchedules,
+      requests: pendingSchedulesWithDoctors,
       rejectedSchedules: rejectedSchedulesWithFeedbackAndDoctors,
     });
 

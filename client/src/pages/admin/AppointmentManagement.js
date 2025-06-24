@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function AppointmentManagement() {
   const [showModal, setShowModal] = useState(false);
@@ -15,11 +17,24 @@ function AppointmentManagement() {
         const response = await axios.get("http://localhost:5000/admin/schedules", {
           withCredentials: true,
         });
+        console.log(response.data)
         setDoctorRequests(response.data.requests || []);
         setCancelledRequests(response.data.rejectedSchedules || []);
         console.log(cancelledRequests)
       } catch (error) {
         console.error("Error fetching appointments:", error);
+        toast.error('Failed to fetch appointments',
+          {
+            position: "bottom-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          }
+        );
       }
     };
     
@@ -33,10 +48,34 @@ function AppointmentManagement() {
 
   const handleAcceptClick = async (requestId) => {
     try {
-      await axios.post(`http://localhost:5000/admin/acceptschedule/${requestId}`);
+      await axios.post(`http://localhost:5000/admin/acceptschedule/${requestId}`, {} , {withCredentials: true});
       setDoctorRequests((prevRequests) => prevRequests.filter((req) => req.id !== requestId));
+      toast.success('Appointment accepted successfully!',
+        {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        }
+      );
     } catch (error) {
       console.error("Error accepting request:", error);
+      toast.error('Failed to accept appointment',
+        {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        }
+      );
     }
   };
 
@@ -49,15 +88,39 @@ function AppointmentManagement() {
     try {
       await axios.post(`http://localhost:5000/admin/rejectschedule/${selectedRequest.id}`, {
         reason: rejectReason,
-      });
+      }, {withCredentials:true});
 
       setDoctorRequests((prevRequests) => prevRequests.filter((req) => req.id !== selectedRequest.id));
       setCancelledRequests((prev) => [...prev, { ...selectedRequest, reason: rejectReason }]);
       
       setShowModal(false);
       setRejectReason("");
+      toast.success('Appointment rejected successfully!',
+        {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        }
+      );
     } catch (error) {
       console.error("Error rejecting request:", error);
+      toast.error('Failed to reject appointment',
+        {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        }
+      );
     }
   };
 
@@ -65,13 +128,14 @@ function AppointmentManagement() {
 
   return (
     <div className="container mt-4">
+      <ToastContainer />
       <h5 className="mb-3">Doctor Requests</h5>
       <table className="table table-bordered table-responsive">
         <thead className="table-dark">
           <tr>
             <th>Schedule Id</th>
             <th>Doctor Id</th>
-            <th>First Name</th>
+            <th>Name</th>
             <th>Date</th>
             <th>Time</th>
             <th>Room</th>
@@ -83,7 +147,7 @@ function AppointmentManagement() {
             <tr key={request.id}>
               <td>{request.id}</td>
               <td>{request.doctor_id}</td>
-              <td>{request.doctor_first_name}</td>
+              <td>{request.doctor_first_name+ " " + request.doctor_last_name}</td>
               <td>{request.schedule_date}</td>
               <td>{request.schedule_time}</td>
               <td>
@@ -114,7 +178,7 @@ function AppointmentManagement() {
           <tr>
             <th>Schedule Id</th>
             <th>Doctor Id</th>
-            <th>First Name</th>
+            <th>Name</th>
             <th>Date</th>
             <th>Time</th>
             <th>Reason</th>
@@ -125,7 +189,7 @@ function AppointmentManagement() {
             <tr key={request.id}>
               <td>{request.id}</td>
               <td>{request.doctor_id}</td>
-              <td>{request.doctor_first_name}</td>
+              <td>{request.doctor_first_name+ " " + request.doctor_last_name}</td>
               <td>{request.schedule_date}</td>
               <td>{request.schedule_time}</td>
               <td>{request.admin_feedback}</td>

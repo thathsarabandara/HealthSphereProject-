@@ -55,6 +55,19 @@ const Patient = sequelize.define('Patient', {
 }, {
     tableName: 'patients',
     timestamps: false,
+    indexes: [
+        {
+            fields: ['first_name'], 
+        },
+        {
+            fields: ['last_name'], 
+        },
+        {
+            fields: ['phone_number'], 
+        },
+        
+
+    ],
 });
 const createPatient = async (id,first_name, last_name, date_of_birth, gender, phone_number, address)=>{
     try{

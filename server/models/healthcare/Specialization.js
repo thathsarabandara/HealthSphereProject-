@@ -25,6 +25,13 @@ const Specialization = sequelize.define('Specialization', {
 }, {
     tableName: 'specializations',
     timestamps: false,
+    indexes: [
+        {
+            unique: true,
+            fields: ['name'], 
+        },
+    ],
+    
 });
 
 module.exports = {

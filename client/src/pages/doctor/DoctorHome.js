@@ -193,7 +193,7 @@ if (loading) {
                               src={`http://localhost:5000/uploads/storage/doctor/${profileData?.userid}/profiledocuments/${profileData.profileImg}` || emptyImage }
                               alt="profile"
                               className="rounded-circle mb-3"
-                              style={{ width: '150px', height: '150px' }}
+                              style={{ width: '150px', height: '150px', objectFit: 'cover' }}
                             />
                             <h5 className="mb-1">{profileData.first_name} {profileData.last_name}</h5>
                             <div style={{ textAlign: 'left', marginTop: '1rem' }}>
