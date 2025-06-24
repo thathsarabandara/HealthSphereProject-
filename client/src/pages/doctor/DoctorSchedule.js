@@ -3,6 +3,8 @@ import { FaCalendarAlt, FaClock } from 'react-icons/fa';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Loader from '../../components/common/Loader';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function ScheduleRequest() {
   const [schedules, setSchedules] = useState([]);
@@ -13,6 +15,8 @@ function ScheduleRequest() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [schedulesPerPage] = useState(5);
 
   useEffect(() => {
     const fetchSchedules = async () => {
@@ -20,12 +24,14 @@ function ScheduleRequest() {
         const response = await axios.get('http://localhost:5000/doctor/schedule', { withCredentials: true });
         if (Array.isArray(response.data)) {
           setSchedules(response.data);
+          toast.success('Schedule data loaded successfully');
         } else {
           setError('Unexpected data format received');
         }
       } catch (error) {
         setError('Error fetching schedules. Please try again.');
         console.error('Error fetching schedules:', error);
+        toast.error('Failed to load schedule data');
       } finally {
         setIsLoading(false);
       }
@@ -55,16 +61,24 @@ function ScheduleRequest() {
 
     try {
       await axios.post('http://localhost:5000/doctor/schedule', { date, time, comment, fees }, { withCredentials: true });
-      alert('Schedule requested successfully');
+      toast.success('Schedule requested successfully!');
       setDate('');
       setTime('');
       setComment('');
       setFees('');
+      window.location.reload();
     } catch (error) {
       setError('Error sending schedule request. Please try again.');
       console.error('Error sending schedule request:', error);
+      toast.error('Failed to send schedule request');
     }
   };
+
+  const indexOfLastSchedule = currentPage * schedulesPerPage;
+  const indexOfFirstSchedule = indexOfLastSchedule - schedulesPerPage;
+  const currentSchedules = schedules.slice(indexOfFirstSchedule, indexOfLastSchedule);
+
+  const paginate = pageNumber => setCurrentPage(pageNumber);
 
   if (isLoading) {
     return (
@@ -88,7 +102,8 @@ function ScheduleRequest() {
   }
 
   return (
-    <div className="container my-5">
+    <div className="container my-5" style={{ minHeight: '70vh' }}>
+      <ToastContainer />
       <h3 className="mb-4">Request for Schedule</h3>
 
       {error && <div className="alert alert-danger">{error}</div>}
@@ -136,8 +151,8 @@ function ScheduleRequest() {
 
       <h3 className="mt-5">Upcoming Schedules</h3>
 
-      {schedules.length > 0 ? (
-        schedules.map((schedule, index) => (
+      {currentSchedules.length > 0 ? (
+        currentSchedules.map((schedule, index) => (
           <div key={index} className="table-responsive mt-3" style={{ maxHeight: '400px', overflowY: 'auto' }}>
             <table className="table table-bordered">
               <thead className="text-white" style={{ backgroundColor: '#012A5C' }}>
@@ -205,6 +220,13 @@ function ScheduleRequest() {
       ) : (
         <p>No schedules available</p>
       )}
+      <div className="pagination">
+        {[...Array(Math.ceil(schedules.length / schedulesPerPage))].map((e, i) => (
+          <button key={i} onClick={() => paginate(i + 1)} className={currentPage === i + 1 ? 'active' : ''}>
+            {i + 1}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

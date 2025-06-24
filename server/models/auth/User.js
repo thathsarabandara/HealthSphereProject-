@@ -28,6 +28,11 @@ const User = sequelize.define('User', {
 }, {
     tableName: 'users',
     timestamps: true,
+    indexes: [
+        {
+            fields: ['email'], 
+        },
+    ],
 });
 
 // Create user function

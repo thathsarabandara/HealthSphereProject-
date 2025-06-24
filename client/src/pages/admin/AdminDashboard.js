@@ -2,6 +2,12 @@ import React, { useState } from "react";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
+import axios from "axios";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Loader from '../../components/common/Loader';
 
 function AdminDashboard() {
   const [messages, setMessages] = useState([
@@ -11,6 +17,28 @@ function AdminDashboard() {
   ]);
 
   const [newMessage, setNewMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/admin/home', { withCredentials: true });
+        if (response.status === 200) {
+          setIsLoading(false);
+        }
+      } catch (error) {
+        console.log(error)
+        navigate('/admin/login')
+      } finally {
+        setIsLoading(false);
+      }
+    };
+  
+    fetchData();
+  }, [navigate]);
+  
 
   const handleSendMessage = () => {
     if (newMessage.trim() !== "") {
@@ -21,6 +49,25 @@ function AdminDashboard() {
       setNewMessage("");
     }
   };
+
+  if (isLoading) {
+      return (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#f0f4f8',
+          zIndex: 9999
+        }}>
+          <Loader />
+        </div>
+      );
+    };
 
   const events = [
     {

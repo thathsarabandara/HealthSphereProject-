@@ -2,8 +2,7 @@ import React, { useState , useEffect} from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import '../../styles/temp.css';
-import { Link } from 'react-router-dom';
-import signin from '../../assets/images/Rectangle 84 (1).svg'
+import signin from '../../assets/images/patient/login.webp'
 import Loader from '../../components/common/Loader';
 
 function Login() {
@@ -57,17 +56,22 @@ const handleSubmit = async (e) => {
 };
 return (
   <div className="container p-3 my-5 h-custom">
-    <div className="row g-0" style={{background: '#C8D8F6', borderRadius: 12}}>
-      <div className='col-md-1'/>
-      <div className="col-md-5 no-gap" >
+    <div className="row mt-3 mb-3" style={{background: '#C8D8F6', borderRadius: 12, overflow: 'hidden'}}>
+      <div className="col-md-6 p-0">
         <img
           src={signin}
-          className="img-fluid mt-5"
+          className="img-fluid"
           alt="Sample image"
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            borderRadius: '12px 0 0 12px'
+          }}
         />
       </div>
 
-      <div className="col-md-5 no-gap ">
+      <div className="col-md-6 mx-auto px-5">
         <div className="d-flex flex-row align-items-center justify-content-center mt-4">
           <p className="lead fw-normal mb-0 me-3">Sign in </p>
       </div>
@@ -117,7 +121,7 @@ return (
                 Remember me
               </label>
             </div>
-            <a href="!#">Forgot password?</a>
+            <a href="/doctor/resetpasswordRequest">Forgot password?</a>
           </div>
 
           <div className="text-center text-md-start mt-4 pt-2">
@@ -126,24 +130,22 @@ return (
                 Sign In
               </span>
             </button>
-
-            {/* Social Login Section */}
-            <div className="text-center my-3">
-                <small>or login with</small>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px', alignItems: 'center' }}>
-              <a href="http://localhost:5000/auth/google?group=doctor" target='_blank' rel='noopener noreferrer' style={{ textDecoration: 'none' }}>
-                <button type="button" style={{ background: '#4285F4', color: '#fff', border: 'none', borderRadius: 4, padding: '10px 20px', fontWeight: 'bold', width: 250 }}>Login with Google</button>
-              </a>
-            </div>
-            
-            <p className="small fw-bold mt-2 pt-1 mb-2 mb-4">
-              Don't have an account? <Link to="/signup" className="link-danger">Register</Link>
-            </p>
           </div>
         </form>
+        <div className="text-center my-3">
+            <small>or Login with</small>
+          </div>
+          <button className="btn btn-outline-secondary w-100" style={{ border: '1px solid #ddd', background: 'white', color: '#333' }}>
+            <i className="fab fa-google me-2"></i> Continue with Google
+          </button>
+
+          {/* Footer Links */}
+          <div className="footer-link">
+            <p>
+              <a href="/doctor/register">Don't have an account? Register here</a>
+            </p>
+          </div>
       </div>
-      <div className='col-md-1'/>
     </div>
   </div>
 );
