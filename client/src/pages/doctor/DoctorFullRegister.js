@@ -194,19 +194,26 @@ function DoctorFullRegister() {
                   }}
                 />
                 <label htmlFor="profile-picture-upload" style={{
-                  color: 'white',
-                  textAlign: 'center',
-                  fontSize: '14px',
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  gap: '8px'
+                  gap: '8px',
+                  backgroundColor: '#f0f0f0',
+                  borderRadius: '8px',
+                  padding: '12px',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
                 }}>
                   <i className="fas fa-camera" style={{
-                    fontSize: '24px'
+                    fontSize: '32px',
+                    color: '#007bff'
                   }}></i>
-                  <span>Change Photo</span>
+                  <span style={{
+                    fontWeight: 'bold',
+                    color: '#007bff',
+                    fontSize: '16px'
+                  }}>Change Photo</span>
                 </label>
               </div>
             </div>
