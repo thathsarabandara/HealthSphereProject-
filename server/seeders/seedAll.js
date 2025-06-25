@@ -60,13 +60,13 @@ const seedDatabase = async () => {
         // await seedPatients();
         // console.log('Patients seeded successfully!');
 
-        // console.log('Seeding schedules...');
-        // await seedSchedules();
-        // console.log('Schedules seeded successfully!');
+        console.log('Seeding schedules...');
+        await seedSchedules();
+        console.log('Schedules seeded successfully!');
 
-        // console.log('Seeding cart items...');
-        // await seedCartItems();
-        // console.log('Cart items seeded successfully!');
+        console.log('Seeding cart items...');
+        await seedCartItems();
+        console.log('Cart items seeded successfully!');
 
         console.log('Seeding patient allergies...');
         await seedPatientAllergies();
@@ -88,9 +88,9 @@ const seedDatabase = async () => {
         await seedPatientHeartRate();
         console.log('Patient heart rate records seeded successfully!');
 
-        console.log('Seeding offers records...');
-        await seedOffers();
-        console.log('Offers records seeded successfully!');
+        // console.log('Seeding offers records...');
+        // await seedOffers();
+        // console.log('Offers records seeded successfully!');
 
         console.log('Database seeded successfully!');
         process.exit();

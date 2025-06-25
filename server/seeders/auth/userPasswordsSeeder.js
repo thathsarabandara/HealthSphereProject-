@@ -4,9 +4,9 @@ const { hashPassword } = require('../../utils/hashpassword'); // Adjust the path
 const userPasswords = [
     { user_id: 1, password: 'johnydoe123' },
     { user_id: 2, password: 'janedoe456' },
-    { user_id: 3, password: 'Admin123@' },
+    { user_id: 3, password: 'Admin2002@' },
     { user_id: 4, password: 'alicej101' },
-    { user_id: 5, password: 'mclark2023' },
+    { user_id: 5, password: 'Developer2002@' },
     { user_id: 6, password: 'johndoe123' },
     { user_id: 7, password: 'janesmith123' },
     { user_id: 8, password: 'emilyjohnson123' },

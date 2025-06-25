@@ -1,7 +1,8 @@
 const { where } = require('sequelize');
-const {Doctor} = require('../../models/healthcare/Doctor');
-const {Specialization} = require('../../models/healthcare/Specialization');
-const {User} = require('../../models/auth/User');
+const { Doctor } = require('../../models/healthcare/Doctor');
+const { Specialization } = require('../../models/healthcare/Specialization');
+const { User } = require('../../models/auth/User');
+const { sendWelcomeEmail, sendRejectionEmail } = require('../../services/doctorEmailServices');
 
 const loadApprovedDoctors = async (req, res) => {
   try {
@@ -54,7 +55,16 @@ const approveDoctor = async (req, res) => {
     doctor.status = 'approved';
     await doctor.save();
 
-    res.json({ message: 'Doctor approved successfully' });
+    // Find user to get email
+    const user = await User.findByPk(doctor.userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Send welcome email
+    await sendWelcomeEmail(user.email);
+
+    res.json({ message: 'Doctor approved successfully. Welcome email sent.' });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -71,7 +81,16 @@ const suspendDoctor = async (req, res) => {
     doctor.status = 'suspended';
     await doctor.save();
 
-    res.json({ message: 'Doctor suspended successfully' });
+    // Find user to get email
+    const user = await User.findByPk(doctor.userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Send rejection email
+    await sendRejectionEmail(user.email);
+
+    res.json({ message: 'Doctor suspended successfully. Rejection email sent.' });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
