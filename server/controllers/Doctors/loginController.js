@@ -7,6 +7,7 @@ const { createUserPassword, findPassword, passwordDeactivate } = require('../../
 const {createPasswordResetRequest, findPasswordResetToken} = require('../../models/security/PasswordResetRequest');
 const { Doctor } = require('../../models/healthcare/Doctor');
 const { isUserBlacklisted, recordFailedLogin, resetLoginAttempts } = require('../../utils/auth/attemptTracker');
+const { sendLoginAttemptEmail } = require('../../services/doctorEmailServices');
 
 exports.login = async (req, res) => {
     const credentials = {
@@ -63,7 +64,11 @@ exports.login = async (req, res) => {
         // 4. Save the token in the database (optional, can also be used with Redis)
         await createToken(user.id, token);
 
-        // 5. Set token in the cookie
+        // 5. Send login attempt alert
+        const deviceInfo = req.headers['user-agent'] || 'Unknown device';
+        await sendLoginAttemptEmail(user.email, deviceInfo);
+
+        // 6. Set token in the cookie
         res.cookie('doctoken', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production', 
@@ -71,7 +76,7 @@ exports.login = async (req, res) => {
             sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax', 
         });
 
-        // 6. Send unusual login alert if needed
+        // 7. Send unusual login alert if needed
         await sendUnusualLogin(user.username, user.email);
 
         return res.status(200).json({ message: 'Login successful' });

@@ -199,3 +199,35 @@ exports.sendOTPEmail = async (toEmail, otp) => {
     };
     await transporter.sendMail(mailOptions);
   };
+
+  exports.sendLoginAttemptEmail = async (toEmail, deviceInfo) => {
+    const mailOptions = {
+      from: emailConfig.auth.user,
+      to: toEmail,
+      subject: '⚠️ New Login Attempt Detected - HealthSphere',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; background-color: #f9f9f9; padding: 20px;">
+          <!-- Header -->
+          <div style="background-color: #FFC107; color: white; padding: 20px; text-align: center;">
+              <h1>New Login Attempt Detected</h1>
+              <p>HealthSphere Security Alert</p>
+          </div>
+          <!-- Email Body -->
+          <div style="background-color: #ffffff; padding: 20px; border-radius: 8px;">
+              <p>Hello,</p>
+              <p>We detected a new login attempt to your HealthSphere account:</p>
+              <p><strong>Device:</strong> ${deviceInfo}</p>
+              <p>If this was you, you can ignore this email.</p>
+              <p>If you don't recognize this activity, please secure your account immediately.</p>
+              <p style="text-align: center;">
+                  <a href="#" style="background-color: #007BFF; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Secure Account</a>
+              </p>
+          </div>
+          <!-- Footer -->
+          <div style="background-color: #FFC107; color: white; padding: 15px; text-align: center; border-radius: 0 0 8px 8px;">
+              &copy; 2024 HealthSphere. All rights reserved.
+          </div>
+        </div>`
+    };
+    await transporter.sendMail(mailOptions);
+  };
