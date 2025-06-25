@@ -260,3 +260,32 @@ exports.sendOTPEmail = async (toEmail, otp) => {
     };
     await transporter.sendMail(mailOptions);
   };
+
+  exports.sendScheduleSubmissionEmail = async (toEmail) => {
+    const mailOptions = {
+      from: emailConfig.auth.user,
+      to: toEmail,
+      subject: '📅 Schedule Submitted - HealthSphere',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; background-color: #f9f9f9; padding: 20px;">
+          <!-- Header -->
+          <div style="background-color: #6f42c1; color: white; padding: 20px; text-align: center;">
+              <h1>Schedule Submitted</h1>
+              <p>HealthSphere Hospitals</p>
+          </div>
+          <!-- Email Body -->
+          <div style="background-color: #ffffff; padding: 20px; border-radius: 8px;">
+              <p>Hello,</p>
+              <p>Your schedule request has been successfully submitted to HealthSphere!</p>
+              <p>Our team will review your schedule and notify you once it's approved.</p>
+              <p>You can view your schedule status in your doctor dashboard at any time.</p>
+              <p>Thank you for using HealthSphere.</p>
+          </div>
+          <!-- Footer -->
+          <div style="background-color: #6f42c1; color: white; padding: 15px; text-align: center; border-radius: 0 0 8px 8px;">
+              &copy; 2024 HealthSphere. All rights reserved.
+          </div>
+        </div>`
+    };
+    await transporter.sendMail(mailOptions);
+  };
