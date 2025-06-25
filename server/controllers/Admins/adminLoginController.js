@@ -5,6 +5,7 @@ const { comparePassword } = require("../../utils/hashpassword");
 const { UserGroup } = require("../../models/auth/UserGroup");
 const { generateToken } = require("../../utils/tokenUtils");
 const { createToken } = require("../../models/auth/Token");
+const { isUserBlacklisted, recordFailedLogin, resetLoginAttempts } = require('../../utils/auth/attemptTracker');
 
 exports.login = async (req, res) => {
     try {
@@ -13,8 +14,22 @@ exports.login = async (req, res) => {
         const user = await User.findOne({ where: { email } });
 
         if (!user) {
+            // Record failed attempt if user exists
+            const existingUser = await User.findOne({ where: { email } });
+            if (existingUser) {
+                await recordFailedLogin(existingUser.id, existingUser);
+            }
             console.log("User not found");
             return res.status(400).json({ message: "Incorrect Credentials" });
+        }
+
+        // Check if user is blacklisted
+        const blacklist = await isUserBlacklisted(user.id);
+        if (blacklist) {
+            return res.status(403).json({ 
+                message: "Account temporarily locked due to excessive failed login attempts",
+                expiresAt: blacklist.expiresAt
+            });
         }
 
         // Fetch user's hashed password
@@ -28,9 +43,14 @@ exports.login = async (req, res) => {
         const isValidPassword = await comparePassword(password, userPassword.password_hash);
 
         if (!isValidPassword) {
+            await recordFailedLogin(user.id, user);
             console.log("Incorrect password");
             return res.status(400).json({ message: "Incorrect Credentials" });
         }
+
+        // Reset login attempts on successful login
+        await resetLoginAttempts(user.id);
+
         // Fetch user's group
         const userGroup = await UserGroup.findOne({ where: { user_id: user.id } });
 

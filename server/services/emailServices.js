@@ -494,7 +494,7 @@ exports.sendHealthTips = async (username, email) => {
                   <ul style="font-size: 16px; color: #333; list-style-type: none; padding: 0;">
                       <li><strong>Stay Hydrated:</strong> Drink at least 8 glasses of water a day to keep your body hydrated.</li>
                       <li><strong>Regular Exercise:</strong> Aim for at least 30 minutes of moderate exercise most days of the week.</li>
-                      <li><strong>Balanced Diet:</strong> Include a variety of fruits, vegetables, whole grains, and lean proteins in your meals.</li>
+                      <li><strong>Balanced Diet:</strong> Incorporate a variety of fruits, vegetables, whole grains, and lean proteins in your meals.</li>
                       <li><strong>Sleep Well:</strong> Aim for 7-9 hours of quality sleep each night to rejuvenate your body.</li>
                       <li><strong>Stay Informed:</strong> Keep track of your health goals and progress regularly.</li>
                   </ul>
@@ -646,7 +646,7 @@ exports.sendPasswordResetEmails = async (username, email, token) => {
         </div>
 
         <!-- Health Tips Section -->
-        <div style="background-color: #ffe0b2; padding: 15px; border-radius: 5px; margin: 20px 10px; text-align: left;">
+        <div style="background-color: #ffe0b2; padding: 15px; border-radius: 5px; margin: 20px 10px; text-align: center;">
             <h3 style="color: #FF9800;">Health Tips for You</h3>
             <ul style="font-size: 16px; color: #333; list-style-type: disc; padding: 5px;">
                 <li><strong>Stay Hydrated:</strong> Drink plenty of water throughout the day to stay hydrated.</li>
@@ -1182,3 +1182,175 @@ exports.sendNotificationsOfSystemUpdates = async (email , date , time) => {
 };
 
 
+
+// Function to send email when user account is locked due to failed login attempts
+exports.sendAccountLockedEmail = async (email, unlockTime) => {
+  const mailOptions = {
+    from: emailConfig.auth.user,
+    to: email,
+    subject: '🔒 Account Locked Due to Suspicious Activity – HealthSphere Hospitals 🏥 | @2024 – DEV Squad ⚡️ [Do Not Reply]',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #fff;">
+      <div style="background-color: #fff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+          <!-- Header Section -->
+          <div style="text-align: center; padding: 20px; background-color: #FF4500; color: white; border-top-left-radius: 10px; border-top-right-radius: 10px;">
+              <h1>Account Locked</h1>
+              <img src="https://drive.google.com/uc?export=view&id=1n-3QGEs8Vvgcln1Oo_dDPOhylkSx2v5B" alt="HealthSphere Logo" style="width: 150px; margin-bottom: 20px;">
+          </div>
+          <img src="https://drive.google.com/uc?export=view&id=1WeeL9wnoMzJ88MkfREENCrUJEK2Zp7l_" alt="HealthSphere Logo" style="margin: 10px; height: 300px; width: 580px;"/>
+          <!-- Alert Message Section -->
+          <div style="padding: 20px; text-align: center;">
+              <p style="font-size: 16px; color: #333;">Dear HealthSphere User,</p>
+              <p style="font-size: 16px; color: #333;">We have detected multiple failed login attempts on your account. For your security, we have temporarily locked your account.</p>
+              <p style="font-size: 16px; color: #FF4500;">Your account will be automatically unlocked at:</p>
+              <p style="font-size: 18px; font-weight: bold; color: #333;">${unlockTime}</p>
+              <p style="font-size: 16px; color: #333;">If this was not you, please contact our support team immediately.</p>
+          </div>
+
+          <!-- Health Tips Section -->
+          <div style="background-color: #f1f1f1; padding: 15px; border-radius: 5px; margin: 20px 10px; text-align: center;">
+              <h3 style="color: #FF4500;">Security Tip</h3>
+              <p style="font-size: 16px; color: #666;">Always use a strong, unique password and never share it with anyone.</p>
+          </div>
+
+          <!-- Footer Section -->
+          <div style="background-color: #f9f9f9; padding: 15px; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
+              <p style="font-size: 12px; text-align: center; color: #888;">If you have any questions or concerns, please contact our support team.</p>
+              <p style="font-size: 12px; text-align: center; color: #aaa;">You received this email because you registered for HealthSphere. If you didn't sign up, please ignore this email.</p>
+              <p style="font-size: 12px; text-align: center; color: #aaa;">All Rights Reserved @2024 - Dev Squad <sup>TM</sup></p>
+
+              <!-- Social Media Links -->
+              <div style="text-align: center; padding: 20px; background-color: #FF4500; color: white; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; margin-top: 20px;">
+                  <p style="margin: 0;">&copy; 2024 HealthSphere. All rights reserved.</p>
+                  <p style="margin: 5px 0;">Follow us on:</p>
+                  <a href="https://facebook.com" style="color: white; text-decoration: none; margin: 0 10px;">Facebook</a> |
+                  <a href="https://twitter.com" style="color: white; text-decoration: none; margin: 0 10px;">Twitter</a> |
+                  <a href="https://instagram.com" style="color: white; text-decoration: none; margin: 0 10px;">Instagram</a>
+              </div>
+          </div>
+      </div>
+    </div>
+    `
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log('Account locked email sent successfully');
+  } catch (error) {
+    console.error('Failed to send account locked email:', error);
+  }
+};
+
+// Function to send email when admin blocks a user account
+exports.sendAdminBlockedEmail = async (email, reason) => {
+  const mailOptions = {
+    from: emailConfig.auth.user,
+    to: email,
+    subject: '⛔ Account Blocked by Admin – HealthSphere Hospitals 🏥 | @2024 – DEV Squad ⚡️ [Do Not Reply]',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #fff;">
+      <div style="background-color: #fff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+          <!-- Header Section -->
+          <div style="text-align: center; padding: 20px; background-color: #FF4500; color: white; border-top-left-radius: 10px; border-top-right-radius: 10px;">
+              <h1>Account Blocked</h1>
+              <img src="https://drive.google.com/uc?export=view&id=1n-3QGEs8Vvgcln1Oo_dDPOhylkSx2v5B" alt="HealthSphere Logo" style="width: 150px; margin-bottom: 20px;">
+          </div>
+          <img src="https://drive.google.com/uc?export=view&id=1WeeL9wnoMzJ88MkfREENCrUJEK2Zp7l_" alt="HealthSphere Logo" style="margin: 10px; height: 300px; width: 580px;"/>
+          <!-- Alert Message Section -->
+          <div style="padding: 20px; text-align: center;">
+              <p style="font-size: 16px; color: #333;">Dear HealthSphere User,</p>
+              <p style="font-size: 16px; color: #333;">Your account has been blocked by an administrator.</p>
+              <p style="font-size: 16px; color: #FF4500;">Reason:</p>
+              <p style="font-size: 18px; font-weight: bold; color: #333;">${reason}</p>
+              <p style="font-size: 16px; color: #333;">If you believe this is a mistake, please contact our support team.</p>
+          </div>
+
+          <!-- Health Tips Section -->
+          <div style="background-color: #f1f1f1; padding: 15px; border-radius: 5px; margin: 20px 10px; text-align: center;">
+              <h3 style="color: #FF4500;">Security Tip</h3>
+              <p style="font-size: 16px; color: #666;">Ensure your account activities comply with our terms of service.</p>
+          </div>
+
+          <!-- Footer Section -->
+          <div style="background-color: #f9f9f9; padding: 15px; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
+              <p style="font-size: 12px; text-align: center; color: #888;">If you have any questions or concerns, please contact our support team.</p>
+              <p style="font-size: 12px; text-align: center; color: #aaa;">You received this email because you registered for HealthSphere. If you didn't sign up, please ignore this email.</p>
+              <p style="font-size: 12px; text-align: center; color: #aaa;">All Rights Reserved @2024 - Dev Squad <sup>TM</sup></p>
+
+              <!-- Social Media Links -->
+              <div style="text-align: center; padding: 20px; background-color: #FF4500; color: white; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; margin-top: 20px;">
+                  <p style="margin: 0;">&copy; 2024 HealthSphere. All rights reserved.</p>
+                  <p style="margin: 5px 0;">Follow us on:</p>
+                  <a href="https://facebook.com" style="color: white; text-decoration: none; margin: 0 10px;">Facebook</a> |
+                  <a href="https://twitter.com" style="color: white; text-decoration: none; margin: 0 10px;">Twitter</a> |
+                  <a href="https://instagram.com" style="color: white; text-decoration: none; margin: 0 10px;">Instagram</a>
+              </div>
+          </div>
+      </div>
+    </div>
+    `
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log('Admin blocked email sent successfully');
+  } catch (error) {
+    console.error('Failed to send admin blocked email:', error);
+  }
+};
+
+// Function to send email when user account is unblocked
+exports.sendAccountUnblockedEmail = async (email) => {
+  const mailOptions = {
+    from: emailConfig.auth.user,
+    to: email,
+    subject: '🔓 Account Unblocked – HealthSphere Hospitals 🏥 | @2024 – DEV Squad ⚡️ [Do Not Reply]',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #fff;">
+      <div style="background-color: #fff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+          <!-- Header Section -->
+          <div style="text-align: center; padding: 20px; background-color: #FF4500; color: white; border-top-left-radius: 10px; border-top-right-radius: 10px;">
+              <h1>Account Unblocked</h1>
+              <img src="https://drive.google.com/uc?export=view&id=1n-3QGEs8Vvgcln1Oo_dDPOhylkSx2v5B" alt="HealthSphere Logo" style="width: 150px; margin-bottom: 20px;">
+          </div>
+          <img src="https://drive.google.com/uc?export=view&id=1WeeL9wnoMzJ88MkfREENCrUJEK2Zp7l_" alt="HealthSphere Logo" style="margin: 10px; height: 300px; width: 580px;"/>
+          <!-- Alert Message Section -->
+          <div style="padding: 20px; text-align: center;">
+              <p style="font-size: 16px; color: #333;">Dear HealthSphere User,</p>
+              <p style="font-size: 16px; color: #333;">Your account has been successfully unblocked. You can now access your account.</p>
+              <p style="font-size: 16px; color: #333;">If you have any issues, please contact our support team.</p>
+          </div>
+
+          <!-- Health Tips Section -->
+          <div style="background-color: #f1f1f1; padding: 15px; border-radius: 5px; margin: 20px 10px; text-align: center;">
+              <h3 style="color: #FF4500;">Security Tip</h3>
+              <p style="font-size: 16px; color: #666;">Regularly update your password and enable two-factor authentication for enhanced security.</p>
+          </div>
+
+          <!-- Footer Section -->
+          <div style="background-color: #f9f9f9; padding: 15px; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
+              <p style="font-size: 12px; text-align: center; color: #888;">If you have any questions or concerns, please contact our support team.</p>
+              <p style="font-size: 12px; text-align: center; color: #aaa;">You received this email because you registered for HealthSphere. If you didn't sign up, please ignore this email.</p>
+              <p style="font-size: 12px; text-align: center; color: #aaa;">All Rights Reserved @2024 - Dev Squad <sup>TM</sup></p>
+
+              <!-- Social Media Links -->
+              <div style="text-align: center; padding: 20px; background-color: #FF4500; color: white; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; margin-top: 20px;">
+                  <p style="margin: 0;">&copy; 2024 HealthSphere. All rights reserved.</p>
+                  <p style="margin: 5px 0;">Follow us on:</p>
+                  <a href="https://facebook.com" style="color: white; text-decoration: none; margin: 0 10px;">Facebook</a> |
+                  <a href="https://twitter.com" style="color: white; text-decoration: none; margin: 0 10px;">Twitter</a> |
+                  <a href="https://instagram.com" style="color: white; text-decoration: none; margin: 0 10px;">Instagram</a>
+              </div>
+          </div>
+      </div>
+    </div>
+    `
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log('Account unblocked email sent successfully');
+  } catch (error) {
+    console.error('Failed to send account unblocked email:', error);
+  }
+};
