@@ -92,10 +92,10 @@ const [currentDateTime, setCurrentDateTime] = useState(new Date());
   // Fetch gender stats data
   const fetchGenderStats = async () => {
     try {
-      const response = await axios.get('', { withCredentials: true });
-      if (response.status === 200) {
-        setGenderStats(response.data); // Assuming 'data' contains the gender stats info
-      }
+      const response = await axios.get('http://localhost:5000/api/doctor/gender-stats', {
+        withCredentials: true
+      });
+      setGenderStats(response.data);
     } catch (error) {
       console.error('Error fetching gender stats:', error);
     }
@@ -137,11 +137,22 @@ const [currentDateTime, setCurrentDateTime] = useState(new Date());
       }
     };
 
+    const fetchGenderStats = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/doctor/gender-stats', {
+          withCredentials: true
+        });
+        setGenderStats(response.data);
+      } catch (error) {
+        console.error('Error fetching gender stats:', error);
+      }
+    };
+
     fetchProfile();
     fetchDashboardStats();
+    fetchGenderStats();
     fetchUserData();
     fetchAppointments();
-    fetchGenderStats();
     fetchReviews();
     const timer = setInterval(() => {
       setCurrentDateTime(new Date());

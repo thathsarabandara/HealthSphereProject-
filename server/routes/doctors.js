@@ -30,5 +30,6 @@ router.post('/verifyuser',registerController.verifyUser);
 router.get('/resendotp', registerController.resendOTP);
 router.post('/fullregister/:id',[doctorAuthMiddleware], registerController.saveProfileDetails);
 router.get('/dashboard', doctorAuthMiddleware, dashboardController.getDashboardStats);
+router.get('/gender-stats', doctorAuthMiddleware, dashboardController.getGenderStats);
 
 module.exports = router;
