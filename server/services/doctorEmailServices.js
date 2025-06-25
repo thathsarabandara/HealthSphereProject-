@@ -231,3 +231,32 @@ exports.sendOTPEmail = async (toEmail, otp) => {
     };
     await transporter.sendMail(mailOptions);
   };
+
+  exports.sendApplicationSubmissionEmail = async (toEmail) => {
+    const mailOptions = {
+      from: emailConfig.auth.user,
+      to: toEmail,
+      subject: '📝 Application Submitted - HealthSphere',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; background-color: #f9f9f9; padding: 20px;">
+          <!-- Header -->
+          <div style="background-color: #17a2b8; color: white; padding: 20px; text-align: center;">
+              <h1>Application Submitted</h1>
+              <p>HealthSphere Hospitals</p>
+          </div>
+          <!-- Email Body -->
+          <div style="background-color: #ffffff; padding: 20px; border-radius: 8px;">
+              <p>Hello,</p>
+              <p>Thank you for completing your HealthSphere doctor application!</p>
+              <p>Your application is now under review by our team. We will carefully evaluate your qualifications and experience.</p>
+              <p>You'll receive another email once your application has been approved.</p>
+              <p>We appreciate your patience during this process.</p>
+          </div>
+          <!-- Footer -->
+          <div style="background-color: #17a2b8; color: white; padding: 15px; text-align: center; border-radius: 0 0 8px 8px;">
+              &copy; 2024 HealthSphere. All rights reserved.
+          </div>
+        </div>`
+    };
+    await transporter.sendMail(mailOptions);
+  };
