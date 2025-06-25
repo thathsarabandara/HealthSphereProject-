@@ -170,4 +170,32 @@ exports.sendOTPEmail = async (toEmail, otp) => {
     };
     await transporter.sendMail(mailOptions);
   };
-  
+
+  exports.sendRejectionEmail = async (toEmail) => {
+    const mailOptions = {
+      from: emailConfig.auth.user,
+      to: toEmail,
+      subject: '❌ Application Update - HealthSphere Hospitals',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; background-color: #f9f9f9; padding: 20px;">
+          <!-- Header -->
+          <div style="background-color: #FF6F61; color: white; padding: 20px; text-align: center;">
+              <h1>Application Update</h1>
+              <p>HealthSphere Hospitals</p>
+          </div>
+          <!-- Email Body -->
+          <div style="background-color: #ffffff; padding: 20px; border-radius: 8px;">
+              <p>Hello,</p>
+              <p>We regret to inform you that your application to join HealthSphere has not been approved at this time.</p>
+              <p>Our team reviewed your application carefully, but we've decided to move forward with other candidates.</p>
+              <p>We appreciate your interest in HealthSphere and encourage you to apply again in the future.</p>
+              <p>Thank you for your understanding.</p>
+          </div>
+          <!-- Footer -->
+          <div style="background-color: #FF6F61; color: white; padding: 15px; text-align: center; border-radius: 0 0 8px 8px;">
+              &copy; 2024 HealthSphere. All rights reserved.
+          </div>
+        </div>`
+    };
+    await transporter.sendMail(mailOptions);
+  };
