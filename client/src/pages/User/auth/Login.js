@@ -151,9 +151,9 @@ function Login() {
               <div className="text-center my-3">
                   <small>or login with</small>
               </div>
-              <a href="http://localhost:5000/auth/google?group=patient" target='_blank' rel='noopener noreferrer' className="d-block text-decoration-none mb-4">
-                <button className="btn btn-outline-secondary w-100" style={{ border: '1px solid #ddd', background: 'white', color: '#333' }}>
-                  <i className="fab fa-google me-2"></i> Continue with Google
+              <a href="http://localhost:5000/auth/google?group=patient" className="d-block text-decoration-none mb-4">
+                <button type="button" className="btn btn-outline-secondary w-100" style={{ border: '1px solid #ddd', background: 'white', color: '#333' }}>
+                  <i className="fab fa-google me-2"></i> Continue with Google as Patient
                 </button>
               </a>
               <p className="small fw-bold mt-2 pt-1 mb-2 mb-4">
