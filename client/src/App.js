@@ -53,7 +53,6 @@ import Bookings from './pages/User/other/Bookings';
 import DoctorPatientProfile from './pages/doctor/DoctorPatientProfile';
 import PatientPrescriptionView from './pages/User/healthcare/PrescriptionView';
 import Checkout from './pages/User/payment/Checkout';
-import DoctorDashboard from './pages/doctor/DoctorDashboard';
 import AdminPanel from './components/admin/AdminPanel';
 import AdminLogin from './pages/admin/Login';
 import DoctorPasswordReset from './pages/doctor/auth/PasswordReset';
@@ -150,7 +149,6 @@ function App() {
             <Route path="/doctor/resetpasswordRequest" element={<DoctorResetPassword />} />
             <Route path="/doctor/about" element={<DoctorAbout/>} />
             <Route path="/doctor/" element={<DoctorHome/>} />
-            <Route path="/doctor/dashboard" element={<DoctorDashboard/>} />
             <Route path="/doctor/schedule" element={<DoctorSchedule/>} />
             <Route path="/doctor/videoconsultation" element={<DoctorVideoConsultation/>} />
             <Route path="/doctor/clinic" element={<DoctorClinic/>} />

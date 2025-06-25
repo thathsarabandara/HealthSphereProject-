@@ -1,4 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { FaBell, FaPlus, FaEnvelope, FaCalendarAlt, FaFileMedical } from 'react-icons/fa';
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import Home1 from "../../assets/images/Rectangle 9 (3).svg"
@@ -62,7 +66,9 @@ const [currentDateTime, setCurrentDateTime] = useState(new Date());
   // Fetch statistics data (appointments, consultations, income, etc.)
   const fetchStatsData = async () => {
     try {
-      const response = await axios.get('', { withCredentials: true });
+      const response = await axios.get('http://localhost:5000/api/doctor/dashboard',
+        {withCredentials: true}
+      );
       if (response.status === 200) {
         setStatsData(response.data); // Assuming 'data' contains the stats info
       }
@@ -109,8 +115,31 @@ const [currentDateTime, setCurrentDateTime] = useState(new Date());
 
 
   useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/doctor/profile',
+          {withCredentials: true}
+        );
+        setProfileData(response.data);
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+      }
+    };
+
+    const fetchDashboardStats = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/doctor/dashboard',
+          {withCredentials: true}
+        );
+        setStatsData(response.data);
+      } catch (error) {
+        console.error('Error fetching dashboard stats:', error);
+      }
+    };
+
+    fetchProfile();
+    fetchDashboardStats();
     fetchUserData();
-    fetchStatsData();
     fetchAppointments();
     fetchGenderStats();
     fetchReviews();
@@ -176,10 +205,18 @@ if (loading) {
       {isAuthenticated ? (
                 <div className="container py-4">
                 {/* Header */}
-                <div className="d-flex align-items-center justify-content-between border-bottom pb-3 mb-4">
+                <div className="d-flex align-items-center justify-content-between border-bottom pb-3 mb-4 bg-light p-3 rounded">
                     <div>
                       <h2 className="font-weight-bold mb-0">Hello Dr. {profileData.first_name} {profileData.last_name} 👋,</h2>
-                      <p className="mb-0"><b>Welcome to Our Platform. Let's help patients live healthier and happier lives 🌟📊</b></p>
+                      <p className="mb-0 text-muted">Welcome to Our Platform. Let's help patients live healthier and happier lives 🌟📊</p>
+                    </div>
+                    <div className="position-relative">
+                      <button className="btn btn-light position-relative">
+                        <FaBell size={24} />
+                        <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                          3
+                        </span>
+                      </button>
                     </div>
                 </div>
         
@@ -187,28 +224,28 @@ if (loading) {
                 <div className="row">
                 {/* Profile Section */}
                     <div className="col-lg-3 col-md-12 mb-4">
-                        <div className="card h-100 shadow-sm">
-                        <div className="card-body text-center">
+                        <div className="card h-100 shadow-sm border-0">
+                        <div className="card-body text-center p-4">
                             <img
                               src={`http://localhost:5000/uploads/storage/doctor/${profileData?.userid}/profiledocuments/${profileData.profileImg}` || emptyImage }
                               alt="profile"
-                              className="rounded-circle mb-3"
+                              className="rounded-circle mb-4 border border-3 border-primary"
                               style={{ width: '150px', height: '150px', objectFit: 'cover' }}
                             />
-                            <h5 className="mb-1">{profileData.first_name} {profileData.last_name}</h5>
-                            <div style={{ textAlign: 'left', marginTop: '1rem' }}>
-                              <p><strong>First Name:</strong> {profileData.first_name}</p>
-                              <p><strong>Last Name:</strong> {profileData.last_name}</p>
-                              <p><strong>Date Of Birth:</strong> {profileData.date_of_birth.split('T')[0]}</p>
-                              <p><strong>Gender:</strong> {profileData.gender}</p>
-                              <p><strong>Email:</strong> {profileData.email}</p>
-                              <p><strong>Phone Number:</strong> {profileData.phone_number}</p>
-                              <p><strong>Address:</strong> {profileData.address}</p>
-                              <p><strong>Medical License Number:</strong> {profileData.medicalLicense}</p>
-                              <p><strong>Specialization:</strong> {profileData.specialization}</p>
-                              <p><strong>Experience:</strong> {profileData.experience}</p>
-                              <p><strong>Hospital Affiliation:</strong> {profileData.hospital}</p>
-                              <p><strong>Medical School:</strong> {profileData.medicalSchool}</p>
+                            <h5 className="mb-3 fw-bold">{profileData.first_name} {profileData.last_name}</h5>
+                            <div className="text-start">
+                              <p className="mb-2"><strong>First Name:</strong> {profileData.first_name}</p>
+                              <p className="mb-2"><strong>Last Name:</strong> {profileData.last_name}</p>
+                              <p className="mb-2"><strong>Date Of Birth:</strong> {profileData.date_of_birth.split('T')[0]}</p>
+                              <p className="mb-2"><strong>Gender:</strong> {profileData.gender}</p>
+                              <p className="mb-2"><strong>Email:</strong> {profileData.email}</p>
+                              <p className="mb-2"><strong>Phone Number:</strong> {profileData.phone_number}</p>
+                              <p className="mb-2"><strong>Address:</strong> {profileData.address}</p>
+                              <p className="mb-2"><strong>Medical License:</strong> {profileData.medicalLicense}</p>
+                              <p className="mb-2"><strong>Specialization:</strong> {profileData.specialization}</p>
+                              <p className="mb-2"><strong>Experience:</strong> {profileData.experience}</p>
+                              <p className="mb-2"><strong>Hospital:</strong> {profileData.hospital}</p>
+                              <p className="mb-2"><strong>Medical School:</strong> {profileData.medicalSchool}</p>
                             </div>
                         </div>
                         </div>
@@ -216,26 +253,26 @@ if (loading) {
                     {/* Right Column */}
                     <div className="col-lg-9 col-md-12">
                         <div className="row mb-4">
-                            <div className="col-6 col-md-3">
-                                <div className="p-3 bg-light text-center rounded">
-                                <strong>Date:</strong>
-                                <h5>{currentDateTime.toLocaleDateString('en-US', {
-                                      weekday: 'long',
-                                      year: 'numeric',
-                                      month: 'numeric',
-                                      day: 'numeric',
-                                    })}
+                            <div className="col-6 col-md-3 mb-3">
+                                <div className="card border-0 bg-primary bg-opacity-10 p-3 text-center rounded">
+                                <strong className="d-block mb-1">Date</strong>
+                                <h5 className="mb-0">
+                                  {currentDateTime.toLocaleDateString('en-US', {
+                                    weekday: 'short',
+                                    month: 'short',
+                                    day: 'numeric',
+                                  })}
                                 </h5>
                                 </div>
                             </div>
-                            <div className="col-6 col-md-3">
-                                <div className="p-3 bg-light text-center rounded">
-                                <strong>Time:</strong>
-                                <h5>{currentDateTime.toLocaleTimeString('en-US', {
-                                      hour: '2-digit',
-                                      minute: '2-digit',
-                                      second: '2-digit',
-                                    })}
+                            <div className="col-6 col-md-3 mb-3">
+                                <div className="card border-0 bg-primary bg-opacity-10 p-3 text-center rounded">
+                                <strong className="d-block mb-1">Time</strong>
+                                <h5 className="mb-0">
+                                  {currentDateTime.toLocaleTimeString('en-US', {
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                  })}
                                 </h5>
                                 </div>
                           </div>
@@ -244,31 +281,39 @@ if (loading) {
                         {/* Statistics */}
                         <div className="row mb-4">
                           <div className="col-6 col-md-3 mb-3">
-                            <div className="p-3 bg-secondary text-white text-center rounded">
-                              <p>Appointments</p>
-                              <h3>{statsData.appointments || '00' }</h3>
-                              <small>Today</small>
+                            <div className="card border-light shadow-sm h-100">
+                              <div className="card-body text-center py-4">
+                                <h2 className="fw-bold">{statsData.appointments || '00'}</h2>
+                                <p className="text-muted mb-1">Appointments</p>
+                                <small className="text-muted">Today</small>
+                              </div>
                             </div>
                           </div>
                           <div className="col-6 col-md-3 mb-3">
-                            <div className="p-3 bg-secondary text-white text-center rounded">
-                              <p>Consultations</p>
-                              <h3>{statsData.consultations || '00' }</h3>
-                              <small>Today</small>
+                            <div className="card border-light shadow-sm h-100">
+                              <div className="card-body text-center py-4">
+                                <h2 className="fw-bold">{statsData.consultations || '00'}</h2>
+                                <p className="text-muted mb-1">Consultations</p>
+                                <small className="text-muted">Today</small>
+                              </div>
                             </div>
                           </div>
                           <div className="col-6 col-md-3 mb-3">
-                            <div className="p-3 bg-secondary text-white text-center rounded">
-                              <p>Cancelled</p>
-                              <h3>{statsData.cancelled || '00' }</h3>
-                              <small>Today</small>
+                            <div className="card border-light shadow-sm h-100">
+                              <div className="card-body text-center py-4">
+                                <h2 className="fw-bold">{statsData.cancelled || '00'}</h2>
+                                <p className="text-muted mb-1">Cancelled</p>
+                                <small className="text-muted">Today</small>
+                              </div>
                             </div>
                           </div>
                           <div className="col-6 col-md-3 mb-3">
-                            <div className="p-3 bg-secondary text-white text-center rounded">
-                              <p>Income</p>
-                              <h3>{statsData.income || '00' }</h3>
-                              <small>Today</small>
+                            <div className="card border-light shadow-sm h-100">
+                              <div className="card-body text-center py-4">
+                                <h2 className="fw-bold">{statsData.income || '00'}</h2>
+                                <p className="text-muted mb-1">Income</p>
+                                <small className="text-muted">Today</small>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -277,123 +322,65 @@ if (loading) {
                         <div className="row">
                           {/* Patient Gender */}
                           <div className="col-md-6 mb-4">
-                            <div className="card shadow-sm p-4">
-                              <h6 style={{ height: '200px' }}>Patient Gender</h6>
-                              {genderStats? (
-                                <p>No Data found</p>
-                              ):(
-                                <div style={{ height: '200px' }}>
+                            <div className="card shadow-sm border-0 h-100">
+                              <div className="card-body p-4">
+                                <h5 className="fw-bold mb-4">Patient Gender Distribution</h5>
+                                {genderStats ? (
+                                  <p className="text-muted">No data available</p>
+                                ) : (
+                                  <div style={{ height: '250px' }}>
                                     <Doughnut data={genderData} options={genderOptions} />
-                                </div>
-                              )}
+                                  </div>
+                                )}
+                              </div>
                             </div>
                           </div>
                           
                   
                           {/* Today Patient Details Table */}
                           <div className="col-md-6 mb-4">
-                            <div className="card shadow-sm  p-4" style={{ borderRadius: '12px' }}>
-                              <h5 className="fw-bold mb-3">Today Patient Details</h5>
-                              <table className="table table-borderless align-middle">
-                                <thead className="table-light" style={{ borderRadius: '8px' }}>
-                                  <tr>
-                                    <th>Patient Name</th>
-                                    <th>Patint ID</th>
-                                    <th>Time</th>
-                                    <th>Status</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  <tr>
-                                    <td>{appointments[0]?.patient_name || '---- ----'}</td>
-                                    <td>{appointments[0]?.patient_id || '--'}</td>
-                                    <td>{appointments[0]?.patient_datetime || '--------- / -------'}</td>
-                                    <td>
-                                      {appointments[0]?.status === 'available' ? (
-                                        <span className="badge bg-success d-flex align-items-center gap-1">
-                                          <FaCheckCircle /> Available
-                                        </span>
-                                      ) : appointments[0]?.status === 'danger' ? (
-                                        <span className="badge bg-danger d-flex align-items-center gap-1">
-                                          <FaTimesCircle /> Cancelled
-                                        </span>
-                                      ) : appointments[0]?.status === 'pending' ? (
-                                        <span className="badge bg-warning d-flex align-items-center gap-1">
-                                          <FaHourglassHalf /> Pending
-                                        </span>
-                                      ) : (
-                                        <p>None</p>
-                                      )}
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td>{appointments[1]?.patient_name || '---- ----'}</td>
-                                    <td>{appointments[1]?.patient_id || '--'}</td>
-                                    <td>{appointments[1]?.patient_datetime || '--------- / -------'}</td>
-                                    <td>
-                                      {appointments[1]?.status === 'available' ? (
-                                        <span className="badge bg-success d-flex align-items-center gap-1">
-                                          <FaCheckCircle /> Available
-                                        </span>
-                                      ) : appointments[1]?.status === 'danger' ? (
-                                        <span className="badge bg-danger d-flex align-items-center gap-1">
-                                          <FaTimesCircle /> Cancelled
-                                        </span>
-                                      ) : appointments[1]?.status === 'pending' ? (
-                                        <span className="badge bg-warning d-flex align-items-center gap-1">
-                                          <FaHourglassHalf /> Pending
-                                        </span>
-                                      ) : (
-                                        <p>None</p>
-                                      )}
-                                    </td>                          
-                                  </tr>
-                                  <tr>
-                                    <td>{appointments[2]?.patient_name || '---- ----'}</td>
-                                    <td>{appointments[2]?.patient_id || '--'}</td>
-                                    <td>{appointments[2]?.patient_datetime || '--------- / -------'}</td>
-                                    <td>
-                                      {appointments[2]?.status === 'available' ? (
-                                        <span className="badge bg-success d-flex align-items-center gap-1">
-                                          <FaCheckCircle /> Available
-                                        </span>
-                                      ) : appointments[2]?.status === 'danger' ? (
-                                        <span className="badge bg-danger d-flex align-items-center gap-1">
-                                          <FaTimesCircle /> Cancelled
-                                        </span>
-                                      ) : appointments[2]?.status === 'pending' ? (
-                                        <span className="badge bg-warning d-flex align-items-center gap-1">
-                                          <FaHourglassHalf /> Pending
-                                        </span>
-                                      ) : (
-                                        <p>None</p>
-                                      )}
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td>{appointments[3]?.patient_name || '---- ----'}</td>
-                                    <td>{appointments[3]?.patient_id || '--'}</td>
-                                    <td>{appointments[3]?.patient_datetime || '--------- / -------'}</td>
-                                    <td>
-                                      {appointments[3]?.status === 'available' ? (
-                                        <span className="badge bg-success d-flex align-items-center gap-1">
-                                          <FaCheckCircle /> Available
-                                        </span>
-                                      ) : appointments[3]?.status === 'danger' ? (
-                                        <span className="badge bg-danger d-flex align-items-center gap-1">
-                                          <FaTimesCircle /> Cancelled
-                                        </span>
-                                      ) : appointments[3]?.status === 'pending' ? (
-                                        <span className="badge bg-warning d-flex align-items-center gap-1">
-                                          <FaHourglassHalf /> Pending
-                                        </span>
-                                      ) : (
-                                        <p>None</p>
-                                      )}
-                                    </td>
-                                  </tr>
-                                </tbody>
-                              </table>
+                            <div className="card shadow-sm border-0 h-100">
+                              <div className="card-body p-4">
+                                <h5 className="fw-bold mb-4">Today's Appointments</h5>
+                                <div className="table-responsive">
+                                  <table className="table table-borderless align-middle">
+                                    <thead>
+                                      <tr className="bg-light">
+                                        <th>Patient</th>
+                                        <th>ID</th>
+                                        <th>Time</th>
+                                        <th>Status</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {appointments.slice(0,4).map((appt, index) => (
+                                        <tr key={index}>
+                                          <td>{appt?.patient_name || '----'}</td>
+                                          <td>{appt?.patient_id || '--'}</td>
+                                          <td>{appt?.patient_datetime || '--:--'}</td>
+                                          <td>
+                                            {appt?.status === 'available' ? (
+                                              <span className="badge bg-success d-flex align-items-center gap-1">
+                                                <FaCheckCircle /> Available
+                                              </span>
+                                            ) : appt?.status === 'danger' ? (
+                                              <span className="badge bg-danger d-flex align-items-center gap-1">
+                                                <FaTimesCircle /> Cancelled
+                                              </span>
+                                            ) : appt?.status === 'pending' ? (
+                                              <span className="badge bg-warning d-flex align-items-center gap-1">
+                                                <FaHourglassHalf /> Pending
+                                              </span>
+                                            ) : (
+                                              <span className="badge bg-secondary">None</span>
+                                            )}
+                                          </td>
+                                        </tr>
+                                      ))}
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </div>
                             </div>
                           </div>
         
@@ -402,44 +389,51 @@ if (loading) {
                         <div className="row">
                             {/* Reviews Card */}
                             <div className="col-md-6 mb-4">
-                              <div className="card shadow-sm p-4">
-                                <h6>Reviews</h6>
-                                {reviews ? (
-                                  <div className="d-flex align-items-center gap-3 mb-3">
-                                  <img
-                                    src={currentReview?.img || emptyImage} // Replace with dynamic image source
-                                    alt="Reviewer"
-                                    className="rounded-circle"
-                                    style={{ width: '50px', height: '50px' }}
-                                  />
-                                  <div>
-                                    <strong>{currentReview?.name}</strong>
-                                    <p className="text-muted mb-1">{"⭐".repeat(currentReview?.rating)}</p>
-                                    <p>{currentReview?.comment}</p>
-                                  </div>
+                              <div className="card shadow-sm border-0 h-100">
+                                <div className="card-body p-4">
+                                  <h5 className="fw-bold mb-4">Recent Review</h5>
+                                  {reviews ? (
+                                    <div className="d-flex align-items-start gap-3">
+                                      <div className="flex-shrink-0">
+                                        <img
+                                          src={currentReview?.img || emptyImage}
+                                          alt="Reviewer"
+                                          className="rounded-circle"
+                                          style={{ width: '50px', height: '50px', objectFit: 'cover' }}
+                                        />
+                                      </div>
+                                      <div>
+                                        <strong>{currentReview?.name || 'Anonymous'}</strong>
+                                        <div className="text-warning mb-2">
+                                          {"⭐".repeat(currentReview?.rating || 0)}
+                                        </div>
+                                        <p className="mb-0">{currentReview?.comment || 'No comment'}</p>
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    <p className="text-muted">No reviews available</p>
+                                  )}
                                 </div>
-                                ):(
-                                  <p>No Review found </p>
-                                )}
-                                
                               </div>
                             </div>
         
                             {/* Upcoming Clinic Date Card */}
                             <div className="col-md-6 mb-4">
-                            <div className="card shadow-sm p-4">
-                                <h6>Upcoming Clinic Date</h6>
-                                <div className="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <p><strong>Date:</strong> 2024/12/01</p>
-                                    <p><strong>Time:</strong> 10:00 A.M.</p>
-                                    <p><strong>Location:</strong> Room 07</p>
+                            <div className="card shadow-sm border-primary border-2 h-100">
+                                <div className="card-body p-4">
+                                  <h5 className="fw-bold mb-4">Upcoming Clinic</h5>
+                                  <div className="d-flex justify-content-between align-items-center">
+                                    <div>
+                                      <p className="mb-1"><strong>Date:</strong> 2024/12/01</p>
+                                      <p className="mb-1"><strong>Time:</strong> 10:00 A.M.</p>
+                                      <p className="mb-1"><strong>Location:</strong> Room 07</p>
+                                    </div>
+                                    <div>
+                                      <button className="btn btn-primary">View Details</button>
+                                    </div>
+                                  </div>
                                 </div>
-                                <div>
-                                    <button className="btn btn-primary">View Details</button>
-                                </div>
-                                </div>
-                            </div>
+                              </div>
                             </div>
                         </div>
         
