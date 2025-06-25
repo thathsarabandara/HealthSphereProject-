@@ -37,10 +37,14 @@ const [isAuthenticated, setIsAuthenticated] = useState(false);
 const [loading, setLoading] = useState(true);
 const [profileData, setProfileData] = useState({});
 const [statsData, setStatsData] = useState({});
+const [patientList, setPatientList] = useState([]);
 const [appointments, setAppointments] = useState([]);
+const [upcomingAppointments, setUpcomingAppointments] = useState([]);
 const [genderStats, setGenderStats] = useState({});
 const [reviews, setReviews] = useState([]);
 const [currentDateTime, setCurrentDateTime] = useState(new Date());
+const [dashboardLoading, setDashboardLoading] = useState(true);
+const [profileLoading, setProfileLoading] = useState(true);
 
   // Fetch user data (authentication)
   const fetchUserData = async () => {
@@ -63,103 +67,50 @@ const [currentDateTime, setCurrentDateTime] = useState(new Date());
     }
   };
 
-  // Fetch statistics data (appointments, consultations, income, etc.)
-  const fetchStatsData = async () => {
+  // Fetch all dashboard data in one go
+  const fetchDashboardData = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/doctor/dashboard',
-        {withCredentials: true}
-      );
-      if (response.status === 200) {
-        setStatsData(response.data); // Assuming 'data' contains the stats info
-      }
-    } catch (error) {
-      console.error('Error fetching stats data:', error);
-    }
-  };
-
-  // Fetch appointments data
-  const fetchAppointments = async () => {
-    try {
-      const response = await axios.get('http://localhost:5000/doctor/appointments', { withCredentials: true });
-      if (response.status === 200) {
-        setAppointments(response.data); // Assuming 'data' contains the appointments info
-      }
-    } catch (error) {
-      console.error('Error fetching appointments:', error);
-    }
-  };
-
-  // Fetch gender stats data
-  const fetchGenderStats = async () => {
-    try {
-      const response = await axios.get('http://localhost:5000/api/doctor/gender-stats', {
+      const response = await axios.get('http://localhost:5000/doctor/dashboard', {
         withCredentials: true
       });
-      setGenderStats(response.data);
+      const data = response.data;
+      setStatsData(data.dashboardStats);
+      setGenderStats(data.genderStats);
+      setReviews(data.reviews);
+      setUpcomingAppointments(data.upcomingAppointments);
+      setPatientList(data.patientList);
     } catch (error) {
-      console.error('Error fetching gender stats:', error);
+      console.error('Error fetching dashboard data:', error);
+    } finally {
+      setDashboardLoading(false);
     }
   };
-
-  // Fetch reviews data
-  const fetchReviews = async () => {
-    try {
-      const response = await axios.get('http://localhost:5000/doctor/reviews', { withCredentials: true });
-      if (response.status === 200) {
-        setReviews(response.data); // Assuming 'data' contains the reviews info
-      }
-    } catch (error) {
-      console.error('Error fetching reviews:', error);
-    }
-  };
-
 
   useEffect(() => {
     const fetchProfile = async () => {
+      setProfileLoading(true);
       try {
-        const response = await axios.get('http://localhost:5000/api/doctor/profile',
+        const response = await axios.get('http://localhost:5000/doctor',
           {withCredentials: true}
         );
         setProfileData(response.data);
       } catch (error) {
         console.error('Error fetching profile:', error);
+      } finally {
+        setProfileLoading(false);
       }
     };
 
-    const fetchDashboardStats = async () => {
-      try {
-        const response = await axios.get('http://localhost:5000/doctor/dashboard',
-          {withCredentials: true}
-        );
-        setStatsData(response.data);
-      } catch (error) {
-        console.error('Error fetching dashboard stats:', error);
-      }
-    };
-
-    const fetchGenderStats = async () => {
-      try {
-        const response = await axios.get('http://localhost:5000/doctor/gender-stats', {
-          withCredentials: true
-        });
-        setGenderStats(response.data);
-      } catch (error) {
-        console.error('Error fetching gender stats:', error);
-      }
-    };
-
+    setDashboardLoading(true);
     fetchProfile();
-    fetchDashboardStats();
-    fetchGenderStats();
+    fetchDashboardData();
     fetchUserData();
-    fetchAppointments();
-    fetchReviews();
     const timer = setInterval(() => {
       setCurrentDateTime(new Date());
     }, 1000);
 
     const interval = setInterval(() => {
-      setCurrentReviewIndex((prevIndex) => (prevIndex + 1) % reviews.length); // Loop through reviews
+      setCurrentReviewIndex((prevIndex) => (prevIndex + 1) % (reviews.length || 1)); // Loop through reviews
     }, 5000); // 5000ms = 5 seconds per review
 
     return () => {
@@ -192,7 +143,7 @@ const genderOptions = {
   },
 };
 
-if (loading) {
+if (loading || profileLoading || dashboardLoading) {
     return (
       <div style={{
         position: 'fixed',
@@ -357,8 +308,8 @@ if (loading) {
                                   <table className="table table-borderless align-middle">
                                     <thead>
                                       <tr className="bg-light">
-                                        <th>Patient</th>
                                         <th>ID</th>
+                                        <th>Patient</th>
                                         <th>Time</th>
                                         <th>Status</th>
                                       </tr>
@@ -366,11 +317,11 @@ if (loading) {
                                     <tbody>
                                       {appointments.slice(0,4).map((appt, index) => (
                                         <tr key={index}>
-                                          <td>{appt?.patient_name || '----'}</td>
-                                          <td>{appt?.patient_id || '--'}</td>
-                                          <td>{appt?.patient_datetime || '--:--'}</td>
+                                          <td>{patientList?.patient_id || '--'}</td>
+                                          <td>{patientList?.first_name+" "+patientList?.last_name || '----'}</td>
+                                          <td>{patientList?.patient_datetime || '--:--'}</td>
                                           <td>
-                                            {appt?.status === 'available' ? (
+                                            {patientList?.status === 'available' ? (
                                               <span className="badge bg-success d-flex align-items-center gap-1">
                                                 <FaCheckCircle /> Available
                                               </span>
@@ -435,9 +386,9 @@ if (loading) {
                                   <h5 className="fw-bold mb-4">Upcoming Clinic</h5>
                                   <div className="d-flex justify-content-between align-items-center">
                                     <div>
-                                      <p className="mb-1"><strong>Date:</strong> 2024/12/01</p>
-                                      <p className="mb-1"><strong>Time:</strong> 10:00 A.M.</p>
-                                      <p className="mb-1"><strong>Location:</strong> Room 07</p>
+                                      <p className="mb-1"><strong>Date:</strong>{upcomingAppointments[0]?.schedule_date || 'No Upcoming Appointments'}</p>
+                                      <p className="mb-1"><strong>Time:</strong>{upcomingAppointments[0]?.schedule_time || 'No Upcoming Appointments'}</p>
+                                      <p className="mb-1"><strong>Location:</strong>{upcomingAppointments[0]?.room_number || 'No Upcoming Appointments'}</p>
                                     </div>
                                     <div>
                                       <button className="btn btn-primary">View Details</button>

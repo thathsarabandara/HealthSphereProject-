@@ -29,9 +29,6 @@ router.post('/register',registerController.register);
 router.post('/verifyuser',registerController.verifyUser);
 router.get('/resendotp', registerController.resendOTP);
 router.post('/fullregister/:id',[doctorAuthMiddleware], registerController.saveProfileDetails);
-router.get('/dashboard', doctorAuthMiddleware, dashboardController.getDashboardStats);
-router.get('/gender-stats', doctorAuthMiddleware, dashboardController.getGenderStats);
-router.get('/reviews', doctorAuthMiddleware, dashboardController.getReviews);
-router.get('/appointments', doctorAuthMiddleware, dashboardController.getUpcomingAppointments);
+router.get('/dashboard', doctorAuthMiddleware, dashboardController.getDashboardData);
 
 module.exports = router;

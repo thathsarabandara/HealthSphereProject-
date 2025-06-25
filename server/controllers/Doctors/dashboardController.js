@@ -33,110 +33,83 @@ const getTodayReservations = async (doctorId) => {
   return reservations;
 };
 
-// @desc    Get dashboard statistics
-// @route   GET /api/doctor/dashboard
+// @desc    Get all dashboard data
+// @route   GET /api/doctor/dashboard-data
 // @access  Private (Doctor)
-exports.getDashboardStats = asyncHandler(async (req, res) => {
+exports.getDashboardData = asyncHandler(async (req, res) => {
   const doctorId = req.doctorID;
   
   try {
+    // Get today's reservations
     const reservations = await getTodayReservations(doctorId);
     
-    // Calculate counts
+    // Dashboard stats
     const appointments = reservations.length; // Total appointments
-    
-    const consultations = reservations.filter(
-      r => r.status === 'completed'
-    ).length;
-    
-    const cancelled = reservations.filter(
-      r => r.status === 'cancelled'
-    ).length;
-    
-    // Calculate total income from completed appointments
+    const consultations = reservations.filter(r => r.status === 'completed').length;
+    const cancelled = reservations.filter(r => r.status === 'cancelled').length;
     const income = reservations
       .filter(r => r.status === 'completed')
       .reduce((sum, r) => sum + (r.fees || 0), 0);
     
-    res.json({
-      appointments,
-      consultations,
-      cancelled,
-      income
-    });
-    
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
-  }
-});
-
-exports.getGenderStats = asyncHandler(async (req, res) => {
-  const doctorId = req.doctorID;
-  
-  try {
-    const reservations = await getTodayReservations(doctorId);
-    
-    // Filter completed reservations
+    // Gender stats
     const completedReservations = reservations.filter(r => r.status === 'completed');
-    
-    // Extract patient IDs
     const patientIds = completedReservations.map(r => r.patient_id);
-    
-    // Get patients' genders
     const patients = await Patient.findAll({
       where: {
         id: { $in: patientIds }
       },
       attributes: ['gender']
     });
-    
-    // Count genders
     const genderCounts = {
       male: 0,
       female: 0,
       other: 0
     };
-    
     patients.forEach(patient => {
       if (patient.gender === 'male') genderCounts.male++;
       else if (patient.gender === 'female') genderCounts.female++;
       else genderCounts.other++;
     });
     
-    res.json(genderCounts);
+    // Reviews
+    const reviews = await Review.findAll({
+      where: {
+        doctor_id: doctorId
+      },
+      limit: 5 // Only get the latest 5 reviews
+    });
+    
+    // Upcoming appointments (today's appointments)
+    const upcomingAppointments = reservations.slice(0, 4); // Only get the first 4
+    
+    // Today's appointment patient list with name, id and status
+    const today = new Date().toISOString().split('T')[0];
+    const todayAppointments = reservations
+      .filter(reservation => {
+        const reservationDate = new Date(reservation.date).toISOString().split('T')[0];
+        return reservationDate === today;
+      })
+    const patientList = await Patient.findAll({
+      where: {
+        id: { $in: todayAppointments.map(appointment => appointment.patient_id) }
+      }
+    });
+
+    res.json({
+      dashboardStats: {
+        appointments,
+        consultations,
+        cancelled,
+        income
+      },
+      genderStats: genderCounts,
+      reviews,
+      upcomingAppointments,
+      patientList
+    });
     
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error' });
   }
 });
-
-exports.getReviews = asyncHandler(async (req, res) => {
-  const doctorId = req.doctorID;
-  
-  try {
-    const reviews = await Review.findAll({
-      where: {
-        doctor_id: doctorId
-      }
-    });
-    res.json(reviews);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
-  }
-});
-
-exports.getUpcomingAppointments = asyncHandler(async (req, res) => {
-  const doctorId = req.doctorID;
-  
-  try {
-    const reservations = await getTodayReservations(doctorId);
-    res.json(reservations);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
-  }
-});
-  
