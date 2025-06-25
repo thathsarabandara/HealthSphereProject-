@@ -1,6 +1,8 @@
 const { Schedule } = require("../../models/healthcare/Schedule");
 const { ScheduleCancel } = require("../../models/healthcare/ScheduleCancel");
 const { Doctor } = require("../../models/healthcare/Doctor");
+const { User } = require("../../models/User");
+const { sendScheduleApprovalEmail, sendScheduleRejectionEmail } = require('../../services/doctorEmailServices');
 
 exports.getScheduleRequest = async (req, res) => {
   try {
@@ -82,56 +84,91 @@ exports.getScheduleRequest = async (req, res) => {
 };
 
 exports.makeAcceptScheduleRequest = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const schedule = await Schedule.findOne({ where: { id } });
-
-        if (!schedule) {
-            return res.status(404).json({ error: "Schedule not found" });
+  try {
+    const { id } = req.params;
+    const schedule = await Schedule.findOne({ 
+      where: { id },
+      include: [
+        {
+          model: Doctor,
+          include: [User]
         }
+      ]
+    });
 
-        schedule.status = "available";
-        await schedule.save();
-
-        return res.status(200).json({
-            message: "Schedule accepted successfully",
-            schedule: schedule,
-        });
-
-    } catch (error) {
-        console.error("Error accepting schedule:", error);
-        return res.status(500).json({ error: "Internal Server Error" });
+    if (!schedule) {
+      return res.status(404).json({ error: "Schedule not found" });
     }
+
+    schedule.status = "available";
+    await schedule.save();
+
+    // Send approval email
+    if (schedule.Doctor && schedule.Doctor.User) {
+      await sendScheduleApprovalEmail(schedule.Doctor.User.email, {
+        id: schedule.id,
+        date: schedule.schedule_date,
+        time: schedule.schedule_time,
+        room: schedule.room_number // assuming we have this field
+      });
+    }
+
+    return res.status(200).json({
+      message: "Schedule accepted successfully",
+      schedule: schedule,
+    });
+
+  } catch (error) {
+    console.error("Error accepting schedule:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
 };
 
 exports.makeRejectScheduleRequest = async (req, res) => {
-    try {
-        const { id } = req.params; 
-        const { rejectReason } = req.body; 
+  try {
+    const { id } = req.params; 
+    const { rejectReason } = req.body; 
 
-        const schedule = await Schedule.findOne({ where: { id } });
-
-        if (!schedule) {
-            return res.status(404).json({ error: "Schedule not found" });
+    const schedule = await Schedule.findOne({ 
+      where: { id },
+      include: [
+        {
+          model: Doctor,
+          include: [User]
         }
+      ]
+    });
 
-        schedule.status = "rejected";
-        await schedule.save();
-
-        await ScheduleCancel.create({
-            schedule_id: schedule.id,
-            status:'rejected',
-            admin_feedback: rejectReason,
-            doctor_feedback: null,
-        });
-
-        return res.status(200).json({
-            message: "Schedule rejected successfully",
-            schedule: schedule,
-        });
-
-    } catch (error) {
-        console.error("Error rejecting schedule:", error);
-        return res.status(500).json({ error: "Internal Server Error" });
+    if (!schedule) {
+      return res.status(404).json({ error: "Schedule not found" });
     }
+
+    schedule.status = "rejected";
+    await schedule.save();
+
+    await ScheduleCancel.create({
+      schedule_id: schedule.id,
+      status:'rejected',
+      admin_feedback: rejectReason,
+      doctor_feedback: null,
+    });
+
+    // Send rejection email
+    if (schedule.Doctor && schedule.Doctor.User) {
+      await sendScheduleRejectionEmail(schedule.Doctor.User.email, {
+        id: schedule.id,
+        date: schedule.schedule_date,
+        time: schedule.schedule_time
+      }, rejectReason);
+    }
+
+    return res.status(200).json({
+      message: "Schedule rejected successfully",
+      schedule: schedule,
+    });
+
+  } catch (error) {
+    console.error("Error rejecting schedule:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
 };

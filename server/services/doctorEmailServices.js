@@ -289,3 +289,67 @@ exports.sendOTPEmail = async (toEmail, otp) => {
     };
     await transporter.sendMail(mailOptions);
   };
+
+  exports.sendScheduleApprovalEmail = async (toEmail, scheduleDetails) => {
+    const mailOptions = {
+      from: emailConfig.auth.user,
+      to: toEmail,
+      subject: '✅ Schedule Approved - HealthSphere',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; background-color: #f9f9f9; padding: 20px;">
+          <!-- Header -->
+          <div style="background-color: #28a745; color: white; padding: 20px; text-align: center;">
+              <h1>Schedule Approved</h1>
+              <p>HealthSphere Hospitals</p>
+          </div>
+          <!-- Email Body -->
+          <div style="background-color: #ffffff; padding: 20px; border-radius: 8px;">
+              <p>Hello,</p>
+              <p>Your schedule request has been approved by HealthSphere!</p>
+              <p><strong>Schedule ID:</strong> ${scheduleDetails.id}</p>
+              <p><strong>Date:</strong> ${scheduleDetails.date}</p>
+              <p><strong>Time:</strong> ${scheduleDetails.time}</p>
+              <p><strong>Room Number:</strong> ${scheduleDetails.room || 'TBD'}</p>
+              <p>You can now accept appointments for this time slot.</p>
+              <p>Thank you for using HealthSphere.</p>
+          </div>
+          <!-- Footer -->
+          <div style="background-color: #28a745; color: white; padding: 15px; text-align: center; border-radius: 0 0 8px 8px;">
+              &copy; 2024 HealthSphere. All rights reserved.
+          </div>
+        </div>`
+    };
+    await transporter.sendMail(mailOptions);
+  };
+
+  exports.sendScheduleRejectionEmail = async (toEmail, scheduleDetails, rejectReason) => {
+    const mailOptions = {
+      from: emailConfig.auth.user,
+      to: toEmail,
+      subject: '❌ Schedule Rejected - HealthSphere',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; background-color: #f9f9f9; padding: 20px;">
+          <!-- Header -->
+          <div style="background-color: #dc3545; color: white; padding: 20px; text-align: center;">
+              <h1>Schedule Rejected</h1>
+              <p>HealthSphere Hospitals</p>
+          </div>
+          <!-- Email Body -->
+          <div style="background-color: #ffffff; padding: 20px; border-radius: 8px;">
+              <p>Hello,</p>
+              <p>We regret to inform you that your schedule request has been rejected.</p>
+              <p><strong>Schedule ID:</strong> ${scheduleDetails.id}</p>
+              <p><strong>Date:</strong> ${scheduleDetails.date}</p>
+              <p><strong>Time:</strong> ${scheduleDetails.time}</p>
+              <p><strong>Reason:</strong> ${rejectReason}</p>
+              <p>Please review your schedule and submit a new request if needed.</p>
+              <p>Thank you for your understanding.</p>
+          </div>
+          <!-- Footer -->
+          <div style="background-color: #dc3545; color: white; padding: 15px; text-align: center; border-radius: 0 0 8px 8px;">
+              &copy; 2024 HealthSphere. All rights reserved.
+          </div>
+        </div>`
+    };
+    await transporter.sendMail(mailOptions);
+  };
