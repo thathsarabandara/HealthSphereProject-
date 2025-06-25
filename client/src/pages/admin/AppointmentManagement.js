@@ -8,6 +8,7 @@ function AppointmentManagement() {
   const [showModal, setShowModal] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
   const [selectedRequest, setSelectedRequest] = useState(null);
+  const [selectedRoom, setSelectedRoom] = useState('');
   const [doctorRequests, setDoctorRequests] = useState([]);
   const [cancelledRequests, setCancelledRequests] = useState([]);
 
@@ -48,7 +49,7 @@ function AppointmentManagement() {
 
   const handleAcceptClick = async (requestId) => {
     try {
-      await axios.post(`http://localhost:5000/admin/acceptschedule/${requestId}`, {} , {withCredentials: true});
+      await axios.post(`http://localhost:5000/admin/acceptschedule/${requestId}`, {room: selectedRoom} , {withCredentials: true});
       setDoctorRequests((prevRequests) => prevRequests.filter((req) => req.id !== requestId));
       toast.success('Appointment accepted successfully!',
         {
@@ -151,7 +152,7 @@ function AppointmentManagement() {
               <td>{request.schedule_date}</td>
               <td>{request.schedule_time}</td>
               <td>
-                <select className="form-select">
+                <select className="form-select" value={selectedRoom} onChange={(e) => setSelectedRoom(e.target.value)}>
                   {roomOptions.map((room) => (
                     <option key={room} value={room}>
                       Room {room}
@@ -215,6 +216,21 @@ function AppointmentManagement() {
                   value={rejectReason}
                   onChange={(e) => setRejectReason(e.target.value)}
                 />
+                <div className="mb-3">
+                  <label>Select Room:</label>
+                  <select 
+                    className="form-select"
+                    value={selectedRoom}
+                    onChange={(e) => setSelectedRoom(e.target.value)}
+                  >
+                    <option value="">Select a room</option>
+                    {roomOptions.map((room) => (
+                      <option key={room} value={room}>
+                        Room {room}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
               <div className="modal-footer">
                 <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>

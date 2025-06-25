@@ -80,19 +80,24 @@ exports.saveReservation = async (req, res) => {
         const reservation = newReservation.toJSON();
         
         // Get schedule details including doctor
-        const scheduleDetails = await Schedule.findByPk(schedule_id, {
-          include: [
-            {
-              model: Doctor,
-              include: [User]
-            }
-          ]
-        });
+        const scheduleDetails = await Schedule.findByPk(schedule_id);
+
+        if (!scheduleDetails) {
+            return res.status(404).json({ message: 'Schedule not found' });
+        }
+        const doctor = await Doctor.findByPk(scheduleDetails.doctor_id);
+        if (!doctor) {
+            return res.status(404).json({ message: 'Doctor not found' });
+        }
+        const user = await User.findByPk(doctor.user_id);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
         
-        if (scheduleDetails && scheduleDetails.Doctor && scheduleDetails.Doctor.User) {
+        if (scheduleDetails && doctor) {
           await sendReservationConfirmationEmail(reservation_email, {
             id: reservation.id,
-            doctorName: scheduleDetails.Doctor.User.username,
+            doctorName: doctor.first_name + ' ' + doctor.last_name,
             room: scheduleDetails.room_number,
             date: scheduleDetails.schedule_date,
             time: scheduleDetails.schedule_time,

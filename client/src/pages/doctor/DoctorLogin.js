@@ -46,7 +46,7 @@ const handleSubmit = async (e) => {
           setError('');
           setEmail('');
           setPassword('');
-
+          window.location.reload();
           // Navigate to the desired route after successful login
           navigate('/doctor/'); // Change this to your desired route
       } catch (err) {

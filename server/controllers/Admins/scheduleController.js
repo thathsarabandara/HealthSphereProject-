@@ -1,7 +1,7 @@
 const { Schedule } = require("../../models/healthcare/Schedule");
 const { ScheduleCancel } = require("../../models/healthcare/ScheduleCancel");
 const { Doctor } = require("../../models/healthcare/Doctor");
-const { User } = require("../../models/User");
+const { User } = require("../../models/auth/User");
 const { sendScheduleApprovalEmail, sendScheduleRejectionEmail } = require('../../services/doctorEmailServices');
 
 exports.getScheduleRequest = async (req, res) => {
@@ -86,30 +86,47 @@ exports.getScheduleRequest = async (req, res) => {
 exports.makeAcceptScheduleRequest = async (req, res) => {
   try {
     const { id } = req.params;
+    const { room } = req.body; // Extract room from request body
+
+    if (!room) {
+      return res.status(400).json({ error: "Room number is required" });
+    }
+
     const schedule = await Schedule.findOne({ 
-      where: { id },
-      include: [
-        {
-          model: Doctor,
-          include: [User]
-        }
-      ]
+      where: { id }
     });
 
     if (!schedule) {
       return res.status(404).json({ error: "Schedule not found" });
     }
 
+    const doctor = await Doctor.findOne({
+      where: { id: schedule.doctor_id }
+    });
+
+    if (!doctor) {
+      return res.status(404).json({ error: "Doctor not found" });
+    } 
+    const user = await User.findOne({
+      where: { id: doctor.user_id }
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }     
+
+    // Assign the room number
+    schedule.room_number = room;
     schedule.status = "available";
     await schedule.save();
 
     // Send approval email
-    if (schedule.Doctor && schedule.Doctor.User) {
-      await sendScheduleApprovalEmail(schedule.Doctor.User.email, {
+    if (user) {
+      await sendScheduleApprovalEmail(user.email, {
         id: schedule.id,
         date: schedule.schedule_date,
         time: schedule.schedule_time,
-        room: schedule.room_number // assuming we have this field
+        room: room
       });
     }
 

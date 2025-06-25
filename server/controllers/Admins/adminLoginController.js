@@ -22,7 +22,10 @@ exports.login = async (req, res) => {
             console.log("User not found");
             return res.status(400).json({ message: "Incorrect Credentials" });
         }
-
+        if(user.isVerified === false){
+            console.log("User not verified");
+            return res.status(400).json({ message: "User not verified" });
+        }
         // Check if user is blacklisted
         const blacklist = await isUserBlacklisted(user.id);
         if (blacklist) {

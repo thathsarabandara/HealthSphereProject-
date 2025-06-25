@@ -49,6 +49,7 @@ const approveDoctor = async (req, res) => {
     console.log(req.params.id);
     const doctor = await Doctor.findByPk(req.params.id);
     if (!doctor) {
+      console.log("Doctor not found");
       return res.status(404).json({ message: 'Doctor not found' });
     }
 
@@ -56,8 +57,9 @@ const approveDoctor = async (req, res) => {
     await doctor.save();
 
     // Find user to get email
-    const user = await User.findByPk(doctor.userId);
+    const user = await User.findByPk(doctor.user_id);
     if (!user) {
+      console.log("User not found");
       return res.status(404).json({ message: 'User not found' });
     }
 
@@ -82,7 +84,7 @@ const suspendDoctor = async (req, res) => {
     await doctor.save();
 
     // Find user to get email
-    const user = await User.findByPk(doctor.userId);
+    const user = await User.findByPk(doctor.user_id);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }

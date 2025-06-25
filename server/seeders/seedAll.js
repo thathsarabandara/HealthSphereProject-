@@ -60,13 +60,13 @@ const seedDatabase = async () => {
         // await seedPatients();
         // console.log('Patients seeded successfully!');
 
-        console.log('Seeding schedules...');
-        await seedSchedules();
-        console.log('Schedules seeded successfully!');
+        // console.log('Seeding schedules...');
+        // await seedSchedules();
+        // console.log('Schedules seeded successfully!');
 
-        console.log('Seeding cart items...');
-        await seedCartItems();
-        console.log('Cart items seeded successfully!');
+        // console.log('Seeding cart items...');
+        // await seedCartItems();
+        // console.log('Cart items seeded successfully!');
 
         console.log('Seeding patient allergies...');
         await seedPatientAllergies();
