@@ -105,6 +105,13 @@ const [profileLoading, setProfileLoading] = useState(true);
     fetchProfile();
     fetchDashboardData();
     fetchUserData();
+    console.log(profileData);
+    console.log(statsData);
+    console.log(genderStats);
+    console.log(reviews);
+    console.log(upcomingAppointments);
+    console.log(patientList);
+    setDashboardLoading(false);
     const timer = setInterval(() => {
       setCurrentDateTime(new Date());
     }, 1000);
@@ -143,7 +150,7 @@ const genderOptions = {
   },
 };
 
-if (loading || profileLoading || dashboardLoading) {
+if (dashboardLoading) {
     return (
       <div style={{
         position: 'fixed',
@@ -198,7 +205,7 @@ if (loading || profileLoading || dashboardLoading) {
                             <div className="text-start">
                               <p className="mb-2"><strong>First Name:</strong> {profileData.first_name}</p>
                               <p className="mb-2"><strong>Last Name:</strong> {profileData.last_name}</p>
-                              <p className="mb-2"><strong>Date Of Birth:</strong> {profileData.date_of_birth.split('T')[0]}</p>
+                              <p className="mb-2"><strong>Date Of Birth:</strong> {profileData.date_of_birth?.split('T')[0]}</p>
                               <p className="mb-2"><strong>Gender:</strong> {profileData.gender}</p>
                               <p className="mb-2"><strong>Email:</strong> {profileData.email}</p>
                               <p className="mb-2"><strong>Phone Number:</strong> {profileData.phone_number}</p>
@@ -315,27 +322,15 @@ if (loading || profileLoading || dashboardLoading) {
                                       </tr>
                                     </thead>
                                     <tbody>
-                                      {appointments.slice(0,4).map((appt, index) => (
+                                      {patientList.slice(0,4).map((patient, index) => (
                                         <tr key={index}>
-                                          <td>{patientList?.patient_id || '--'}</td>
-                                          <td>{patientList?.first_name+" "+patientList?.last_name || '----'}</td>
-                                          <td>{patientList?.patient_datetime || '--:--'}</td>
+                                          <td>{patient?.id || '--'}</td>
+                                          <td>{(patient?.first_name || '') + " " + (patient?.last_name || '') || '----'}</td>
+                                          <td>--:--</td>
                                           <td>
-                                            {patientList?.status === 'available' ? (
-                                              <span className="badge bg-success d-flex align-items-center gap-1">
-                                                <FaCheckCircle /> Available
-                                              </span>
-                                            ) : appt?.status === 'danger' ? (
-                                              <span className="badge bg-danger d-flex align-items-center gap-1">
-                                                <FaTimesCircle /> Cancelled
-                                              </span>
-                                            ) : appt?.status === 'pending' ? (
-                                              <span className="badge bg-warning d-flex align-items-center gap-1">
-                                                <FaHourglassHalf /> Pending
-                                              </span>
-                                            ) : (
-                                              <span className="badge bg-secondary">None</span>
-                                            )}
+                                            <span className="badge bg-success d-flex align-items-center gap-1">
+                                              <FaCheckCircle /> Available
+                                            </span>
                                           </td>
                                         </tr>
                                       ))}
