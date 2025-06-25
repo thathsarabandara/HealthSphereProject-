@@ -80,7 +80,7 @@ const [currentDateTime, setCurrentDateTime] = useState(new Date());
   // Fetch appointments data
   const fetchAppointments = async () => {
     try {
-      const response = await axios.get('', { withCredentials: true });
+      const response = await axios.get('http://localhost:5000/doctor/appointments', { withCredentials: true });
       if (response.status === 200) {
         setAppointments(response.data); // Assuming 'data' contains the appointments info
       }
@@ -104,7 +104,7 @@ const [currentDateTime, setCurrentDateTime] = useState(new Date());
   // Fetch reviews data
   const fetchReviews = async () => {
     try {
-      const response = await axios.get('', { withCredentials: true });
+      const response = await axios.get('http://localhost:5000/doctor/reviews', { withCredentials: true });
       if (response.status === 200) {
         setReviews(response.data); // Assuming 'data' contains the reviews info
       }
