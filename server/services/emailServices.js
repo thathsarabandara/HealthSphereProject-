@@ -1491,6 +1491,11 @@ exports.sendPaymentSuccessEmail = async (toEmail, paymentDetails, items) => {
               <p style="font-size: 16px; color: #333; text-align: right;"><strong>Total:</strong> $${paymentDetails.amount}</p>
           </div>
 
+          <!-- Call-to-Action Button -->
+          <p style="text-align: center; margin: 30px 0;">
+              <a href="https://yourwebsite.com/dashboard" style="background-color: #28a745; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-size: 18px;">View Your Payment Details</a>
+          </p>
+
           <!-- Footer Section -->
           <div style="background-color: #f9f9f9; padding: 15px; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
               <p style="font-size: 12px; text-align: center; color: #888;">If you have any questions regarding your payment, please contact our support team.</p>
@@ -1575,5 +1580,58 @@ exports.sendReservationPaymentSuccessEmail = async (toEmail, reservationDetails,
     console.log('Reservation payment success email sent successfully');
   } catch (error) {
     console.error('Failed to send reservation payment success email:', error);
+  }
+};
+
+exports.sendPrescriptionAddedEmail = async (toEmail, patientName, reservationId) => {
+  const mailOptions = {
+    from: emailConfig.auth.user,
+    to: toEmail,
+    subject: '📝 Prescription Added - HealthSphere',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #fff;">
+      <div style="background-color: #fff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+          <!-- Header Section -->
+          <div style="text-align: center; padding: 20px; background-color: #007bff; color: white; border-top-left-radius: 10px; border-top-right-radius: 10px;">
+              <h1>Prescription Added</h1>
+              <img src="https://drive.google.com/uc?export=view&id=1n-3QGEs8Vvgcln1Oo_dDPOhylkSx2v5B" alt="HealthSphere Logo" style="width: 150px; margin-bottom: 20px;">
+          </div>
+          <!-- Alert Message Section -->
+          <div style="padding: 20px; text-align: center;">
+              <p style="font-size: 16px; color: #333;">Dear ${patientName},</p>
+              <p style="font-size: 16px; color: #333;">Your prescription for reservation (ID: ${reservationId}) has been added successfully.</p>
+              <p style="font-size: 16px; color: #333;">You can view and download your prescription from your HealthSphere account.</p>
+          </div>
+
+          <!-- Call to Action Button -->
+          <div style="text-align: center; margin: 30px 0;">
+              <a href="https://yourwebsite.com/prescriptions" style="background-color: #007bff; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-size: 18px;">View Prescription</a>
+          </div>
+
+          <!-- Footer Section -->
+          <div style="background-color: #f9f9f9; padding: 15px; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
+              <p style="font-size: 12px; text-align: center; color: #888;">If you have any questions regarding your prescription, please contact our support team.</p>
+              <p style="font-size: 12px; text-align: center; color: #aaa;">You received this email because a prescription was added to your HealthSphere account.</p>
+              <p style="font-size: 12px; text-align: center; color: #aaa;">All Rights Reserved @2024 - Dev Squad <sup>TM</sup></p>
+
+              <!-- Social Media Links -->
+              <div style="text-align: center; padding: 20px; background-color: #007bff; color: white; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; margin-top: 20px;">
+                  <p style="margin: 0;">&copy; 2024 HealthSphere. All rights reserved.</p>
+                  <p style="margin: 5px 0;">Follow us on:</p>
+                  <a href="https://facebook.com" style="color: white; text-decoration: none; margin: 0 10px;">Facebook</a> |
+                  <a href="https://twitter.com" style="color: white; text-decoration: none; margin: 0 10px;">Twitter</a> |
+                  <a href="https://instagram.com" style="color: white; text-decoration: none; margin: 0 10px;">Instagram</a>
+              </div>
+          </div>
+      </div>
+    </div>
+    `
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log('Prescription added email sent successfully');
+  } catch (error) {
+    console.error('Failed to send prescription added email:', error);
   }
 };

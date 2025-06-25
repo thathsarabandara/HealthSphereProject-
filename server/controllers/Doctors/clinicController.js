@@ -5,6 +5,7 @@ const { Patient } = require("../../models/healthcare/Patient");
 const { Reservation } = require("../../models/healthcare/Reservation");
 const { Schedule } = require("../../models/healthcare/Schedule");
 const { Prescription } = require("../../models/healthcare/Prescription");
+const { sendPrescriptionAddedEmail } = require('../../services/emailServices');
 
 exports.loadClinics = async (req, res) => {
     try {
@@ -208,7 +209,16 @@ exports.loadClinics = async (req, res) => {
       if (!updatedReservation[0]) {
         return res.status(404).json({ error: 'Reservation not found or already completed.' });
       }
-  
+
+      const patient = await Patient.findByPk(patientid, {
+        include: [User]
+      });
+      
+      if (patient && patient.User) {
+        // Send prescription added email
+        await sendPrescriptionAddedEmail(patient.User.email, patient.first_name, reservationid);
+      }
+
       res.status(201).json({
         message: 'Prescription saved successfully!',
         data: newPrescription,
