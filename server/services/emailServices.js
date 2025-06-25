@@ -1241,7 +1241,6 @@ exports.sendAccountLockedEmail = async (email, unlockTime) => {
   }
 };
 
-// Function to send email when admin blocks a user account
 exports.sendAdminBlockedEmail = async (email, reason) => {
   const mailOptions = {
     from: emailConfig.auth.user,
@@ -1299,7 +1298,6 @@ exports.sendAdminBlockedEmail = async (email, reason) => {
   }
 };
 
-// Function to send email when user account is unblocked
 exports.sendAccountUnblockedEmail = async (email) => {
   const mailOptions = {
     from: emailConfig.auth.user,
@@ -1460,5 +1458,122 @@ exports.sendReservationCancellationEmail = async (toEmail, reservationDetails) =
     console.log('Reservation cancellation email sent successfully');
   } catch (error) {
     console.error('Failed to send reservation cancellation email:', error);
+  }
+};
+
+exports.sendPaymentSuccessEmail = async (toEmail, paymentDetails, items) => {
+  const mailOptions = {
+    from: emailConfig.auth.user,
+    to: toEmail,
+    subject: '✅ Payment Successful - HealthSphere',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #fff;">
+      <div style="background-color: #fff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+          <!-- Header Section -->
+          <div style="text-align: center; padding: 20px; background-color: #28a745; color: white; border-top-left-radius: 10px; border-top-right-radius: 10px;">
+              <h1>Payment Successful</h1>
+              <img src="https://drive.google.com/uc?export=view&id=1n-3QGEs8Vvgcln1Oo_dDPOhylkSx2v5B" alt="HealthSphere Logo" style="width: 150px; margin-bottom: 20px;">
+          </div>
+          <!-- Alert Message Section -->
+          <div style="padding: 20px; text-align: center;">
+              <p style="font-size: 16px; color: #333;">Dear Patient,</p>
+              <p style="font-size: 16px; color: #333;">Your payment of $${paymentDetails.amount} was successful!</p>
+              <p style="font-size: 16px; color: #333;"><strong>Payment ID:</strong> ${paymentDetails.id}</p>
+              <p style="font-size: 16px; color: #333;"><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
+          </div>
+
+          <!-- Purchased Items -->
+          <div style="background-color: #f1f1f1; padding: 15px; border-radius: 5px; margin: 20px 10px;">
+              <h3 style="color: #28a745; text-align: center;">Purchased Items</h3>
+              <ul style="font-size: 16px; color: #333; list-style-type: none; padding: 0;">
+                ${items.map(item => `<li>${item.name} - $${item.price}</li>`).join('')}
+              </ul>
+              <p style="font-size: 16px; color: #333; text-align: right;"><strong>Total:</strong> $${paymentDetails.amount}</p>
+          </div>
+
+          <!-- Footer Section -->
+          <div style="background-color: #f9f9f9; padding: 15px; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
+              <p style="font-size: 12px; text-align: center; color: #888;">If you have any questions regarding your payment, please contact our support team.</p>
+              <p style="font-size: 14px; text-align: center; color: #777;">Need help or have questions? <a href="mailto:support@yourwebsite.com" style="color: #28a745; text-decoration: none;">Contact our support team</a>.</p>
+              <p style="font-size: 12px; color: #aaa; text-align: center;">You received this email because you made a payment on HealthSphere.</p>
+              <p style="font-size: 12px; color: #aaa; text-align: center;">All Rights Reserved @2024 - Dev Squad <sup>TM</sup></p>
+
+              <!-- Social Media Links -->
+              <div style="text-align: center; padding: 20px; background-color: #28a745; color: white; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; margin-top: 20px;">
+                  <p style="margin: 0;">&copy; 2024 HealthSphere. All rights reserved.</p>
+                  <p style="margin: 5px 0;">Follow us on:</p>
+                  <a href="https://facebook.com" style="color: white; text-decoration: none; margin: 0 10px;">Facebook</a> |
+                  <a href="https://twitter.com" style="color: white; text-decoration: none; margin: 0 10px;">Twitter</a> |
+                  <a href="https://instagram.com" style="color: white; text-decoration: none; margin: 0 10px;">Instagram</a>
+              </div>
+          </div>
+      </div>
+    </div>
+    `
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log('Payment success email sent successfully');
+  } catch (error) {
+    console.error('Failed to send payment success email:', error);
+  }
+};
+
+exports.sendReservationPaymentSuccessEmail = async (toEmail, reservationDetails, paymentDetails) => {
+  const mailOptions = {
+    from: emailConfig.auth.user,
+    to: toEmail,
+    subject: '✅ Reservation Payment Successful - HealthSphere',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #fff;">
+      <div style="background-color: #fff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+          <!-- Header Section -->
+          <div style="text-align: center; padding: 20px; background-color: #28a745; color: white; border-top-left-radius: 10px; border-top-right-radius: 10px;">
+              <h1>Reservation Payment Successful</h1>
+              <img src="https://drive.google.com/uc?export=view&id=1n-3QGEs8Vvgcln1Oo_dDPOhylkSx2v5B" alt="HealthSphere Logo" style="width: 150px; margin-bottom: 20px;">
+          </div>
+          <!-- Alert Message Section -->
+          <div style="padding: 20px; text-align: center;">
+              <p style="font-size: 16px; color: #333;">Dear Patient,</p>
+              <p style="font-size: 16px; color: #333;">Your payment for reservation (ID: ${reservationDetails.id}) was successful!</p>
+              <p style="font-size: 16px; color: #333;"><strong>Payment ID:</strong> ${paymentDetails.id}</p>
+              <p style="font-size: 16px; color: #333;"><strong>Amount:</strong> $${paymentDetails.amount}</p>
+              <p style="font-size: 16px; color: #333;"><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
+          </div>
+
+          <!-- Reservation Details -->
+          <div style="background-color: #f1f1f1; padding: 15px; border-radius: 5px; margin: 20px 10px;">
+              <h3 style="color: #28a745; text-align: center;">Reservation Details</h3>
+              <p style="font-size: 16px; color: #333;"><strong>Reservation ID:</strong> ${reservationDetails.id}</p>
+              <p style="font-size: 16px; color: #333;"><strong>Date:</strong> ${reservationDetails.date}</p>
+              <p style="font-size: 16px; color: #333;"><strong>Time:</strong> ${reservationDetails.time}</p>
+          </div>
+
+          <!-- Footer Section -->
+          <div style="background-color: #f9f9f9; padding: 15px; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
+              <p style="font-size: 12px; text-align: center; color: #888;">If you have any questions or concerns, please contact our support team.</p>
+              <p style="font-size: 12px; text-align: center; color: #aaa;">You received this email because you made a payment for a reservation on HealthSphere.</p>
+              <p style="font-size: 12px; text-align: center; color: #aaa;">All Rights Reserved @2024 - Dev Squad <sup>TM</sup></p>
+
+              <!-- Social Media Links -->
+              <div style="text-align: center; padding: 20px; background-color: #28a745; color: white; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; margin-top: 20px;">
+                  <p style="margin: 0;">&copy; 2024 HealthSphere. All rights reserved.</p>
+                  <p style="margin: 5px 0;">Follow us on:</p>
+                  <a href="https://facebook.com" style="color: white; text-decoration: none; margin: 0 10px;">Facebook</a> |
+                  <a href="https://twitter.com" style="color: white; text-decoration: none; margin: 0 10px;">Twitter</a> |
+                  <a href="https://instagram.com" style="color: white; text-decoration: none; margin: 0 10px;">Instagram</a>
+              </div>
+          </div>
+      </div>
+    </div>
+    `
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log('Reservation payment success email sent successfully');
+  } catch (error) {
+    console.error('Failed to send reservation payment success email:', error);
   }
 };

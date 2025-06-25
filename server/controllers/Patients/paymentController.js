@@ -8,6 +8,9 @@ const { CardDetails } = require("../../models/transactions/CardDetails");
 const { CartPayments } = require("../../models/transactions/CartPayment");
 const { Payment } = require("../../models/transactions/Payment");
 const { ReservationPayment } = require("../../models/transactions/ReservationPayment");
+const { sendPaymentConfirmationEmail } = require('../../services/emailServices');
+const { sendPaymentSuccessEmail } = require('../../services/emailServices');
+const { sendReservationPaymentSuccessEmail } = require('../../services/emailServices');
 
 // Helper function to mask card number
 function maskCardNumber(cardNumber) {
@@ -203,6 +206,35 @@ exports.makePayment = async (req, res) => {
             { where: { patient_id: req.patientID, status: 'pending' } }
         );
 
+        const patient = await Patient.findByPk(req.patientID, {
+          include: [User]
+        });
+        
+        if (patient && patient.User) {
+          // Fetch cart items with details
+          const cartItems = await Cart.findAll({
+            where: {
+              patient_id: req.patientID,
+              status: 'completed', // Now completed
+            },
+            include: [{
+              model: MedicalItem,
+              attributes: ['name', 'price']
+            }]
+          });
+          
+          const items = cartItems.map(item => ({
+            name: item.MedicalItem.name,
+            price: item.MedicalItem.price
+          }));
+          
+          // Send payment success email
+          await sendPaymentSuccessEmail(patient.User.email, {
+            id: payment.id,
+            amount: payment.amount
+          }, items);
+        }
+
         return res.status(200).json({ message: 'Payment successful', paymentId: payment.id });
     } catch (error) {
         console.error('Error processing payment:', error);
@@ -297,6 +329,22 @@ exports.makePayments = async (req, res) => {
             { status: 'available' },
             { where: { id: reservationPayment , status: 'pending' } }
         );
+
+        const patient = await Patient.findByPk(req.patientID, {
+          include: [User]
+        });
+        
+        if (patient && patient.User) {
+          // Send reservation payment success email
+          await sendReservationPaymentSuccessEmail(patient.User.email, {
+            id: reservation.id,
+            date: reservation.reservation_date,
+            time: reservation.reservation_time
+          }, {
+            id: payment.id,
+            amount: payment.amount
+          });
+        }
 
         return res.status(200).json({ message: 'Payment successful', paymentId: payment.id });
     } catch (error) {
