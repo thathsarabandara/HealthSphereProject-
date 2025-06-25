@@ -49,7 +49,8 @@ function DoctorVerify() {
         }
     };
   return (
-        <div className="login-container mb-5" style={{background: '#C8D8F6'}}>
+        <div className='container' style={{minHeight: '70vh'}}>
+        <div className="login-container" style={{background: '#C8D8F6'}}>
             <h2 className="text-center">Verify OTP</h2>
                 {error && <p style={{ color: 'red' }}>{error}</p>}
                 {success && <p style={{ color: 'green' }}>{success}</p>}
@@ -88,6 +89,7 @@ function DoctorVerify() {
                     <a href="/login">Back to Login</a>
                 </p>
             </div>
+        </div>
         </div>
   )
 }

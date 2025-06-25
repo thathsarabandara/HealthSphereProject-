@@ -5,7 +5,7 @@ const tokenutils = require('../../utils/tokenUtils');
 const { sendUnusualLogin, sendPasswordResetEmails, sendPasswordChange } = require('../../services/emailServices');
 const { createUserPassword, findPassword, passwordDeactivate } = require('../../models/auth/UserPassword');
 const {createPasswordResetRequest, findPasswordResetToken} = require('../../models/security/PasswordResetRequest');
-
+const { isUserBlacklisted, recordFailedLogin, resetLoginAttempts } = require('../../utils/auth/attemptTracker');
 
 exports.login = async (req, res) => {
     const credentials = {
@@ -16,18 +16,34 @@ exports.login = async (req, res) => {
     try {
         // 1. Find user by email
         const user = await findByEmail(credentials.email);
-        const hashedPassword = await findPassword(user.id);
-
+        
         if (!user || !user.isVerified) {
             return res.status(404).json({ error: 'User not found or not verified' });
         }
+        
+        // Check if user is blacklisted
+        const blacklist = await isUserBlacklisted(user.id);
+        if (blacklist) {
+            return res.status(403).json({ 
+                error: 'Account temporarily locked due to excessive failed login attempts',
+                expiresAt: blacklist.expiresAt
+            });
+        }
+        
+        const hashedPassword = await findPassword(user.id);
 
         // 2. Verify password
         const isValidPassword = await comparePassword(credentials.password, hashedPassword.password_hash);
         if (!isValidPassword) {
-            return res.status(401).json({ error: 'Invalid credentials' });
+            // Record failed attempt
+            await recordFailedLogin(user.id, user);
+            console.log("Incorrect password");
+            return res.status(400).json({ message: "Incorrect Credentials" });
         }
 
+        // 3. Reset login attempts on successful login
+        await resetLoginAttempts(user.id);
+        
         // 3. Generate JWT or token
         const token = await tokenutils.generateToken({ id: user.id, email: user.email });
 
@@ -217,5 +233,3 @@ exports.resetPassword = async (req, res) => {
         res.status(500).json({ message: 'Internal server error.' });
     }
 };
-
-

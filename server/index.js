@@ -15,6 +15,7 @@ const path = require('path');
 const { rateLimiterMiddleware } = require('./middleware/rateLimit/rateLimiter');
 const passport = require('passport')
 require('./config/passport')
+const { errorLogger, requestLogger } = require('./middleware/logging/logger');
 
 // portNumber for the server
 const PORT = process.env.PORT || 5000;
@@ -29,6 +30,9 @@ app.use(auditLogMiddleware);
 app.use(rateLimiterMiddleware);
 app.use(cors(corsOptions,ipapiCorsOptions)); // Use CORS middleware
 
+// Request logging
+app.use(requestLogger);
+
 // Body Parser Middleware
 app.use(bodyParser.json());
 app.use(express.json());
@@ -39,6 +43,10 @@ app.use('/', patientRoutes);
 app.use('/doctor', doctorRoutes);
 app.use('/admin', adminRoutes);
 app.use('/auth', auth)
+
+// Error logging (must be after all other middleware and routes)
+app.use(errorLogger);
+
 // Start server
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

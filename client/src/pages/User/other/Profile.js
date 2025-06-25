@@ -39,9 +39,19 @@ function Profile() {
 
           setProfileData(data);
           setOriginalData(data);
+          toast.success('Profile data loaded successfully!', {
+            position: "bottom-right",
+            autoClose: 3000,
+            theme: "colored"
+          } );
         }
       } catch (error) {
         console.error('Error fetching profile data:', error);
+        toast.error('Failed to load profile data!', {
+          position: "bottom-right",
+          autoClose: 3000,
+          theme: "colored"
+        });
       } finally {
         setLoading(false);
       }
@@ -94,7 +104,7 @@ function Profile() {
     );
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
   
     const formData = new FormData();
@@ -114,28 +124,26 @@ function Profile() {
       return;
     }
   
-    // To debug FormData:
-    for (let pair of formData.entries()) {
-      console.log(pair[0]+ ', ' + pair[1]);
+    try {
+      const response = await axios.put(`http://localhost:5000/userprofile/${profileData.id}`, formData);
+      if (response.status === 200) {
+        const data = response.data.data;
+        
+        // Update profile picture preview
+        if (data?.profilePicture) {
+          setPp(`http://localhost:5000/uploads/storage/patient/${data.id}/profilepictures/${data.profilePicture}`);
+        } else {
+          setPp(emptyImage);
+        }
+        
+        setProfileData(data);
+        setOriginalData(data);
+        toast.success('Profile updated successfully!');
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error('Failed to update profile!');
     }
-  
-    axios.put(`http://localhost:5000/userprofile/${profileData.id}`, formData)
-      .then(res => {
-        toast.success('Profile updated successfully!', {
-          position: "bottom-right",
-          autoClose: 3000,
-          theme: "colored"
-        });
-        setOriginalData(profileData);
-      })
-      .catch(err => {
-        console.error(err);
-        toast.error('Failed to update profile', {
-          position: "bottom-right",
-          autoClose: 3000,
-          theme: "colored"
-        });
-      });
   };
   
   

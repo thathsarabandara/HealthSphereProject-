@@ -53,7 +53,8 @@ function OTPVerification() {
     };
     
     return (
-        <div className="login-container mb-5" style={{background: '#C8D8F6'}}>
+        <div style={{minHeight: '70vh', }}>
+            <div className="login-container" style={{background: '#C8D8F6', }}>
             <ErrorPopup show={verifyerrorVisible} onClose={handleverifyErrorClose} title="Something Went Wrong!" message="OTP Verification Failed!" button='Okay' />
             <SuccessPopup show={verifysuccessVisible} onClose={handleverifySuccessClose} title="Verified Succesfully " message="OTP Verification Successfully Done!" button='Okay' />
             <ErrorPopup show={errorVisible} onClose={handleErrorClose} title="Something Went Wrong!" message="OTP Resend failed Try again!" button='Okay' />
@@ -96,6 +97,7 @@ function OTPVerification() {
                     <a href="/login">Back to Login</a>
                 </p>
             </div>
+        </div>
         </div>
     );
 }

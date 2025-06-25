@@ -1,4 +1,4 @@
-import React, { useState , useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import emptyImage from '../../assets/images/emptyProfile.png';
@@ -33,6 +33,7 @@ function DoctorFullRegister() {
 
   const [profilePicturePreview, setProfilePicturePreview] = useState(emptyImage);
   const [isLoading, setIsLoading] = useState(true);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   useEffect(() => {
     const loadingTimeout = setTimeout(() => setIsLoading(false), 3000);
@@ -125,7 +126,14 @@ function DoctorFullRegister() {
     .then((response) => {
       console.log('Registration request submitted successfully:', response);
       notifySuccess('Registration request submitted successfully!');
-      navigate('/doctor/login'); // Navigate to another page after submission
+      
+      // Show success screen
+      setShowSuccess(true);
+      
+      // Redirect after 6 seconds
+      setTimeout(() => {
+        navigate('/doctor/login');
+      }, 6000);
     })
     .catch((err) => {
       console.log(formData)
@@ -134,8 +142,59 @@ function DoctorFullRegister() {
     });
   };
 
+  if (showSuccess) {
+    return (
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        backgroundColor: 'white',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 1000
+      }}>
+        <div style={{
+          textAlign: 'center',
+          maxWidth: '600px',
+          padding: '20px'
+        }}>
+          <i className="fas fa-check-circle" style={{
+            fontSize: '100px',
+            color: '#4CAF50',
+            marginBottom: '20px'
+          }}></i>
+          <h1 className="mb-4">Your Request is Under Review</h1>
+          <p className="lead mb-4">
+            Thank you for registering! Our team is reviewing your application.
+            We'll notify you via email once your account is approved.
+          </p>
+          <p className="text-muted">
+            You'll be redirected to the login page in 6 seconds...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+      
       <form
         onSubmit={handleSubmit}
         className="container p-4 mt-5 mb-5"
@@ -194,19 +253,26 @@ function DoctorFullRegister() {
                   }}
                 />
                 <label htmlFor="profile-picture-upload" style={{
-                  color: 'white',
-                  textAlign: 'center',
-                  fontSize: '14px',
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  gap: '8px'
+                  gap: '8px',
+                  backgroundColor: '#f0f0f0',
+                  borderRadius: '8px',
+                  padding: '12px',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
                 }}>
                   <i className="fas fa-camera" style={{
-                    fontSize: '24px'
+                    fontSize: '32px',
+                    color: '#007bff'
                   }}></i>
-                  <span>Change Photo</span>
+                  <span style={{
+                    fontWeight: 'bold',
+                    color: '#007bff',
+                    fontSize: '16px'
+                  }}>Change Photo</span>
                 </label>
               </div>
             </div>
@@ -421,18 +487,6 @@ function DoctorFullRegister() {
         </button>
       </div>
     </form>
-    <ToastContainer
-      position="top-right"
-      autoClose={3000}
-      hideProgressBar={false}
-      newestOnTop={false}
-      closeOnClick
-      rtl={false}
-      pauseOnFocusLoss
-      draggable
-      pauseOnHover
-      theme="light"
-    />
   </div>
   );
 }

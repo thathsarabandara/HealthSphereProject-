@@ -6,6 +6,7 @@ const { Schedule } = require("../../models/healthcare/Schedule");
 const { Reservation } = require("../..//models/healthcare/Reservation");
 const { Specialization } = require("../../models/healthcare/Specialization");
 const { Doctor } = require("../../models/healthcare/Doctor");
+const { sendReservationConfirmationEmail, sendReservationCancellationEmail } = require('../../services/emailServices');
 
 exports.loadUserData = async (req, res) => {
     try {
@@ -75,6 +76,34 @@ exports.saveReservation = async (req, res) => {
             reservation_time,
             status,
         });
+
+        const reservation = newReservation.toJSON();
+        
+        // Get schedule details including doctor
+        const scheduleDetails = await Schedule.findByPk(schedule_id);
+
+        if (!scheduleDetails) {
+            return res.status(404).json({ message: 'Schedule not found' });
+        }
+        const doctor = await Doctor.findByPk(scheduleDetails.doctor_id);
+        if (!doctor) {
+            return res.status(404).json({ message: 'Doctor not found' });
+        }
+        const user = await User.findByPk(doctor.user_id);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        
+        if (scheduleDetails && doctor) {
+          await sendReservationConfirmationEmail(reservation_email, {
+            id: reservation.id,
+            doctorName: doctor.first_name + ' ' + doctor.last_name,
+            room: scheduleDetails.room_number,
+            date: scheduleDetails.schedule_date,
+            time: scheduleDetails.schedule_time,
+            paymentStatus: 'pending'
+          });
+        }
 
         // Send success response
         res.status(201).json({ message: 'Reservation created successfully', reservation: newReservation });
@@ -186,10 +215,18 @@ exports.cancelReservation = async (req, res) => {
       return res.status(404).json({ error: 'Reservation not found or already canceled.' });
     }
 
+    // Get reservation email before updating
+    const reservation = isValidReservation.toJSON();
+
     await Reservation.update(
       { status: 'canceled' },
       { where: { id: id } }
     );
+
+    // Send cancellation email
+    await sendReservationCancellationEmail(reservation.reservation_email, {
+      id: reservation.id
+    });
 
     return res.status(200).json({ message: 'Reservation canceled successfully.' });
   } catch (error) {

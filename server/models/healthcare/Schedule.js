@@ -34,6 +34,9 @@ const Schedule = sequelize.define('Schedule', {
     fees: {
         type: DataTypes.DECIMAL(10, 2),
     },
+    room_number: {
+        type: DataTypes.INTEGER,
+    },
     created_at: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,

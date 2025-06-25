@@ -4,7 +4,8 @@ const { Schedule } = require("../../models/healthcare/Schedule");
 const { Doctor } = require("../../models/healthcare/Doctor");
 const { Reservation } = require("../../models/healthcare/Reservation");
 const { Patient } = require("../../models/healthcare/Patient");
-
+const { User } = require("../../models/auth/User");
+const { sendScheduleSubmissionEmail } = require('../../services/doctorEmailServices');
 
 // Save a schedule
 exports.saveSchedules = async (req, res) => {
@@ -32,6 +33,12 @@ exports.saveSchedules = async (req, res) => {
       comment,
       fees,
     });
+
+    // Get user email
+    const user = await User.findByPk(req.userID);
+    if (user) {
+      await sendScheduleSubmissionEmail(user.email);
+    }
 
     res.status(201).json({ message: 'Schedule requested successfully', schedule: newSchedule });
   } catch (error) {
@@ -129,4 +136,3 @@ exports.loadSchedules = async (req, res) => {
       res.status(500).json({ message: 'Error fetching schedules', error });
     }
   };
-  

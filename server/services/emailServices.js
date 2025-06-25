@@ -100,7 +100,7 @@ exports.sendWelcomeMessage = async (username, userid, email) => {
               <p style="font-size: 16px; color: #333;">As a new member, here’s what you can do next:</p>
 
               <!-- Key Features Section -->
-              <ul style="font-size: 16px; color: #333;">
+              <ul style="font-size: 16px; color: #333; list-style-type: none; padding: 0;">
                   <li><strong>Book an Appointment:</strong> Schedule appointments with our certified doctors at your convenience.</li>
                   <li><strong>View Your Medical Records:</strong> Access your health records anytime, anywhere.</li>
                   <li><strong>Receive Health Notifications:</strong> Stay informed with personalized health tips and updates.</li>
@@ -155,84 +155,122 @@ exports.sendWelcomeMessage = async (username, userid, email) => {
   }
 };
 
-exports.sendReservationConfirmedMessage = async (username, email, appointmentDate, appointmentTime, doctorName, specialization) => {
-    const mailOptions = {
-      from: emailConfig.auth.user,
-      to: email,
-      subject: '✅ Your Appointment is Confirmed! – HealthSphere Hospitals 🏥 | @2024 – DEV Squad ⚡️ [Do Not Reply]',
-      html: `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f4f4f4;">
-            <div style="background-color: #fff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-                <!-- Header Section with Logo -->
-                <div style="text-align: center; padding: 20px; background-color: #007BFF; color: white; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-                    <img src="https://drive.google.com/uc?export=view&id=1n-3QGEs8Vvgcln1Oo_dDPOhylkSx2v5B" alt="HealthSphere Logo" style="width: 150px; margin-bottom: 20px;">
-                    <h1>Your Appointment is Confirmed!</h1>
-                </div>
-                <img src="https://drive.google.com/uc?export=view&id=137AWCk6gCHlsQlLJZh7WRUMZkQ-pl9Mp" alt="HealthSphere Logo" style="margin: 10px; height: 300px; width: 580px;"/>
-                <!-- Appointment Details Section -->
-                <div style="padding: 20px; text-align: left; background-color: #e9f7fe; border-radius: 5px; margin: 20px;">
-                    <h2 style="color: #007BFF;">Appointment Details</h2>
-                    <p style="font-size: 16px; color: #333;">Hello ${username},</p>
-                    <p style="font-size: 16px; color: #333;">We are pleased to confirm your appointment with the following details:</p>
-                    <ul style="font-size: 16px; color: #333; list-style-type: none; padding: 0;">
-                        <li><strong>Date:</strong> ${appointmentDate}</li>
-                        <li><strong>Time:</strong> ${appointmentTime}</li>
-                        <li><strong>Doctor:</strong> Dr. ${doctorName}</li>
-                        <li><strong>Specialization:</strong> ${specialization}</li>
-                        <li><strong>Location:</strong> At HealthSphere Hospitals </li>
-                    </ul>
-                </div>
-
-                <!-- Reminder Section -->
-                <div style="padding: 20px; text-align: center; background-color: #fff; border-radius: 5px; margin: 20px;">
-                    <h3 style="color: #007BFF;">Important Reminder</h3>
-                    <p style="font-size: 16px; color: #333;">Please arrive at least 15 minutes early for your appointment. If you need to reschedule, don't hesitate to reach out!</p>
-                </div>
-
-                <!-- Call-to-Action Button -->
-                <p style="text-align: center; margin: 30px 0;">
-                    <a href="https://yourwebsite.com/dashboard" style="background-color: #007BFF; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-size: 18px;">View Your Appointment</a>
-                </p>
-
-                <!-- Healthcare Tip Section -->
-                <div style="background-color: #f1f1f1; padding: 15px; border-radius: 5px; text-align: center; margin: 20px;">
-                    <h3 style="color: #007BFF;">Health Tip of the Day</h3>
-                    <p style="font-size: 16px; color: #666;">Remember to hydrate before your appointment! Drinking enough water can improve your overall health.</p>
-                </div>
-
-                <!-- Footer Section -->
-                <div style="background-color: #f1f1f1; padding: 15px; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
-                    <p style="font-size: 12px; text-align: center; color: #888;">If you have any questions, please contact our support team immediately.</p>
-                    <p style="font-size: 14px; text-align: center; color: #777;">Need help or have questions? <a href="mailto:support@yourwebsite.com" style="color: #007BFF; text-decoration: none;">Contact our support team</a>.</p>
-                    <p style="font-size: 12px; color: #aaa; text-align: center;">You received this email because you scheduled an appointment with HealthSphere. If you didn't schedule an appointment, please ignore this email.</p>
-                    <p style="font-size: 12px; color: #aaa; text-align: center;">All Rights Reserved @2024 - Dev Squad <sup>TM</sup></p>
-
-                    <!-- Social Media Links -->
-                    <div style="text-align: center; padding: 20px; background-color: #007BFF; color: white; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; margin-top: 20px;">
-                        <p style="margin: 0;">&copy; 2024 HealthSphere. All rights reserved.</p>
-                        <p style="margin: 5px 0;">Follow us on:</p>
-                        <a href="https://facebook.com" style="color: white; text-decoration: none; margin: 0 10px;">Facebook</a> |
-                        <a href="https://twitter.com" style="color: white; text-decoration: none; margin: 0 10px;">Twitter</a> |
-                        <a href="https://instagram.com" style="color: white; text-decoration: none; margin: 0 10px;">Instagram</a>
-                    </div>
-                </div>
-            </div>
+exports.sendScheduleApprovalEmail = async (email, { id, date, time, room }) => {
+  const mailOptions = {
+    from: emailConfig.auth.user,
+    to: email,
+    subject: '✅ Appointment Approved – HealthSphere Hospitals 🏥 | @2024 – DEV Squad ⚡️ [Do Not Reply]',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f2f2f2;">
+        <!-- Header -->
+        <div style="text-align: center; padding: 20px; background-color: #007BFF; color: white; border-top-left-radius: 8px; border-top-right-radius: 8px;">
+          <h1 style="margin: 0;">HealthSphere</h1>
+          <p style="margin: 5px 0;">Your Trusted Healthcare Service</p>
+          <img src="https://drive.google.com/uc?export=view&id=1n-3QGEs8Vvgcln1Oo_dDPOhylkSx2v5B" alt="HealthSphere Logo" style="margin: 10px 0; height: 50px; width: 150px;"/>
+        </div>
+        
+        <!-- Email Body -->
+        <div style="background-color: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+          <img src="https://drive.google.com/uc?export=view&id=1BrkMgx7nzjZST11AnyVrs2QbQyR8npoc" alt="HealthSphere Logo" style="margin: 10px; height: 300px; width: 580px;"/>
+          <div style="text-align: center; padding: 20px;">
+            <h2>Your Appointment Has Been Approved!</h2>
+            <p>Hello,</p>
+            <p>Your appointment with ID: ${id} has been approved.</p>
+            <p>Date: ${date}</p>
+            <p>Time: ${time}</p>
+            <p>Room: ${room}</p>
+            <p>Thank you for using our service!</p>
+            <img src="https://drive.google.com/uc?export=view&id=1WPwLg2QwLQXeT_vv_udV4XYtBOXXjz2L" alt="Health Matters" style="margin: 20px 0; border-radius: 5px; height: 220px; width: 400px;"/>
           </div>
-      `
-    };
-  
-    try {
-      await Promise.race([
-        transporter.sendMail(mailOptions),
-        new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('Email sending timed out')), 10000)
-        ),
-      ]);
-      console.log('Appoinment Confirm email sent successfully');
-    } catch (error) {
-      console.error('Failed to send Appoinment confirm email:', error);
-    }
+          <div style="background-color: #f1f1f1; padding: 15px; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;">
+            <p style="font-size: 12px; text-align: center; color: #888;">If you have any questions, feel free to contact our support team.</p>
+            <p style="font-size: 12px; text-align: center; color: #888;">Developed by Dev Squad <sup>TM</sup></p>
+          </div>
+        </div>
+        
+        <!-- Footer -->
+        <div style="text-align: center; padding: 20px; background-color: #007BFF; color: white; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; margin-top: 20px;">
+          <p style="margin: 0;">&copy; 2024 HealthSphere. All rights reserved.</p>
+          <p style="margin: 5px 0;">Follow us on:</p>
+          <a href="https://facebook.com" style="color: white; text-decoration: none; margin: 0 10px;">Facebook</a> |
+          <a href="https://twitter.com" style="color: white; text-decoration: none; margin: 0 10px;">Twitter</a> |
+          <a href="https://instagram.com" style="color: white; text-decoration: none; margin: 0 10px;">Instagram</a>
+        </div>
+      </div>
+    `
   };
+
+  try {
+    await Promise.race([
+      transporter.sendMail(mailOptions),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Email sending timed out')), 30000)
+      )
+    ]);
+    console.log('Schedule approval email sent successfully');
+  } catch (error) {
+    console.error('Failed to send schedule approval email:', error);
+  }
+};
+
+exports.sendReservationConfirmedMessage = async (username, email, appointmentDate, appointmentTime, doctorName, specialization) => {
+  const mailOptions = {
+    from: emailConfig.auth.user,
+    to: email,
+    subject: '✅ Your Appointment is Confirmed! – HealthSphere Hospitals 🏥 | @2024 – DEV Squad ⚡️ [Do Not Reply]',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f2f2f2;">
+        <!-- Header -->
+        <div style="text-align: center; padding: 20px; background-color: #007BFF; color: white; border-top-left-radius: 8px; border-top-right-radius: 8px;">
+          <h1 style="margin: 0;">HealthSphere</h1>
+          <p style="margin: 5px 0;">Your Trusted Healthcare Service</p>
+          <img src="https://drive.google.com/uc?export=view&id=1n-3QGEs8Vvgcln1Oo_dDPOhylkSx2v5B" alt="HealthSphere Logo" style="margin: 10px 0; height: 50px; width: 150px;"/>
+        </div>
+        
+        <!-- Email Body -->
+        <div style="background-color: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+          <img src="https://drive.google.com/uc?export=view&id=1BrkMgx7nzjZST11AnyVrs2QbQyR8npoc" alt="HealthSphere Logo" style="margin: 10px; height: 300px; width: 580px;"/>
+          <div style="text-align: center; padding: 20px;">
+            <h2>Appointment Confirmed!</h2>
+            <p>Hello ${username},</p>
+            <p>Your appointment has been confirmed.</p>
+            <p>Appointment Date: ${appointmentDate}</p>
+            <p>Appointment Time: ${appointmentTime}</p>
+            <p>Doctor: ${doctorName}</p>
+            <p>Specialization: ${specialization}</p>
+            <p>Thank you for using our service!</p>
+            <img src="https://drive.google.com/uc?export=view&id=1WPwLg2QwLQXeT_vv_udV4XYtBOXXjz2L" alt="Health Matters" style="margin: 20px 0; border-radius: 5px; height: 220px; width: 400px;"/>
+          </div>
+          <div style="background-color: #f1f1f1; padding: 15px; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;">
+            <p style="font-size: 12px; text-align: center; color: #888;">If you have any questions, feel free to contact our support team.</p>
+            <p style="font-size: 12px; text-align: center; color: #888;">Developed by Dev Squad <sup>TM</sup></p>
+          </div>
+        </div>
+        
+        <!-- Footer -->
+        <div style="text-align: center; padding: 20px; background-color: #007BFF; color: white; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; margin-top: 20px;">
+          <p style="margin: 0;">&copy; 2024 HealthSphere. All rights reserved.</p>
+          <p style="margin: 5px 0;">Follow us on:</p>
+          <a href="https://facebook.com" style="color: white; text-decoration: none; margin: 0 10px;">Facebook</a> |
+          <a href="https://twitter.com" style="color: white; text-decoration: none; margin: 0 10px;">Twitter</a> |
+          <a href="https://instagram.com" style="color: white; text-decoration: none; margin: 0 10px;">Instagram</a>
+        </div>
+      </div>
+    `
+  };
+
+  try {
+    await Promise.race([
+      transporter.sendMail(mailOptions),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Email sending timed out')), 30000)
+      ),
+    ]);
+    console.log('Appointment Confirm email sent successfully');
+  } catch (error) {
+    console.error('Failed to send Appoinment confirm email:', error);
+  }
+};
 
 // Function to send notifications about upcoming appointments
 exports.sendAppoinmentRemainderEmail = async (username, email, appointmentDate, appointmentTime, doctorName, specialization) => {
@@ -355,7 +393,7 @@ exports.sendAppoinmentCancellationEmail = async (username, email, appointmentDat
 
           <!-- Footer Section -->
           <div style="background-color: #f1f1f1; padding: 15px; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
-              <p style="font-size: 12px; text-align: center; color: #888;">If you have any questions or need further assistance, please contact our support team immediately.</p>
+              <p style="font-size: 12px; text-align: center; color: #888;">If you have any questions regarding your appointment, please contact our support team.</p>
               <p style="font-size: 14px; text-align: center; color: #777;">Need help or have questions? <a href="mailto:support@yourwebsite.com" style="color: #dc3545; text-decoration: none;">Contact our support team</a>.</p>
               <p style="font-size: 12px; color: #aaa;">You received this email because you scheduled an appointment with HealthSphere. If you didn't schedule an appointment, please ignore this email.</p>
               <p style="font-size: 12px; color: #aaa;">All Rights Reserved @2024 - Dev Squad <sup>TM</sup></p>
@@ -435,8 +473,8 @@ exports.sendPrescriptionUpdateEmail = async (username, email, prescriptionId, me
           <div style="background-color: #f1f1f1; padding: 15px; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
               <p style="font-size: 12px; text-align: center; color: #888;">If you have any questions regarding your prescription, please contact our support team.</p>
               <p style="font-size: 14px; text-align: center; color: #777;">Need help or have questions? <a href="mailto:support@yourwebsite.com" style="color: #007BFF; text-decoration: none;">Contact our support team</a>.</p>
-              <p style="font-size: 12px; color: #aaa; text-align: center;">You received this email because your prescription was updated with HealthSphere. If you didn't request this update, please ignore this email.</p>
-              <p style="font-size: 12px; color: #aaa; text-align: center;">All Rights Reserved @2024 - Dev Squad <sup>TM</sup></p>
+              <p style="font-size: 12px; color: #aaa;">You received this email because your prescription was updated with HealthSphere. If you didn't request this update, please ignore this email.</p>
+              <p style="font-size: 12px; color: #aaa;">All Rights Reserved @2024 - Dev Squad <sup>TM</sup></p>
 
               <!-- Social Media Links -->
               <div style="text-align: center; padding: 20px; background-color: #007BFF; color: white; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; margin-top: 20px;">
@@ -494,7 +532,7 @@ exports.sendHealthTips = async (username, email) => {
                   <ul style="font-size: 16px; color: #333; list-style-type: none; padding: 0;">
                       <li><strong>Stay Hydrated:</strong> Drink at least 8 glasses of water a day to keep your body hydrated.</li>
                       <li><strong>Regular Exercise:</strong> Aim for at least 30 minutes of moderate exercise most days of the week.</li>
-                      <li><strong>Balanced Diet:</strong> Include a variety of fruits, vegetables, whole grains, and lean proteins in your meals.</li>
+                      <li><strong>Balanced Diet:</strong> Incorporate a variety of fruits, vegetables, whole grains, and lean proteins in your meals.</li>
                       <li><strong>Sleep Well:</strong> Aim for 7-9 hours of quality sleep each night to rejuvenate your body.</li>
                       <li><strong>Stay Informed:</strong> Keep track of your health goals and progress regularly.</li>
                   </ul>
@@ -510,8 +548,8 @@ exports.sendHealthTips = async (username, email) => {
           <div style="background-color: #f1f1f1; padding: 15px; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
               <p style="font-size: 12px; text-align: center; color: #888;">If you have any questions regarding your health tips, please contact our support team.</p>
               <p style="font-size: 14px; text-align: center; color: #777;">Need help or have questions? <a href="mailto:support@yourwebsite.com" style="color: #007BFF; text-decoration: none;">Contact our support team</a>.</p>
-              <p style="font-size: 12px; color: #aaa; text-align: center;">You received this email because you signed up for health updates from HealthSphere. If you didn't request this update, please ignore this email.</p>
-              <p style="font-size: 12px; color: #aaa; text-align: center;">All Rights Reserved @2024 - Dev Squad <sup>TM</sup></p>
+              <p style="font-size: 12px; color: #aaa;">You received this email because you signed up for health updates from HealthSphere. If you didn't request this update, please ignore this email.</p>
+              <p style="font-size: 12px; color: #aaa;">All Rights Reserved @2024 - Dev Squad <sup>TM</sup></p>
 
               <!-- Social Media Links -->
               <div style="text-align: center; padding: 20px; background-color: #007BFF; color: white; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; margin-top: 20px;">
@@ -589,8 +627,8 @@ exports.sendPaymentReciptEmails = async (username, email , amount, paymentDate, 
           <div style="background-color: #f1f1f1; padding: 15px; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
               <p style="font-size: 12px; text-align: center; color: #888;">If you have any questions regarding your payment, please contact our support team.</p>
               <p style="font-size: 14px; text-align: center; color: #777;">Need help or have questions? <a href="mailto:support@yourwebsite.com" style="color: #007BFF; text-decoration: none;">Contact our support team</a>.</p>
-              <p style="font-size: 12px; color: #aaa; text-align: center;">You received this email because you made a payment through HealthSphere. If you didn't make this payment, please contact us immediately.</p>
-              <p style="font-size: 12px; color: #aaa; text-align: center;">All Rights Reserved @2024 - Dev Squad <sup>TM</sup></p>
+              <p style="font-size: 12px; color: #aaa;">You received this email because you made a payment through HealthSphere. If you didn't make this payment, please contact us immediately.</p>
+              <p style="font-size: 12px; color: #aaa;">All Rights Reserved @2024 - Dev Squad <sup>TM</sup></p>
 
               <!-- Social Media Links -->
               <div style="text-align: center; padding: 20px; background-color: #007BFF; color: white; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; margin-top: 20px;">
@@ -620,7 +658,7 @@ exports.sendPaymentReciptEmails = async (username, email , amount, paymentDate, 
 };
 
  
-// Function to send notifications for approved password reset requests
+// Function to send notifications about approved password reset requests
 exports.sendPasswordResetEmails = async (username, email, token) => {
   const mailOptions = {
     from: emailConfig.auth.user,
@@ -646,7 +684,7 @@ exports.sendPasswordResetEmails = async (username, email, token) => {
         </div>
 
         <!-- Health Tips Section -->
-        <div style="background-color: #ffe0b2; padding: 15px; border-radius: 5px; margin: 20px 10px; text-align: left;">
+        <div style="background-color: #ffe0b2; padding: 15px; border-radius: 5px; margin: 20px 10px; text-align: center;">
             <h3 style="color: #FF9800;">Health Tips for You</h3>
             <ul style="font-size: 16px; color: #333; list-style-type: disc; padding: 5px;">
                 <li><strong>Stay Hydrated:</strong> Drink plenty of water throughout the day to stay hydrated.</li>
@@ -869,7 +907,7 @@ exports.sendAccountAccess = async (username, email) => {
               <ul style="font-size: 16px; color: #333; list-style-type: none; padding: 0;">
                   <li><strong>Monitor Your Account:</strong> Regularly check your account activity for any unauthorized actions.</li>
                   <li><strong>Update Your Password:</strong> Use a strong and unique password to protect your account.</li>
-                  <li><strong>Enable Two-Factor Authentication:</strong> Add extra security by using two-factor authentication.</li>
+                  <li><strong>Enable Two-Factor Authentication:</strong> Protect your account with an extra layer of security.</li>
               </ul>
           </div>
 
@@ -1182,3 +1220,462 @@ exports.sendNotificationsOfSystemUpdates = async (email , date , time) => {
 };
 
 
+
+// Function to send email when user account is locked due to failed login attempts
+exports.sendAccountLockedEmail = async (email, unlockTime) => {
+  const mailOptions = {
+    from: emailConfig.auth.user,
+    to: email,
+    subject: '🔒 Account Locked Due to Suspicious Activity – HealthSphere Hospitals 🏥 | @2024 – DEV Squad ⚡️ [Do Not Reply]',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #fff;">
+      <div style="background-color: #fff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+          <!-- Header Section -->
+          <div style="text-align: center; padding: 20px; background-color: #FF4500; color: white; border-top-left-radius: 10px; border-top-right-radius: 10px;">
+              <h1>Account Locked</h1>
+              <img src="https://drive.google.com/uc?export=view&id=1n-3QGEs8Vvgcln1Oo_dDPOhylkSx2v5B" alt="HealthSphere Logo" style="width: 150px; margin-bottom: 20px;">
+          </div>
+          <img src="https://drive.google.com/uc?export=view&id=1WeeL9wnoMzJ88MkfREENCrUJEK2Zp7l_" alt="HealthSphere Logo" style="margin: 10px; height: 300px; width: 580px;"/>
+          <!-- Alert Message Section -->
+          <div style="padding: 20px; text-align: center;">
+              <p style="font-size: 16px; color: #333;">Dear HealthSphere User,</p>
+              <p style="font-size: 16px; color: #333;">We have detected multiple failed login attempts on your account. For your security, we have temporarily locked your account.</p>
+              <p style="font-size: 16px; color: #FF4500;">Your account will be automatically unlocked at:</p>
+              <p style="font-size: 18px; font-weight: bold; color: #333;">${unlockTime}</p>
+              <p style="font-size: 16px; color: #333;">If this was not you, please contact our support team immediately.</p>
+          </div>
+
+          <!-- Health Tips Section -->
+          <div style="background-color: #f1f1f1; padding: 15px; border-radius: 5px; margin: 20px 10px; text-align: center;">
+              <h3 style="color: #FF4500;">Security Tip</h3>
+              <p style="font-size: 16px; color: #666;">Always use a strong, unique password and never share it with anyone.</p>
+          </div>
+
+          <!-- Footer Section -->
+          <div style="background-color: #f9f9f9; padding: 15px; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
+              <p style="font-size: 12px; text-align: center; color: #888;">If you have any questions or concerns, please contact our support team.</p>
+              <p style="font-size: 12px; text-align: center; color: #aaa;">You received this email because you registered for HealthSphere. If you didn't sign up, please ignore this email.</p>
+              <p style="font-size: 12px; text-align: center; color: #aaa;">All Rights Reserved @2024 - Dev Squad <sup>TM</sup></p>
+
+              <!-- Social Media Links -->
+              <div style="text-align: center; padding: 20px; background-color: #FF4500; color: white; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; margin-top: 20px;">
+                  <p style="margin: 0;">&copy; 2024 HealthSphere. All rights reserved.</p>
+                  <p style="margin: 5px 0;">Follow us on:</p>
+                  <a href="https://facebook.com" style="color: white; text-decoration: none; margin: 0 10px;">Facebook</a> |
+                  <a href="https://twitter.com" style="color: white; text-decoration: none; margin: 0 10px;">Twitter</a> |
+                  <a href="https://instagram.com" style="color: white; text-decoration: none; margin: 0 10px;">Instagram</a>
+              </div>
+          </div>
+      </div>
+    </div>
+    `
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log('Account locked email sent successfully');
+  } catch (error) {
+    console.error('Failed to send account locked email:', error);
+  }
+};
+
+exports.sendAdminBlockedEmail = async (email, reason) => {
+  const mailOptions = {
+    from: emailConfig.auth.user,
+    to: email,
+    subject: '⛔ Account Blocked by Admin – HealthSphere Hospitals 🏥 | @2024 – DEV Squad ⚡️ [Do Not Reply]',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #fff;">
+      <div style="background-color: #fff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+          <!-- Header Section -->
+          <div style="text-align: center; padding: 20px; background-color: #FF4500; color: white; border-top-left-radius: 10px; border-top-right-radius: 10px;">
+              <h1>Account Blocked</h1>
+              <img src="https://drive.google.com/uc?export=view&id=1n-3QGEs8Vvgcln1Oo_dDPOhylkSx2v5B" alt="HealthSphere Logo" style="width: 150px; margin-bottom: 20px;">
+          </div>
+          <img src="https://drive.google.com/uc?export=view&id=1WeeL9wnoMzJ88MkfREENCrUJEK2Zp7l_" alt="HealthSphere Logo" style="margin: 10px; height: 300px; width: 580px;"/>
+          <!-- Alert Message Section -->
+          <div style="padding: 20px; text-align: center;">
+              <p style="font-size: 16px; color: #333;">Dear HealthSphere User,</p>
+              <p style="font-size: 16px; color: #333;">Your account has been blocked by an administrator.</p>
+              <p style="font-size: 16px; color: #FF4500;">Reason:</p>
+              <p style="font-size: 18px; font-weight: bold; color: #333;">${reason}</p>
+              <p style="font-size: 16px; color: #333;">If you believe this is a mistake, please contact our support team.</p>
+          </div>
+
+          <!-- Health Tips Section -->
+          <div style="background-color: #f1f1f1; padding: 15px; border-radius: 5px; margin: 20px 10px; text-align: center;">
+              <h3 style="color: #FF4500;">Security Tip</h3>
+              <p style="font-size: 16px; color: #666;">Ensure your account activities comply with our terms of service.</p>
+          </div>
+
+          <!-- Footer Section -->
+          <div style="background-color: #f9f9f9; padding: 15px; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
+              <p style="font-size: 12px; text-align: center; color: #888;">If you have any questions or concerns, please contact our support team.</p>
+              <p style="font-size: 12px; text-align: center; color: #aaa;">You received this email because you registered for HealthSphere. If you didn't sign up, please ignore this email.</p>
+              <p style="font-size: 12px; text-align: center; color: #aaa;">All Rights Reserved @2024 - Dev Squad <sup>TM</sup></p>
+
+              <!-- Social Media Links -->
+              <div style="text-align: center; padding: 20px; background-color: #FF4500; color: white; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; margin-top: 20px;">
+                  <p style="margin: 0;">&copy; 2024 HealthSphere. All rights reserved.</p>
+                  <p style="margin: 5px 0;">Follow us on:</p>
+                  <a href="https://facebook.com" style="color: white; text-decoration: none; margin: 0 10px;">Facebook</a> |
+                  <a href="https://twitter.com" style="color: white; text-decoration: none; margin: 0 10px;">Twitter</a> |
+                  <a href="https://instagram.com" style="color: white; text-decoration: none; margin: 0 10px;">Instagram</a>
+              </div>
+          </div>
+      </div>
+    </div>
+    `
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log('Admin blocked email sent successfully');
+  } catch (error) {
+    console.error('Failed to send admin blocked email:', error);
+  }
+};
+
+exports.sendAccountUnblockedEmail = async (email) => {
+  const mailOptions = {
+    from: emailConfig.auth.user,
+    to: email,
+    subject: '🔓 Account Unblocked – HealthSphere Hospitals 🏥 | @2024 – DEV Squad ⚡️ [Do Not Reply]',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #fff;">
+      <div style="background-color: #fff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+          <!-- Header Section -->
+          <div style="text-align: center; padding: 20px; background-color: #FF4500; color: white; border-top-left-radius: 10px; border-top-right-radius: 10px;">
+              <h1>Account Unblocked</h1>
+              <img src="https://drive.google.com/uc?export=view&id=1n-3QGEs8Vvgcln1Oo_dDPOhylkSx2v5B" alt="HealthSphere Logo" style="width: 150px; margin-bottom: 20px;">
+          </div>
+          <img src="https://drive.google.com/uc?export=view&id=1WeeL9wnoMzJ88MkfREENCrUJEK2Zp7l_" alt="HealthSphere Logo" style="margin: 10px; height: 300px; width: 580px;"/>
+          <!-- Alert Message Section -->
+          <div style="padding: 20px; text-align: center;">
+              <p style="font-size: 16px; color: #333;">Dear HealthSphere User,</p>
+              <p style="font-size: 16px; color: #333;">Your account has been successfully unblocked. You can now access your account.</p>
+              <p style="font-size: 16px; color: #333;">If you have any issues, please contact our support team.</p>
+          </div>
+
+          <!-- Health Tips Section -->
+          <div style="background-color: #f1f1f1; padding: 15px; border-radius: 5px; margin: 20px 10px; text-align: center;">
+              <h3 style="color: #FF4500;">Security Tip</h3>
+              <p style="font-size: 16px; color: #666;">Regularly update your password and enable two-factor authentication for enhanced security.</p>
+          </div>
+
+          <!-- Footer Section -->
+          <div style="background-color: #f9f9f9; padding: 15px; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
+              <p style="font-size: 12px; text-align: center; color: #888;">If you have any questions or concerns, please contact our support team.</p>
+              <p style="font-size: 12px; text-align: center; color: #aaa;">You received this email because you registered for HealthSphere. If you didn't sign up, please ignore this email.</p>
+              <p style="font-size: 12px; text-align: center; color: #aaa;">All Rights Reserved @2024 - Dev Squad <sup>TM</sup></p>
+
+              <!-- Social Media Links -->
+              <div style="text-align: center; padding: 20px; background-color: #FF4500; color: white; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; margin-top: 20px;">
+                  <p style="margin: 0;">&copy; 2024 HealthSphere. All rights reserved.</p>
+                  <p style="margin: 5px 0;">Follow us on:</p>
+                  <a href="https://facebook.com" style="color: white; text-decoration: none; margin: 0 10px;">Facebook</a> |
+                  <a href="https://twitter.com" style="color: white; text-decoration: none; margin: 0 10px;">Twitter</a> |
+                  <a href="https://instagram.com" style="color: white; text-decoration: none; margin: 0 10px;">Instagram</a>
+              </div>
+          </div>
+      </div>
+    </div>
+    `
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log('Account unblocked email sent successfully');
+  } catch (error) {
+    console.error('Failed to send account unblocked email:', error);
+  }
+};
+
+exports.sendReservationConfirmationEmail = async (toEmail, reservationDetails) => {
+  const mailOptions = {
+    from: emailConfig.auth.user,
+    to: toEmail,
+    subject: '✅ Reservation Confirmed - HealthSphere',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #fff;">
+      <div style="background-color: #fff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+          <!-- Header Section -->
+          <div style="text-align: center; padding: 20px; background-color: #28a745; color: white; border-top-left-radius: 10px; border-top-right-radius: 10px;">
+              <h1>Reservation Confirmed</h1>
+              <img src="https://drive.google.com/uc?export=view&id=1n-3QGEs8Vvgcln1Oo_dDPOhylkSx2v5B" alt="HealthSphere Logo" style="width: 150px; margin-bottom: 20px;">
+          </div>
+          <!-- Alert Message Section -->
+          <div style="padding: 20px; text-align: center;">
+              <p style="font-size: 16px; color: #333;">Dear Patient,</p>
+              <p style="font-size: 16px; color: #333;">Your reservation has been successfully created!</p>
+              <p style="font-size: 16px; color: #333;"><strong>Reservation ID:</strong> ${reservationDetails.id}</p>
+              <p style="font-size: 16px; color: #333;"><strong>Doctor:</strong> ${reservationDetails.doctorName}</p>
+              <p style="font-size: 16px; color: #333;"><strong>Room Number:</strong> ${reservationDetails.room || 'TBD'}</p>
+              <p style="font-size: 16px; color: #333;"><strong>Date:</strong> ${reservationDetails.date}</p>
+              <p style="font-size: 16px; color: #333;"><strong>Time:</strong> ${reservationDetails.time}</p>
+              <p style="font-size: 16px; color: #333;"><strong>Payment Status:</strong> ${reservationDetails.paymentStatus}</p>
+              <p style="font-size: 16px; color: #333;">Please make your payment to complete the reservation.</p>
+          </div>
+
+          <!-- Footer Section -->
+          <div style="background-color: #f9f9f9; padding: 15px; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
+              <p style="font-size: 12px; text-align: center; color: #888;">If you have any questions or concerns, please contact our support team.</p>
+              <p style="font-size: 12px; text-align: center; color: #aaa;">You received this email because you made a reservation on HealthSphere.</p>
+              <p style="font-size: 12px; text-align: center; color: #aaa;">All Rights Reserved @2024 - Dev Squad <sup>TM</sup></p>
+
+              <!-- Social Media Links -->
+              <div style="text-align: center; padding: 20px; background-color: #28a745; color: white; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; margin-top: 20px;">
+                  <p style="margin: 0;">&copy; 2024 HealthSphere. All rights reserved.</p>
+                  <p style="margin: 5px 0;">Follow us on:</p>
+                  <a href="https://facebook.com" style="color: white; text-decoration: none; margin: 0 10px;">Facebook</a> |
+                  <a href="https://twitter.com" style="color: white; text-decoration: none; margin: 0 10px;">Twitter</a> |
+                  <a href="https://instagram.com" style="color: white; text-decoration: none; margin: 0 10px;">Instagram</a>
+              </div>
+          </div>
+      </div>
+    </div>
+    `
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log('Reservation confirmation email sent successfully');
+  } catch (error) {
+    console.error('Failed to send reservation confirmation email:', error);
+  }
+};
+
+exports.sendReservationCancellationEmail = async (toEmail, reservationDetails) => {
+  const mailOptions = {
+    from: emailConfig.auth.user,
+    to: toEmail,
+    subject: '❌ Reservation Cancelled - HealthSphere',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #fff;">
+      <div style="background-color: #fff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+          <!-- Header Section with Logo -->
+          <div style="text-align: center; padding: 20px; background-color: #dc3545; color: white; border-top-left-radius: 10px; border-top-right-radius: 10px;">
+              <h1>Reservation Cancelled</h1>
+              <img src="https://drive.google.com/uc?export=view&id=1n-3QGEs8Vvgcln1Oo_dDPOhylkSx2v5B" alt="HealthSphere Logo" style="width: 150px; margin-bottom: 20px;">
+          </div>
+          <!-- Alert Message Section -->
+          <div style="padding: 20px; text-align: center;">
+              <p style="font-size: 16px; color: #333;">Dear Patient,</p>
+              <p style="font-size: 16px; color: #333;">Your reservation (ID: ${reservationDetails.id}) has been successfully cancelled.</p>
+              <p style="font-size: 16px; color: #333;">If you did not request this cancellation, please contact our support team immediately.</p>
+          </div>
+
+          <!-- Refund Information -->
+          <div style="background-color: #f1f1f1; padding: 15px; border-radius: 5px; margin: 20px 10px; text-align: center;">
+              <h3 style="color: #dc3545;">Refund Information</h3>
+              <p style="font-size: 16px; color: #666;">Any payments made for this reservation will be refunded within 5-7 business days.</p>
+          </div>
+
+          <!-- Footer Section -->
+          <div style="background-color: #f9f9f9; padding: 15px; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
+              <p style="font-size: 12px; text-align: center; color: #888;">If you have any questions or concerns, please contact our support team.</p>
+              <p style="font-size: 12px; text-align: center; color: #aaa;">You received this email because you cancelled a reservation on HealthSphere.</p>
+              <p style="font-size: 12px; text-align: center; color: #aaa;">All Rights Reserved @2024 - Dev Squad <sup>TM</sup></p>
+
+              <!-- Social Media Links -->
+              <div style="text-align: center; padding: 20px; background-color: #dc3545; color: white; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; margin-top: 20px;">
+                  <p style="margin: 0;">&copy; 2024 HealthSphere. All rights reserved.</p>
+                  <p style="margin: 5px 0;">Follow us on:</p>
+                  <a href="https://facebook.com" style="color: white; text-decoration: none; margin: 0 10px;">Facebook</a> |
+                  <a href="https://twitter.com" style="color: white; text-decoration: none; margin: 0 10px;">Twitter</a> |
+                  <a href="https://instagram.com" style="color: white; text-decoration: none; margin: 0 10px;">Instagram</a>
+              </div>
+          </div>
+      </div>
+    </div>
+    `
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log('Reservation cancellation email sent successfully');
+  } catch (error) {
+    console.error('Failed to send reservation cancellation email:', error);
+  }
+};
+
+exports.sendPaymentSuccessEmail = async (toEmail, paymentDetails, items) => {
+  const mailOptions = {
+    from: emailConfig.auth.user,
+    to: toEmail,
+    subject: '✅ Payment Successful - HealthSphere',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #fff;">
+      <div style="background-color: #fff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+          <!-- Header Section -->
+          <div style="text-align: center; padding: 20px; background-color: #28a745; color: white; border-top-left-radius: 10px; border-top-right-radius: 10px;">
+              <h1>Payment Successful</h1>
+              <img src="https://drive.google.com/uc?export=view&id=1n-3QGEs8Vvgcln1Oo_dDPOhylkSx2v5B" alt="HealthSphere Logo" style="width: 150px; margin-bottom: 20px;">
+          </div>
+          <!-- Alert Message Section -->
+          <div style="padding: 20px; text-align: center;">
+              <p style="font-size: 16px; color: #333;">Dear Patient,</p>
+              <p style="font-size: 16px; color: #333;">Your payment of $${paymentDetails.amount} was successful!</p>
+              <p style="font-size: 16px; color: #333;"><strong>Payment ID:</strong> ${paymentDetails.id}</p>
+              <p style="font-size: 16px; color: #333;"><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
+          </div>
+
+          <!-- Purchased Items -->
+          <div style="background-color: #f1f1f1; padding: 15px; border-radius: 5px; margin: 20px 10px;">
+              <h3 style="color: #28a745; text-align: center;">Purchased Items</h3>
+              <ul style="font-size: 16px; color: #333; list-style-type: none; padding: 0;">
+                ${items.map(item => `<li>${item.name} - $${item.price}</li>`).join('')}
+              </ul>
+              <p style="font-size: 16px; color: #333; text-align: right;"><strong>Total:</strong> $${paymentDetails.amount}</p>
+          </div>
+
+          <!-- Call-to-Action Button -->
+          <p style="text-align: center; margin: 30px 0;">
+              <a href="https://yourwebsite.com/dashboard" style="background-color: #28a745; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-size: 18px;">View Your Payment Details</a>
+          </p>
+
+          <!-- Footer Section -->
+          <div style="background-color: #f9f9f9; padding: 15px; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
+              <p style="font-size: 12px; text-align: center; color: #888;">If you have any questions regarding your payment, please contact our support team.</p>
+              <p style="font-size: 14px; text-align: center; color: #777;">Need help or have questions? <a href="mailto:support@yourwebsite.com" style="color: #28a745; text-decoration: none;">Contact our support team</a>.</p>
+              <p style="font-size: 12px; color: #aaa; text-align: center;">You received this email because you made a payment on HealthSphere.</p>
+              <p style="font-size: 12px; color: #aaa; text-align: center;">All Rights Reserved @2024 - Dev Squad <sup>TM</sup></p>
+
+              <!-- Social Media Links -->
+              <div style="text-align: center; padding: 20px; background-color: #28a745; color: white; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; margin-top: 20px;">
+                  <p style="margin: 0;">&copy; 2024 HealthSphere. All rights reserved.</p>
+                  <p style="margin: 5px 0;">Follow us on:</p>
+                  <a href="https://facebook.com" style="color: white; text-decoration: none; margin: 0 10px;">Facebook</a> |
+                  <a href="https://twitter.com" style="color: white; text-decoration: none; margin: 0 10px;">Twitter</a> |
+                  <a href="https://instagram.com" style="color: white; text-decoration: none; margin: 0 10px;">Instagram</a>
+              </div>
+          </div>
+      </div>
+    </div>
+    `
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log('Payment success email sent successfully');
+  } catch (error) {
+    console.error('Failed to send payment success email:', error);
+  }
+};
+
+exports.sendReservationPaymentSuccessEmail = async (toEmail, reservationDetails, paymentDetails) => {
+  const mailOptions = {
+    from: emailConfig.auth.user,
+    to: toEmail,
+    subject: '✅ Reservation Payment Successful - HealthSphere',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #fff;">
+      <div style="background-color: #fff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+          <!-- Header Section -->
+          <div style="text-align: center; padding: 20px; background-color: #28a745; color: white; border-top-left-radius: 10px; border-top-right-radius: 10px;">
+              <h1>Reservation Payment Successful</h1>
+              <img src="https://drive.google.com/uc?export=view&id=1n-3QGEs8Vvgcln1Oo_dDPOhylkSx2v5B" alt="HealthSphere Logo" style="width: 150px; margin-bottom: 20px;">
+          </div>
+          <!-- Alert Message Section -->
+          <div style="padding: 20px; text-align: center;">
+              <p style="font-size: 16px; color: #333;">Dear Patient,</p>
+              <p style="font-size: 16px; color: #333;">Your payment for reservation (ID: ${reservationDetails.id}) was successful!</p>
+              <p style="font-size: 16px; color: #333;"><strong>Payment ID:</strong> ${paymentDetails.id}</p>
+              <p style="font-size: 16px; color: #333;"><strong>Amount:</strong> $${paymentDetails.amount}</p>
+              <p style="font-size: 16px; color: #333;"><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
+          </div>
+
+          <!-- Reservation Details -->
+          <div style="background-color: #f1f1f1; padding: 15px; border-radius: 5px; margin: 20px 10px;">
+              <h3 style="color: #28a745; text-align: center;">Reservation Details</h3>
+              <p style="font-size: 16px; color: #333;"><strong>Reservation ID:</strong> ${reservationDetails.id}</p>
+              <p style="font-size: 16px; color: #333;"><strong>Date:</strong> ${reservationDetails.date}</p>
+              <p style="font-size: 16px; color: #333;"><strong>Time:</strong> ${reservationDetails.time}</p>
+          </div>
+
+          <!-- Footer Section -->
+          <div style="background-color: #f9f9f9; padding: 15px; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
+              <p style="font-size: 12px; text-align: center; color: #888;">If you have any questions or concerns, please contact our support team.</p>
+              <p style="font-size: 12px; text-align: center; color: #aaa;">You received this email because you made a payment for a reservation on HealthSphere.</p>
+              <p style="font-size: 12px; text-align: center; color: #aaa;">All Rights Reserved @2024 - Dev Squad <sup>TM</sup></p>
+
+              <!-- Social Media Links -->
+              <div style="text-align: center; padding: 20px; background-color: #28a745; color: white; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; margin-top: 20px;">
+                  <p style="margin: 0;">&copy; 2024 HealthSphere. All rights reserved.</p>
+                  <p style="margin: 5px 0;">Follow us on:</p>
+                  <a href="https://facebook.com" style="color: white; text-decoration: none; margin: 0 10px;">Facebook</a> |
+                  <a href="https://twitter.com" style="color: white; text-decoration: none; margin: 0 10px;">Twitter</a> |
+                  <a href="https://instagram.com" style="color: white; text-decoration: none; margin: 0 10px;">Instagram</a>
+              </div>
+          </div>
+      </div>
+    </div>
+    `
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log('Reservation payment success email sent successfully');
+  } catch (error) {
+    console.error('Failed to send reservation payment success email:', error);
+  }
+};
+
+exports.sendPrescriptionAddedEmail = async (email, username, prescriptionId, doctorName, appointmentDate, appointmentTime) => {
+  const mailOptions = {
+    from: emailConfig.auth.user,
+    to: email,
+    subject: '📋 New Prescription Added – HealthSphere Hospitals 🏥 | @2024 – DEV Squad ⚡️ [Do Not Reply]',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f2f2f2;">
+        <!-- Header -->
+        <div style="text-align: center; padding: 20px; background-color: #007BFF; color: white; border-top-left-radius: 8px; border-top-right-radius: 8px;">
+          <h1 style="margin: 0;">HealthSphere</h1>
+          <p style="margin: 5px 0;">Your Trusted Healthcare Service</p>
+          <img src="https://drive.google.com/uc?export=view&id=1n-3QGEs8Vvgcln1Oo_dDPOhylkSx2v5B" alt="HealthSphere Logo" style="margin: 10px 0; height: 50px; width: 150px;"/>
+        </div>
+        
+        <!-- Email Body -->
+        <div style="background-color: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+          <img src="https://drive.google.com/uc?export=view&id=1BrkMgx7nzjZST11AnyVrs2QbQyR8npoc" alt="HealthSphere Logo" style="margin: 10px; height: 300px; width: 580px;"/>
+          <div style="text-align: center; padding: 20px;">
+            <h2>New Prescription Added!</h2>
+            <p>Hello ${username},</p>
+            <p>A new prescription has been added to your account.</p>
+            <p>Prescription ID: ${prescriptionId}</p>
+            <p>Doctor: ${doctorName}</p>
+            <p>Appointment Date: ${appointmentDate}</p>
+            <p>Appointment Time: ${appointmentTime}</p>
+            <p>Please log in to your account to view the details.</p>
+            <img src="https://drive.google.com/uc?export=view&id=1WPwLg2QwLQXeT_vv_udV4XYtBOXXjz2L" alt="Health Matters" style="margin: 20px 0; border-radius: 5px; height: 220px; width: 400px;"/>
+          </div>
+          <div style="background-color: #f1f1f1; padding: 15px; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;">
+            <p style="font-size: 12px; text-align: center; color: #888;">If you have any questions, feel free to contact our support team.</p>
+            <p style="font-size: 12px; text-align: center; color: #888;">Developed by Dev Squad <sup>TM</sup></p>
+          </div>
+        </div>
+        
+        <!-- Footer -->
+        <div style="text-align: center; padding: 20px; background-color: #007BFF; color: white; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; margin-top: 20px;">
+          <p style="margin: 0;">&copy; 2024 HealthSphere. All rights reserved.</p>
+          <p style="margin: 5px 0;">Follow us on:</p>
+          <a href="https://facebook.com" style="color: white; text-decoration: none; margin: 0 10px;">Facebook</a> |
+          <a href="https://twitter.com" style="color: white; text-decoration: none; margin: 0 10px;">Twitter</a> |
+          <a href="https://instagram.com" style="color: white; text-decoration: none; margin: 0 10px;">Instagram</a>
+        </div>
+      </div>
+    `
+  };
+
+  try {
+    await Promise.race([
+      transporter.sendMail(mailOptions),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Email sending timed out')), 30000)
+      ),
+    ]);
+    console.log('Prescription added email sent successfully');
+  } catch (error) {
+    console.error('Failed to send prescription added email:', error);
+  }
+};
