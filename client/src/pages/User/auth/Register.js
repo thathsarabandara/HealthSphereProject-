@@ -16,6 +16,7 @@ function Register() {
   const [policyChecked, setPolicyChecked] = useState(false);
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const loadingTimeout = setTimeout(() => setIsLoading(false), 3000);
@@ -85,6 +86,7 @@ function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     if (
       errors.username ||
@@ -100,6 +102,7 @@ function Register() {
         ...prev,
         form: 'Please fix the errors in the form before submitting.'
       }));
+      setLoading(false);
       return;
     }
 
@@ -108,6 +111,7 @@ function Register() {
         ...prev,
         policy: 'You must agree to the policy regulations.'
       }));
+      setLoading(false);
       return;
     }
 
@@ -127,6 +131,8 @@ function Register() {
     } catch (error) {
       setErrorMessage(error.response?.data?.error || 'Registration failed');
       setSuccess('');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -237,21 +243,18 @@ function Register() {
             </div>
 
             <div className="text-center text-md-start mt-2 pt-2">
-              <button
-                type="submit"
-                className="btn mt-1 w-100 mb-2"
+              <button 
+                type="submit" 
+                className="btn mt-1 w-100 mb-2 text-white" 
                 style={{ background: '#112D4E', borderRadius: 10 }}
+                disabled={loading}
               >
-                <span
-                  className="text-white"
-                  style={{
-                    fontSize: 15,
-                    fontFamily: 'Sansation',
-                    fontWeight: 400,
-                  }}
-                >
-                  Sign Up
-                </span>
+                {loading ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    Registering...
+                  </>
+                ) : 'Sign Up'}
               </button>
             </div>
           </form>
