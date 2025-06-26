@@ -57,7 +57,7 @@ exports.getDashboardData = asyncHandler(async (req, res) => {
     // Gender stats
     const completedReservations = reservations.filter(r => r.status === 'completed');
     const patientIds = completedReservations.map(r => r.patient_id);
-    console.log(patientIds)
+    
     const patients = await Promise.all(
       patientIds.map(id => Patient.findOne({ where: { id } }))
     );
