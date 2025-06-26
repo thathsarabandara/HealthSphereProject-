@@ -23,6 +23,8 @@ function Profile() {
 
   const [pp, setPp] = useState(emptyImage);
 
+  const [saveLoading, setSaveLoading] = useState(false);
+
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
@@ -106,6 +108,7 @@ function Profile() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSaveLoading(true);
   
     const formData = new FormData();
   
@@ -143,6 +146,8 @@ function Profile() {
     } catch (error) {
       console.error(error);
       toast.error('Failed to update profile!');
+    } finally {
+      setSaveLoading(false);
     }
   };
   
@@ -277,7 +282,18 @@ function Profile() {
 
               <div className="d-flex justify-content-end gap-2 mt-4">
                 <button type="button" className="btn btn-secondary">Cancel</button>
-                <button type="button" className="btn btn-primary" onClick={handleSubmit} disabled={!hasChanges}>Save</button>
+                <button 
+                  type="button" 
+                  className="btn btn-primary" 
+                  disabled={saveLoading}
+                >
+                  {saveLoading ? (
+                    <>
+                      <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                      Saving...
+                    </>
+                  ) : 'Save Changes'}
+                </button>
               </div>
             </div>
           </div>

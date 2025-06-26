@@ -16,6 +16,7 @@ function App() {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const [usernameError, setUsernameError] = useState('');
   const [emailError, setEmailError] = useState('');
@@ -121,8 +122,9 @@ function App() {
     return true;
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
 
     const isValid = validateUsername(username) &&
                     validateEmail(email) &&
@@ -131,6 +133,7 @@ function App() {
                     validateTerms(termsAccepted);
 
     if (!isValid) {
+      setLoading(false);
       return;
     }
 
@@ -154,6 +157,7 @@ function App() {
       setError('');
       setSuccess('');
     }
+    setLoading(false);
   };
 
   return (
@@ -292,21 +296,18 @@ function App() {
             </div>
 
             <div className="text-center text-md-start mt-4 pt-2">
-              <button
-                type="submit"
-                className="btn mt-1 w-100 mb-4"
-                style={{ background: '#112D4E', borderRadius: 10 }}
+              <button 
+                type="submit" 
+                className="btn w-100 text-white" 
+                style={{ background: '#112D4E' }}
+                disabled={loading}
               >
-                <span
-                  className="text-white"
-                  style={{
-                    fontSize: 15,
-                    fontFamily: 'Sansation',
-                    fontWeight: 400,
-                  }}
-                >
-                  Sign Up
-                </span>
+                {loading ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    Registering...
+                  </>
+                ) : 'Register'}
               </button>
               <ToastContainer
                 position="top-right"

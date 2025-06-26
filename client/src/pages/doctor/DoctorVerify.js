@@ -7,10 +7,12 @@ function DoctorVerify() {
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [id, setID] = useState(null);
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
         try{
             const response = await axios.post('http://localhost:5000/doctor/verifyuser', { otp }, { withCredentials: true }); // This is important for sending cookies
 
@@ -20,9 +22,10 @@ function DoctorVerify() {
             setError('');
             setOtp('');
         }catch(err){
-            setError(error.response?.data?.error || 'OTP Verification failed');
+            setError(err.response?.data?.error || 'OTP Verification failed');
             setSuccess('');
         }
+        setLoading(false);
     };
 
     useEffect(() => {
@@ -69,8 +72,18 @@ function DoctorVerify() {
                 </div>
 
                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                    <button type="submit" className="btn btn-block text-white" style={{ background: '#112D4E' }}>
-                        Verify OTP
+                    <button 
+                      type="submit" 
+                      className="btn w-100 text-white" 
+                      style={{ background: '#112D4E' }}
+                      disabled={loading}
+                    >
+                      {loading ? (
+                        <>
+                          <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                          Verifying...
+                        </>
+                      ) : 'Verify'}
                     </button>
                 </div>
             </form>

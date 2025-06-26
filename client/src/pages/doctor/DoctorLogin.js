@@ -12,6 +12,7 @@ const [error, setError] = useState('');
 const [success, setSuccess] = useState('');
 const navigate = useNavigate();
 const [isLoading, setIsLoading] = useState(true);
+const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const loadingTimeout = setTimeout(() => setIsLoading(false), 3000);
@@ -39,6 +40,7 @@ const [isLoading, setIsLoading] = useState(true);
 
 const handleSubmit = async (e) => {
       e.preventDefault();
+      setLoading(true);
       try {
           const response = await axios.post('http://localhost:5000/doctor/login', { email, password }, { withCredentials: true });
 
@@ -52,6 +54,7 @@ const handleSubmit = async (e) => {
           setError(err.response?.data?.error || 'Login failed. Please try again.');
           setSuccess('');
       }
+      setLoading(false);
 };
 return (
   <div className="container p-3 my-5 h-custom">
@@ -124,10 +127,18 @@ return (
           </div>
 
           <div className="text-center text-md-start mt-4 pt-2">
-            <button className="btn mt-1 w-100" style={{ background: '#112D4E', borderRadius: 10 }} type='submit'>
-              <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
-                Sign In
-              </span>
+            <button 
+              type="submit" 
+              className="btn w-100 text-white" 
+              style={{ background: '#112D4E' }}
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                  Logging in...
+                </>
+              ) : 'Login'}
             </button>
           </div>
         </form>

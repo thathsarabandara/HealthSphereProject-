@@ -76,9 +76,11 @@ const [profileLoading, setProfileLoading] = useState(true);
       const data = response.data;
       setStatsData(data.dashboardStats);
       setGenderStats(data.genderStats);
+      console.log(data.genderStats)
       setReviews(data.reviews);
       setUpcomingAppointments(data.upcomingAppointments);
       setPatientList(data.patientList);
+      setDashboardLoading(false);
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
     } finally {
@@ -87,44 +89,39 @@ const [profileLoading, setProfileLoading] = useState(true);
   };
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      setProfileLoading(true);
+    // Function to load data
+    const loadData = async () => {
+      setDashboardLoading(true);
       try {
-        const response = await axios.get('http://localhost:5000/doctor',
-          {withCredentials: true}
-        );
-        setProfileData(response.data);
+        await fetchDashboardData();
+        await fetchUserData();
       } catch (error) {
-        console.error('Error fetching profile:', error);
+        console.error('Error loading data:', error);
       } finally {
-        setProfileLoading(false);
+        setDashboardLoading(false);
       }
     };
 
-    setDashboardLoading(true);
-    fetchProfile();
-    fetchDashboardData();
-    fetchUserData();
-    console.log(profileData);
-    console.log(statsData);
-    console.log(genderStats);
-    console.log(reviews);
-    console.log(upcomingAppointments);
-    console.log(patientList);
-    setDashboardLoading(false);
+    loadData();
+
+    // Set up the current time interval
     const timer = setInterval(() => {
       setCurrentDateTime(new Date());
     }, 1000);
 
-    const interval = setInterval(() => {
-      setCurrentReviewIndex((prevIndex) => (prevIndex + 1) % (reviews.length || 1)); // Loop through reviews
-    }, 5000); // 5000ms = 5 seconds per review
-
     return () => {
       clearInterval(timer);
-      clearInterval(interval); // Cleanup the intervals when the component unmounts
     };
-  }, [reviews]); // Re-run effect when reviews change
+  }, []); // Run only on mount
+
+  // Effect for the reviews interval
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentReviewIndex((prevIndex) => (prevIndex + 1) % (reviews.length || 1));
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [reviews]); // Restart interval when reviews change
 
 const currentReview = reviews[currentReviewIndex];
 
@@ -254,7 +251,7 @@ if (dashboardLoading) {
                               <div className="card-body text-center py-4">
                                 <h2 className="fw-bold">{statsData.appointments || '00'}</h2>
                                 <p className="text-muted mb-1">Appointments</p>
-                                <small className="text-muted">Today</small>
+                                <small className="text-muted">Total</small>
                               </div>
                             </div>
                           </div>
@@ -263,7 +260,7 @@ if (dashboardLoading) {
                               <div className="card-body text-center py-4">
                                 <h2 className="fw-bold">{statsData.consultations || '00'}</h2>
                                 <p className="text-muted mb-1">Consultations</p>
-                                <small className="text-muted">Today</small>
+                                <small className="text-muted">Total</small>
                               </div>
                             </div>
                           </div>
@@ -272,7 +269,7 @@ if (dashboardLoading) {
                               <div className="card-body text-center py-4">
                                 <h2 className="fw-bold">{statsData.cancelled || '00'}</h2>
                                 <p className="text-muted mb-1">Cancelled</p>
-                                <small className="text-muted">Today</small>
+                                <small className="text-muted">Total</small>
                               </div>
                             </div>
                           </div>
@@ -281,7 +278,7 @@ if (dashboardLoading) {
                               <div className="card-body text-center py-4">
                                 <h2 className="fw-bold">{statsData.income || '00'}</h2>
                                 <p className="text-muted mb-1">Income</p>
-                                <small className="text-muted">Today</small>
+                                <small className="text-muted">Total</small>
                               </div>
                             </div>
                           </div>
@@ -295,11 +292,11 @@ if (dashboardLoading) {
                               <div className="card-body p-4">
                                 <h5 className="fw-bold mb-4">Patient Gender Distribution</h5>
                                 {genderStats ? (
-                                  <p className="text-muted">No data available</p>
-                                ) : (
                                   <div style={{ height: '250px' }}>
-                                    <Doughnut data={genderData} options={genderOptions} />
-                                  </div>
+                                  <Doughnut data={genderData} options={genderOptions} />
+                                </div>
+                                ) : (
+                                  <p className="text-muted">No data available</p>
                                 )}
                               </div>
                             </div>

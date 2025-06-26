@@ -3,22 +3,15 @@ const {Reservation} = require('../../models/healthcare/Reservation');
 const {Patient} = require('../../models/healthcare/Patient');
 const {Review} = require('../../models/content/Review');
 const asyncHandler = require('express-async-handler');
+const { Op } = require('sequelize');
 
 // Helper function to get today's reservations for a doctor
-const getTodayReservations = async (doctorId) => {
-  // Get today's date at start and end
-  const todayStart = new Date();
-  todayStart.setHours(0, 0, 0, 0);
-  
-  const todayEnd = new Date();
-  todayEnd.setHours(23, 59, 59, 999);
-  
+const getTotalReservations = async (doctorId) => {
   // Find today's approved schedules for this doctor
   const schedules = await Schedule.findAll({
     where: {
       doctor_id: doctorId,
-      schedule_date: { $gte: todayStart, $lte: todayEnd },
-      status: 'approved'
+      status: 'available'|| 'completed'
     }
   });
   const scheduleIds = schedules.map(s => s.id);
@@ -38,39 +31,45 @@ const getTodayReservations = async (doctorId) => {
 // @access  Private (Doctor)
 exports.getDashboardData = asyncHandler(async (req, res) => {
   const doctorId = req.doctorID;
-  
+
   try {
     // Get today's reservations
-    const reservations = await getTodayReservations(doctorId);
-    
+    const reservations = await getTotalReservations(doctorId);
     // Dashboard stats
     const appointments = reservations.length; // Total appointments
     const consultations = reservations.filter(r => r.status === 'completed').length;
-    const cancelled = reservations.filter(r => r.status === 'cancelled').length;
-    const income = reservations
-      .filter(r => r.status === 'completed')
-      .reduce((sum, r) => sum + (r.fees || 0), 0);
+    const cancelledSchedules = await Schedule.findAll({
+      where: {
+        doctor_id: doctorId,
+        status: 'cancelled' || 'rejected'
+      }
+    });
+    const cancelled = cancelledSchedules.length || 0;
+    const incomeReservations = reservations.filter(r => r.status === 'completed');
+
+    const completedScheduleIds = incomeReservations.map(r => r.schedule_id);
+
+    const completedSchedules = await Schedule.findAll({
+      where: { id: { [Op.in]: completedScheduleIds } }
+    });
     
+    const income = completedSchedules.map(schedule => schedule.fees).reduce((a, b) => a + b, 0);
     // Gender stats
     const completedReservations = reservations.filter(r => r.status === 'completed');
     const patientIds = completedReservations.map(r => r.patient_id);
-    const patients = await Patient.findAll({
-      where: {
-        id: { $in: patientIds }
-      },
-      attributes: ['gender']
-    });
+    const patients = await Promise.all(
+      patientIds.map(id => Patient.findOne({ where: { id } }))
+    );
+    console.log(patients);
     const genderCounts = {
       male: 0,
       female: 0,
-      other: 0
     };
     patients.forEach(patient => {
-      if (patient.gender === 'male') genderCounts.male++;
-      else if (patient.gender === 'female') genderCounts.female++;
-      else genderCounts.other++;
+      if (patient.gender === 'Male') genderCounts.male++;
+      else if (patient.gender === 'Female') genderCounts.female++;
     });
-    
+    console.log(genderCounts)
     // Reviews
     const reviews = await Review.findAll({
       where: {
@@ -86,15 +85,24 @@ exports.getDashboardData = asyncHandler(async (req, res) => {
     const today = new Date().toISOString().split('T')[0];
     const todayAppointments = reservations
       .filter(reservation => {
-        const reservationDate = new Date(reservation.date).toISOString().split('T')[0];
-        return reservationDate === today;
+        if (!reservation.date) return false;
+        
+        try {
+          const dateObj = new Date(reservation.date);
+          if (isNaN(dateObj)) return false;
+          
+          const reservationDate = dateObj.toISOString().split('T')[0];
+          return reservationDate === today;
+        } catch (error) {
+          console.error(`Invalid date format for reservation ${reservation.id}: ${reservation.date}`);
+          return false;
+        }
       })
     const patientList = await Patient.findAll({
       where: {
         id: { $in: todayAppointments.map(appointment => appointment.patient_id) }
       }
     });
-
     res.json({
       dashboardStats: {
         appointments,

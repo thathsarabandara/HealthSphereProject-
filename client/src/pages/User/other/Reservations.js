@@ -17,6 +17,7 @@ function Reservations() {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Fetch default data from the backend
   useEffect(() => {
@@ -57,23 +58,25 @@ function Reservations() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
     try {
-      const response = await axios.post(`http://localhost:5000/reservation/${scheduleid}`, formData, {withCredentials: true});
-      if (response.status === 200 || response.status === 201) {
+      const response = await axios.post('http://localhost:5000/reservations', formData, {
+        withCredentials: true,
+      });
+      if (response.data.success) {
         toast.success('Reservation submitted successfully!');
-        setFormData({ name: '', address: '', phone_number: '', email: '' });
-        navigate('/'); // Navigate back to the home page after successful submission
-      } else {
-        toast.error('Failed to submit the reservation. Please try again.');
+        setFormData({
+          name: '',
+          address: '',
+          phone_number: '',
+          email: '',
+        });
       }
-    } catch (error) {
-      const status = error.response?.status || 500;
-      toast.error(`An error occurred: ${error.message}`);
-      if (status === 401) {
-        navigate('/login');
-      } else {
-        navigate(`/error/${status}`);
-      }
+    } catch (err) {
+      setError(err.response?.data?.message || 'An error occurred');
+      toast.error('Failed to submit reservation');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -162,8 +165,17 @@ function Reservations() {
                 />
               </div>
 
-              <button type="submit" className="btn btn-primary">
-                Book
+              <button 
+                type="submit" 
+                className="btn btn-primary" 
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-2"></span>
+                    Submitting...
+                  </>
+                ) : 'Submit Reservation'}
               </button>
             </form>
           </div>

@@ -11,6 +11,8 @@ function DoctorRequestPage() {
   const [error, setError] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5); // Number of items per page
+  const [acceptLoading, setAcceptLoading] = useState({});
+  const [rejectLoading, setRejectLoading] = useState({});
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -38,6 +40,7 @@ function DoctorRequestPage() {
   };
 
   const handleAccept = async (id) => {
+    setAcceptLoading(prev => ({ ...prev, [id]: true }));
     console.log(`Accepting request for doctor ID: ${id}`);
     // Update status in UI
     setPendingDoctors(pendingDoctors.map(request => 
@@ -52,9 +55,11 @@ function DoctorRequestPage() {
       console.error('Error accepting doctor request:', error);
       toast.error('Failed to approve doctor!');
     }
+    setAcceptLoading(prev => ({ ...prev, [id]: false }));
   };
 
   const handleReject = async (id) => {
+    setRejectLoading(prev => ({ ...prev, [id]: true }));
     console.log(`Rejecting request for doctor ID: ${id}`);
     // Update status in UI
     setPendingDoctors(pendingDoctors.map(request => 
@@ -69,6 +74,7 @@ function DoctorRequestPage() {
       console.error('Error rejecting doctor request:', error);
       toast.error('Failed to reject doctor!');
     }
+    setRejectLoading(prev => ({ ...prev, [id]: false }));
   };
 
   // Get current items
@@ -201,13 +207,21 @@ function DoctorRequestPage() {
                     <button 
                       style={acceptButtonStyle}
                       onClick={() => handleAccept(request.id)}
+                      disabled={acceptLoading[request.id]}
                     >
+                      {acceptLoading[request.id] ? (
+                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                      ) : null}
                       Accept
                     </button>
                     <button 
                       style={rejectButtonStyle}
                       onClick={() => handleReject(request.id)}
+                      disabled={rejectLoading[request.id]}
                     >
+                      {rejectLoading[request.id] ? (
+                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                      ) : null}
                       Reject
                     </button>
                   </td>
