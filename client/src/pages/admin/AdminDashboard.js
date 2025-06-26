@@ -1,9 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import axios from "axios";
-import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -18,8 +17,17 @@ function AdminDashboard() {
 
   const [newMessage, setNewMessage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [schdules, setSchedules] = useState([])
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+
+  const [metrics, setMetrics] = useState({
+    totalPatients: 0,
+    activeDoctors: 0,
+    todaysAppointments: 0,
+    bedOccupancy: '0%',
+    availableBeds: 0
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -35,8 +43,31 @@ function AdminDashboard() {
         setIsLoading(false);
       }
     };
-  
+
+    const fetchDashboardMetrics = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/admin/dashboard', {
+          withCredentials:true
+        });
+        setMetrics(response.data);
+      } catch (error) {
+        console.error('Error fetching dashboard metrics:', error);
+      }
+    };
+
+    const fetchSchdule = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/admin/dashboard/schdules', {
+          withCredentials:true
+        });
+        setSchedules(response.data)
+      } catch (error) {
+        console.error('Error fetching dashboard metrics:', error);
+      }
+    };
     fetchData();
+    fetchDashboardMetrics();
+    fetchSchdule();
   }, [navigate]);
 
   const handleSendMessage = () => {
@@ -73,12 +104,13 @@ function AdminDashboard() {
       <h2 className="m-3">Dashboard</h2>
       <div className="container-fluid">
         {/* Hospital Metrics Cards */}
+        
         <div className="row">
           {[
-            { title: "Total Patients", value: "1,240", color: "#E3FCEF", percentage: "+5.2% from last month" },
-            { title: "Active Doctors", value: "58", color: "#E3F2FD", percentage: "+3 new" },
-            { title: "Today's Appointments", value: "120", color: "#FFEBEE", percentage: "15 completed" },
-            { title: "Bed Occupancy", value: "85%", color: "#FFF8E1", percentage: "12 beds available" },
+            { title: "Total Patients", value: metrics.totalPatients, color: "#E3FCEF", percentage: "Total" },
+            { title: "Total Doctors", value: metrics.activeDoctors, color: "#E3F2FD", percentage: "Total" },
+            { title: "Total Appointments", value: metrics.totalAppointments, color: "#FFEBEE", percentage: "Total" },
+            { title: "Total Schdules", value: metrics.totalSchedules, color: "#FFF8E1", percentage: 'Total' },
           ].map((card, index) => (
             <div key={index} className="col-md-3 col-sm-6 mb-4">
               <div
@@ -98,7 +130,7 @@ function AdminDashboard() {
           ))}
         </div>
 
-        {/* Hospital Status Section */}
+      <div className="row">{/* Hospital Status Section */}
         <div className="row mb-4">
           <div className="col-md-6 mb-4">
             <div style={{
@@ -108,23 +140,20 @@ function AdminDashboard() {
               boxShadow: "0 4px 6px rgba(0, 0, 0, 0.05)",
             }}>
               <h5>Today's Schedule</h5>
-              <ul style={{ listStyleType: "none", padding: 0 }}>
-                <li style={{ padding: "8px 0", borderBottom: "1px solid #eee" }}>
-                  <strong>Dr. Smith</strong> - General Checkup (9:00 AM)
-                </li>
-                <li style={{ padding: "8px 0", borderBottom: "1px solid #eee" }}>
-                  <strong>Dr. Johnson</strong> - Surgery (11:30 AM)
-                </li>
-                <li style={{ padding: "8px 0", borderBottom: "1px solid #eee" }}>
-                  <strong>Dr. Williams</strong> - Pediatrics (2:00 PM)
-                </li>
-                <li style={{ padding: "8px 0" }}>
-                  <strong>Dr. Davis</strong> - Cardiology (4:30 PM)
-                </li>
-              </ul>
+
+              {schdules && schdules.length > 0 ? (
+                <ul style={{ listStyleType: "none", padding: 0, margin: 0 }}>
+                  {schdules.map((schedule, index) => (
+                    <li key={index} style={{ padding: "8px 0", borderBottom: "1px solid #eee" }}>
+                      <strong>{schedule.doctorName}</strong> - {schedule.schedule_date} - {schedule.schedule_time}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No Data Found</p>
+              )}
             </div>
           </div>
-          
           <div className="col-md-6 mb-4">
             <div style={{
               backgroundColor: "white",
@@ -149,8 +178,10 @@ function AdminDashboard() {
               </ul>
             </div>
           </div>
-        </div>
 
+        </div>
+        </div>
+      </div>
         {/* Recent Admissions */}
         <div style={{
           backgroundColor: "white",
@@ -191,7 +222,6 @@ function AdminDashboard() {
           </table>
         </div>
       </div>
-    </div>
   );
 }
 

@@ -68,8 +68,7 @@ function Reservations() {
       const response = await axios.post(`http://localhost:5000/reservation/${scheduleid}`, dataToSend, {
         withCredentials: true,
       });
-      if (response.data.success) {
-        toast.success('Reservation submitted successfully!');
+      toast.success('Reservation submitted successfully!');
         setFormData({
           name: '',
           address: '',
@@ -77,7 +76,6 @@ function Reservations() {
           email: '',
         });
         navigate('/bookings');
-      }
     } catch (err) {
       toast.error('Failed to submit reservation');
     } finally {

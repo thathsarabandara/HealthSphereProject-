@@ -1,29 +1,26 @@
-const {Schedule} = require('../../models/healthcare/Schedule');
-const {Reservation} = require('../../models/healthcare/Reservation');
-const {Patient} = require('../../models/healthcare/Patient');
-const {Review} = require('../../models/content/Review');
+const { Schedule } = require('../../models/healthcare/Schedule');
+const { Reservation } = require('../../models/healthcare/Reservation');
+const { Patient } = require('../../models/healthcare/Patient');
+const { Review } = require('../../models/content/Review');
 const asyncHandler = require('express-async-handler');
 const { Op } = require('sequelize');
 
-// Helper function to get today's reservations for a doctor
+// Helper function to get reservations for a doctor's active schedules
 const getTotalReservations = async (doctorId) => {
-  // Find today's approved schedules for this doctor
   const schedules = await Schedule.findAll({
     where: {
       doctor_id: doctorId,
-      status: 'available'|| 'completed'
+      status: { [Op.in]: ['available', 'completed'] }
     }
   });
+
   const scheduleIds = schedules.map(s => s.id);
-  
-  // Get reservations for these schedules
-  const reservations = await Reservation.findAll({
+
+  return await Reservation.findAll({
     where: {
-      schedule_id: scheduleIds
+      schedule_id: { [Op.in]: scheduleIds }
     }
   });
-  
-  return reservations;
 };
 
 // @desc    Get all dashboard data
@@ -33,59 +30,55 @@ exports.getDashboardData = asyncHandler(async (req, res) => {
   const doctorId = req.doctorID;
 
   try {
-    // Get today's reservations
+    // Reservations
     const reservations = await getTotalReservations(doctorId);
-    // Dashboard stats
-    const appointments = reservations.length; // Total appointments
+    const appointments = reservations.length;
     const consultations = reservations.filter(r => r.status === 'completed').length;
+
+    // Cancelled Schedules
     const cancelledSchedules = await Schedule.findAll({
       where: {
         doctor_id: doctorId,
-        status: 'cancelled' || 'rejected'
+        status: { [Op.in]: ['cancelled', 'rejected'] }
       }
     });
-    const cancelled = cancelledSchedules.length || 0;
-    const incomeReservations = reservations.filter(r => r.status === 'completed');
+    const cancelled = cancelledSchedules.length;
 
-    const completedScheduleIds = incomeReservations.map(r => r.schedule_id);
+    // Income Calculation
+    const completedReservations = reservations.filter(r => r.status === 'completed');
+    const completedScheduleIds = completedReservations.map(r => r.schedule_id);
 
     const completedSchedules = await Schedule.findAll({
       where: { id: { [Op.in]: completedScheduleIds } }
     });
-    
-    const income = completedSchedules.map(schedule => schedule.fees).reduce((a, b) => a + b, 0);
-    // Gender stats
-    const completedReservations = reservations.filter(r => r.status === 'completed');
+
+    const income = completedSchedules.reduce((sum, schedule) => sum + schedule.fees, 0);
+
+    // Gender Stats
     const patientIds = completedReservations.map(r => r.patient_id);
-    
     const patients = await Promise.all(
       patientIds.map(id => Patient.findOne({ where: { id } }))
     );
-    console.log(patients)
-    const genderCounts = {
-      male: 0,
-      female: 0,
-    };
+
+    const genderCounts = { male: 0, female: 0 };
     patients.forEach(patient => {
-      if (patient.gender === 'Male') genderCounts.male++;
-      else if (patient.gender === 'Female') genderCounts.female++;
+      if (patient?.gender === 'Male') genderCounts.male++;
+      else if (patient?.gender === 'Female') genderCounts.female++;
     });
 
     // Reviews
     const reviewList = await Review.findAll({
-      where: {
-        doctor_id: doctorId
-      },
-      limit: 5 // Only get the latest 5 reviews
+      where: { doctor_id: doctorId },
+      limit: 5,
+      order: [['created_at', 'DESC']]
     });
 
     const reviews = await Promise.all(
-      reviewList.map(async (review) => {
+      reviewList.map(async review => {
         const user = await Patient.findOne({
           where: { id: review.patient_id },
-          attributes: ['id','first_name', 'last_name', 'profilePictureLocation'],
+          attributes: ['id', 'first_name', 'last_name', 'profilePictureLocation'],
         });
-
         return {
           id: review.id,
           rating: review.rating,
@@ -97,29 +90,34 @@ exports.getDashboardData = asyncHandler(async (req, res) => {
         };
       })
     );
-    
-    // Today's appointment patient list with name, id and status
+
+    // Upcoming Schedules
     const now = new Date();
     const upcomingSchedules = await Schedule.findAll({
       where: {
         doctor_id: doctorId,
         status: 'available',
-        schedule_date: { $gte: now }
+        schedule_date: { [Op.gte]: now }
       },
       order: [['schedule_date', 'ASC']]
     });
-    
-    const reservationList = await Reservation.findAll({
-      where: {
-        schedule_id: upcomingSchedules[0].id
-      }
-    })
 
+    const upcomingSchedule = upcomingSchedules[0] || null;
+
+    // Upcoming Reservations (if any)
+    let reservationList = [];
+    if (upcomingSchedule) {
+      reservationList = await Reservation.findAll({
+        where: { schedule_id: upcomingSchedule.id }
+      });
+    }
+
+    // Patient List for upcoming appointment
     const patientsList = await Promise.all(
       reservationList.map(async (reservation) => {
         const patient = await Patient.findOne({
           where: { id: reservation.patient_id },
-          attributes: ['id','first_name', 'last_name', 'profilePictureLocation'],
+          attributes: ['id', 'first_name', 'last_name', 'profilePictureLocation'],
         });
         return {
           id: patient.id,
@@ -128,15 +126,17 @@ exports.getDashboardData = asyncHandler(async (req, res) => {
           profilePictureLocation: patient.profilePictureLocation,
         };
       })
-    )
-    // Map to only include required fields
+    );
+
+    // Format upcoming schedules for display
     const formattedUpcomingSchedules = upcomingSchedules.map(schedule => ({
       schedule_date: schedule.schedule_date,
       schedule_time: schedule.schedule_time,
       room_number: schedule.room_number,
       fees: schedule.fees
-    }));    
-    
+    }));
+
+    // Send Response
     res.json({
       dashboardStats: {
         appointments,
@@ -149,7 +149,7 @@ exports.getDashboardData = asyncHandler(async (req, res) => {
       upcomingSchedules: formattedUpcomingSchedules,
       patientList: patientsList
     });
-    
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error' });
