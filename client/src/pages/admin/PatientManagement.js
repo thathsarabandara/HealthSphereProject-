@@ -42,7 +42,7 @@ function PatientManagement() {
         console.log("Patient data from backend:", response.data);
 
         setPatientData(response.data.patient);
-        console.log(" Patient data:", patientData.date_of_birth);
+        console.log(" Patient data:", patientData);
 
         // Assign reservation data
         setReservations(response.data.reservations);

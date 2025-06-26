@@ -1,0 +1,20 @@
+{
+  "name": "healthsphereproject-",
+  "version": "1.0.0",
+  "description": "**HealthSphere** is a comprehensive **Hospital Management System** designed to facilitate smooth interactions between **Patients**, **Doctors**, and **Admins**. Built using the **MERN (MySQL, Express, React, Node.js)** stack, HealthSphere supports various features like patient management, doctor scheduling, and system administration to streamline healthcare operations.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thathsarabandara/HealthSphereProject-.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/thathsarabandara/HealthSphereProject-/issues"
+  },
+  "homepage": "https://github.com/thathsarabandara/HealthSphereProject-#readme"
+}

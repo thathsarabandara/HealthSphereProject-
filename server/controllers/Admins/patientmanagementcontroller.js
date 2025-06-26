@@ -258,7 +258,7 @@ exports.uploadPatientProfilePicture = async (req, res) => {
     // Respond with the new profile picture URL
     return res.status(200).json({
       message: "Profile picture uploaded successfully",
-      profilePicture: `http://localhost:5000${profilePictureUrl}`,
+      profilePicture: `http://localhost:5000${patientData.profilePictureLocation}`,
     });
   } catch (error) {
     console.error("Error uploading profile picture:", error);

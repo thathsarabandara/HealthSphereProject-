@@ -7,6 +7,7 @@ const patientmanagement = require("../controllers/Admins/patientmanagementcontro
 const {
   profilePictureUpload,
 } = require("../middleware/upload/profilePictureUpload");
+const doctorAndStaffManagementController = require("../controllers/Admins/doctorAndStaffManagementController");
 
 // Admin Authentication Routes
 router.post("/login", adminLoginController.login);
@@ -33,8 +34,6 @@ router.put(
   profilePictureUpload,
   patientmanagement.uploadPatientProfilePicture
 );
-console.log(patientmanagement);
-
 router.get("/patientmanagement/viewpatient", patientmanagement.patientDetails);
 router.get(
   "/patientmanagement/viewdoctor/:id",
@@ -45,6 +44,31 @@ router.get(
   patientmanagement.loadPrescription
 );
 
+//manage doctors and staff
+router.get(
+  "/doctorAndStaffManagement/getSignupRequests",
+  doctorAndStaffManagementController.getSignupRequests
+);
+router.get(
+  "/doctorAndStaffManagement/viewdoctor",
+  doctorAndStaffManagementController.doctorDetails
+);
+// router.put(
+//   "/doctorAndStaffManagement/acceptSignupRequest",
+//   doctorAndStaffManagementController.acceptSignupRequest
+// );
+
+//upload doctor profile picture
+router.put(
+  "/doctorAndStaffManagement/upload-profile-picture/:id",
+  profilePictureUpload,
+  doctorAndStaffManagementController.uploadPatientProfilePicture
+);
+
+router.put(
+  "/doctorAndStaffManagement/acceptdoctor",
+  doctorAndStaffManagementController.acceptSignupRequest
+);
 // // Refund Management (You need a controller function for handling refunds)
 // router.get('/admin/refund', adminAuthMiddleware);
 

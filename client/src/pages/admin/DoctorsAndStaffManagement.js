@@ -1,136 +1,435 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function DoctorsAndStaffManagement() {
+  const [searchValue, setSearchValue] = useState("");
+  const [doctorData, setDoctorData] = useState(null);
+  const [signupRequests, setSignupRequests] = useState([]);
+  const [error, setError] = useState(null);
+  const [showSignupRequests, setShowSignupRequests] = useState(false); // Toggle for signup requests
+  const [currentDateTime, setCurrentDateTime] = useState(new Date());
+  const [currentView, setCurrentView] = useState(""); // Tracks the active view: "searched" or "pending"
+  const [pendingDoctorData, setPendingDoctorData] = useState(""); // Pending doctor data
+  const fileInputRef = useRef(null);
+  const navigate = useNavigate();
 
-  const [dateTime, setDateTime] = useState(new Date().toLocaleString());
+  // Fetch new signup requests
+  useEffect(() => {
+    const fetchSignupRequests = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:5000/admin/doctorAndStaffManagement/getSignupRequests",
+          { withCredentials: true }
+        );
+        setSignupRequests(response.data.requests);
+      } catch (err) {
+        console.error("Error fetching signup requests:", err);
+        setError("Failed to fetch signup requests.");
+      }
+    };
 
+    fetchSignupRequests();
+  }, []);
+  //view pending doctor
+  const handleViewPendingDoctorProfile = async (doctorId) => {
+    setError(null); // Reset error message
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/admin/doctorAndStaffManagement/viewdoctor?id=${doctorId}`,
+        { withCredentials: true }
+      );
+      setPendingDoctorData(response.data.doctorData); // Set pending doctor data
+      setCurrentView("pending"); // Set the current view to "pending"
+    } catch (err) {
+      console.error("Error fetching doctor profile:", err);
+      setError("Failed to fetch doctor profile.");
+    }
+  };
+
+  // Update current date and time every second
   useEffect(() => {
     const interval = setInterval(() => {
-      setDateTime(new Date().toLocaleString());
-    }, 1000); // Update every second
+      setCurrentDateTime(new Date());
+    }, 1000);
 
-    return () => clearInterval(interval); // Cleanup on component unmount
+    return () => clearInterval(interval); // Cleanup interval on component unmount
   }, []);
 
-  const containerStyle = {
-    marginTop: '20px',
-    padding: '20px',
-    backgroundColor: '#fff',
-    borderRadius: '8px',
-    boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+  // Handle search for a doctor by ID
+  const handleSearch = async () => {
+    setDoctorData(null); // Reset doctor data on new search
+    setError(null); // Reset error message
+    setCurrentView(""); // Reset current view
+
+    if (!searchValue.trim()) {
+      setError("Please enter a valid doctor ID.");
+      return;
+    }
+
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/admin/doctorAndStaffManagement/viewdoctor?id=${searchValue}`,
+        { withCredentials: true }
+      );
+      setDoctorData(response.data.doctorData);
+      console.log("Doctor Data:", response.data.doctorData); // Debugging log
+      setError(null);
+      setCurrentView("searched"); // Set the current view to "searched"
+    } catch (err) {
+      console.error("Error fetching doctor data:", err);
+      setError("Failed to fetch doctor data.");
+    }
   };
 
-  const headerStyle = {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '20px',
+  // Handle accepting a doctor
+  const handleAcceptDoctor = async (doctorId) => {
+    try {
+      await axios.put(
+        `http://localhost:5000/admin/doctorAndStaffManagement/acceptdoctor`,
+        { id: doctorId },
+        { withCredentials: true }
+      );
+      alert("Doctor accepted successfully!");
+      setSignupRequests(
+        (prev) => prev.filter((request) => request.id !== doctorId) // Remove from pending list
+      );
+    } catch (err) {
+      console.error("Error accepting doctor:", err);
+      setError("Failed to accept doctor.");
+    }
   };
 
-  const tableStyle = {
-    width: '100%',
-    borderCollapse: 'collapse',
-    marginBottom: '20px',
-  };
+  // handle ProfilePictureChange
+  const handleProfilePictureChange = async (event) => {
+    const file = event.target.files[0]; // Get the selected file
+    if (!file) return;
 
-  const tableHeaderStyle = {
-    backgroundColor: '#112d4e',
-    color: 'white',
-    padding: '10px',
-    textAlign: 'left',
-  };
+    // Create a FormData object to send the file
+    const formData = new FormData();
+    formData.append("profilePicture", file); // Append the file to the FormData object
 
-  const tableCellStyle = {
-    padding: '10px',
-    borderBottom: '1px solid #ddd',
+    //send the profile picture to the server
+    try {
+      const response = await axios.put(
+        `http://localhost:5000/admin/doctorAndStaffManagement/upload-profile-picture/${doctorData.id}`,
+        formData,
+        {
+          withCredentials: true,
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
+      //update the profile picture in the frontend
+      setDoctorData((prev) => ({
+        ...prev,
+        profile_picture: response.data.profilePicture,
+      }));
+      console.log("Profile picture uploaded successfully:", response.data);
+    } catch (error) {
+      console.error("Error uploading profile picture:", error);
+      setError("Failed to upload profile picture.");
+    }
   };
-
-  const buttonStyle = {
-    padding: '5px 10px',
-    backgroundColor: '#17a2b8',
-    color: 'white',
-    border: 'none',
-    borderRadius: '4px',
-  };
-
-  const data = [
-    { doctorId: 'D001', date: '2022.09.19', doctorName: 'John' },
-    { doctorId: 'D002', date: '2022.09.20', doctorName: 'Jane' },
-    { doctorId: 'D003', date: '2022.09.21', doctorName: 'Doe' },
-  ];
 
   return (
-    <div style={containerStyle}>
-      <div style={headerStyle}>
-        <h4>Doctors and Staff Management</h4>
-        <p style={{backgroundColor: "#bacae7", borderRadius: "10px", textAlign: "center", padding: "5px"}}> {dateTime}</p>
+    <div
+      style={{
+        marginTop: "20px",
+        padding: "20px",
+        backgroundColor: "#fff",
+        borderRadius: "8px",
+        boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
+      }}
+    >
+      <h4>Doctors and Staff Management</h4>
+
+      {/* Current Date and Time */}
+      <div className="text-end mb-3">
+        <strong>Current Date and Time:</strong>{" "}
+        {currentDateTime.toLocaleDateString()}{" "}
+        {currentDateTime.toLocaleTimeString()}
       </div>
 
-      <div className='row mb-4'>
-        <div className='col-md-4'>
-          <div style={{ padding: "20px", backgroundColor: "#F4F6F8" }}>
-            <h5>Sign up request</h5>
-            <div>
-              <div style={{width: '100%', height: '100%', color: 'black', fontSize: 20, fontFamily: 'Sansation', fontWeight: '700', wordWrap: 'break-word'}}>No. of requests -</div>
-              <div style={{width: '100%', height: '100%', background: '#786262'}} />
-            </div>
+      {/* Signup Requests and Total Staff Section */}
+      <div className="d-flex justify-content-between mb-4">
+        {/* Signup Requests Card */}
+        <div
+          className="card text-center me-3" // Add margin to the right for spacing
+          style={{
+            width: "200px",
+            padding: "20px",
+            backgroundColor: "#e8f4ff",
+            borderRadius: "8px",
+          }}
+        >
+          <h6>Sign Up Requests</h6>
+          <p>No. of requests: {signupRequests.length}</p>
+          <button
+            className="btn btn-outline-primary"
+            onClick={() => setShowSignupRequests(!showSignupRequests)}
+          >
+            View
+          </button>
+          <input
+            type="file"
+            accept="image/*"
+            style={{ display: "none" }}
+            ref={fileInputRef} // Reference to the file input
+            onChange={handleProfilePictureChange} // Handle file selection
+          />
+        </div>
+
+        {/* Total Staff Card */}
+        <div
+          className="card text-center"
+          style={{
+            width: "200px",
+            padding: "20px",
+            backgroundColor: "#e8f4ff",
+            borderRadius: "8px",
+          }}
+        >
+          <h6>Total Staff</h6>
+          <p>Doctors: 50</p>
+          <p>Nurses: 30</p>
+          <p>Other: 20</p>
+        </div>
+      </div>
+
+      {/* Search Section */}
+      <div className="card p-3 mb-3">
+        <h5>Search Doctor by ID</h5>
+        <div className="d-flex align-items-center">
+          <input
+            type="text"
+            className="form-control me-2"
+            placeholder="Enter Doctor ID"
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+          />
+          <button className="btn btn-primary" onClick={handleSearch}>
+            Search
+          </button>
+        </div>
+        {error && <div className="alert alert-danger mt-2">{error}</div>}
+      </div>
+
+      {/* Doctor Details */}
+      {doctorData && currentView === "searched" && (
+        <div className="card p-3 mb-3">
+          <div className="row">
+            {/* Profile Picture */}
+            <div
+              className="rounded-circle bg-secondary "
+              style={{
+                width: "150px",
+                height: "150px",
+                marginRight: "40px",
+                marginLeft: "50px",
+                backgroundImage: doctorData.profile_picture
+                  ? `url(${doctorData.profile_picture})`
+                  : "",
+
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }}
+            ></div>
             <button
-                  style={{
-                    marginTop: "10px",
-                    padding: "10px 20px",
-                    backgroundColor: "#7B61FF",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "5px",
-                    cursor: "pointer",
-                  }}
-                >
-                  View
-                </button>
+              className="btn btn-outline-primary mb-3 w-50"
+              onClick={() => fileInputRef.current.click()} // Trigger file input
+            >
+              Edit Profile Picture
+            </button>
+
+            {/* Doctor Information */}
+            <div className="col-md-9" style={{ marginLeft: "30px" }}>
+              <div className="row">
+                <div className="col-md-6">
+                  <p>
+                    <strong>Doctor ID:</strong> {doctorData.id}
+                  </p>
+                  <p>
+                    <strong>First Name:</strong> {doctorData.firstName}
+                  </p>
+                  <p>
+                    <strong>Last Name:</strong> {doctorData.lastName}
+                  </p>
+                  <p>
+                    <strong>Phone Number:</strong> {doctorData.phoneNumber}
+                  </p>
+                  <p>
+                    <strong>Email:</strong> {doctorData.email}
+                  </p>
+                  <p>
+                    <strong>Gender:</strong> {doctorData.gender}
+                  </p>
+                  <p>
+                    <strong>Address:</strong> {doctorData.address}
+                  </p>
+                </div>
+                <div className="col-md-6">
+                  <p>
+                    <strong>Registration Date:</strong>{" "}
+                    {new Date(doctorData.registrationDate).toLocaleString()}
+                  </p>
+                  <p>
+                    <strong>Date of Birth:</strong>{" "}
+                    {new Date(doctorData.dateOfBirth).toLocaleDateString()}
+                  </p>
+                  <p>
+                    <strong>Specialization:</strong> {doctorData.specialization}
+                  </p>
+                  <p>
+                    <strong>Medical School:</strong> {doctorData.medicalSchool}
+                  </p>
+                  <p>
+                    <strong>Medical License Number:</strong>{" "}
+                    {doctorData.medicalLicenseNumber}
+                  </p>
+                  <p>
+                    <strong>Years of Experience:</strong>{" "}
+                    {doctorData.yearsOfExperience}
+                  </p>
+                  <p>
+                    <strong>Bio:</strong> {doctorData.bio}
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-
-        <div className='col-md-4'>
-          <div style={{ padding: "20px", backgroundColor: "#F4F6F8" }}>
-            <h5>Total Staff</h5>
-            <div>
-              <div style={{width: '100%', height: '100%', color: 'black', fontSize: 20, fontFamily: 'Sansation', fontWeight: '700', wordWrap: 'break-word'}}>Doctors -</div>
-              <div style={{width: '100%', height: '100%', background: '#786262'}} />
+      )}
+      {/* Pending Doctor View */}
+      {pendingDoctorData && currentView === "pending" && (
+        <div className="card p-3 mb-3">
+          <h5>Pending Doctor Details</h5>
+          <div className="row">
+            <div className="col-md-3 text-center">
+              <img
+                src={pendingDoctorData.profilePicture || "default-profile.png"}
+                alt="Doctor Profile"
+                className="img-fluid rounded-circle"
+                style={{
+                  width: "150px",
+                  height: "150px",
+                  objectFit: "cover",
+                }}
+              />
             </div>
-            <div>
-              <div style={{width: '100%', height: '100%', color: 'black', fontSize: 20, fontFamily: 'Sansation', fontWeight: '700', wordWrap: 'break-word'}}>Nurse -</div>
-              <div style={{width: '100%', height: '100%', background: '#786262'}} />
-            </div>
-            <div>
-              <div style={{width: '100%', height: '100%', color: 'black', fontSize: 20, fontFamily: 'Sansation', fontWeight: '700', wordWrap: 'break-word'}}>Others -</div>
-              <div style={{width: '100%', height: '100%', background: '#786262'}} />
+            <div className="col-md-9">
+              <div className="row">
+                <div className="col-md-6">
+                  <p>
+                    <strong>Doctor ID:</strong> {pendingDoctorData.id}
+                  </p>
+                  <p>
+                    <strong>First Name:</strong> {pendingDoctorData.firstName}
+                  </p>
+                  <p>
+                    <strong>Last Name:</strong> {pendingDoctorData.lastName}
+                  </p>
+                  <p>
+                    <strong>Phone Number:</strong>{" "}
+                    {pendingDoctorData.phoneNumber}
+                  </p>
+                  <p>
+                    <strong>Email:</strong> {pendingDoctorData.email}
+                  </p>
+                  <p>
+                    <strong>Gender:</strong> {pendingDoctorData.gender}
+                  </p>
+                  <p>
+                    <strong>Address:</strong> {pendingDoctorData.address}
+                  </p>
+                </div>
+                <div className="col-md-6">
+                  <p>
+                    <strong>Registration Date:</strong>{" "}
+                    {new Date(
+                      pendingDoctorData.registrationDate
+                    ).toLocaleString()}
+                  </p>
+                  <p>
+                    <strong>Date of Birth:</strong>{" "}
+                    {new Date(
+                      pendingDoctorData.dateOfBirth
+                    ).toLocaleDateString()}
+                  </p>
+                  <p>
+                    <strong>Specialization:</strong>{" "}
+                    {pendingDoctorData.specialization}
+                  </p>
+                  <p>
+                    <strong>Medical School:</strong>{" "}
+                    {pendingDoctorData.medicalSchool}
+                  </p>
+                  <p>
+                    <strong>Medical License Number:</strong>{" "}
+                    {pendingDoctorData.medicalLicenseNumber}
+                  </p>
+                  <p>
+                    <strong>Years of Experience:</strong>{" "}
+                    {pendingDoctorData.yearsOfExperience}
+                  </p>
+                  <p>
+                    <strong>Bio:</strong> {pendingDoctorData.bio}
+                  </p>
+                </div>
+              </div>
+              <button
+                className="btn btn-success mt-3"
+                onClick={() => handleAcceptDoctor(pendingDoctorData.id)}
+              >
+                Accept Doctor
+              </button>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
-      <table style={tableStyle}>
-        <thead>
-          <tr>
-            <th style={tableHeaderStyle}>Doctor ID</th>
-            <th style={tableHeaderStyle}>Date</th>
-            <th style={tableHeaderStyle}>Doctor Name</th>
-            <th style={tableHeaderStyle}>Profile View</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((row, index) => (
-            <tr key={index}>
-              <td style={tableCellStyle}>{row.doctorId}</td>
-              <td style={tableCellStyle}>{row.date}</td>
-              <td style={tableCellStyle}>{row.doctorName}</td>
-              <td style={tableCellStyle}>
-                <button style={buttonStyle}>View</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {/* Signup Requests Table */}
+      {showSignupRequests && (
+        <div className="card p-3 mb-3">
+          <h5>New Signup Requests</h5>
+          <table className="table table-bordered">
+            <thead>
+              <tr>
+                <th>Doctor ID</th>
+                <th>Name</th>
+                <th>Date</th>
+                <th>Profile View</th>
+              </tr>
+            </thead>
+            <tbody>
+              {signupRequests.length > 0 ? (
+                signupRequests.map((request) => (
+                  <tr key={request.id}>
+                    <td>{request.id}</td>
+                    <td>{request.name}</td>
+                    <td>{new Date(request.date).toLocaleDateString()}</td>
+                    <td>
+                      <button
+                        className="btn btn-outline-primary btn-sm"
+                        onClick={() =>
+                          handleViewPendingDoctorProfile(request.id)
+                        }
+                      >
+                        View
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="4" className="text-center">
+                    No signup requests found.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }
