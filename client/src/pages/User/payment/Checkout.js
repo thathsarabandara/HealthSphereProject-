@@ -33,6 +33,8 @@ function Checkout() {
     expiryDate: '',
     csv: ''
   });
+  
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const validateCardNumber = (cardNumber) => {
     if (!/^\d+$/.test(cardNumber)) {
@@ -133,6 +135,7 @@ function Checkout() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
     
     // Validate all fields again in case the user didn't type (e.g., pasted and didn't change)
     const newErrors = {
@@ -146,6 +149,7 @@ function Checkout() {
     
     // Check if there are any errors
     if (Object.values(newErrors).some(error => error !== '')) {
+      setIsSubmitting(false);
       return;
     }
     
@@ -179,7 +183,7 @@ function Checkout() {
       toast.error('Payment failed. Please try again.');
       console.error('Error processing payment:', error);
     } finally {
-      setIsLoading(false);
+      setIsSubmitting(false);
     }
   };
   
@@ -353,7 +357,16 @@ function Checkout() {
                       {errors.csv && <div className="text-danger">{errors.csv}</div>}
                     </div>
                   </div>
-                  <button type="submit" className="btn btn-primary w-100">Pay Now</button>
+                  <button type="submit" className="btn btn-primary w-100" disabled={isSubmitting}>
+                    {isSubmitting ? (
+                      <>
+                        <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        Processing...
+                      </>
+                    ) : (
+                      'Pay Now'
+                    )}
+                  </button>
                 </form>
               ) : (
                 <form onSubmit={handleSubmit}>
@@ -366,7 +379,16 @@ function Checkout() {
                       onChange={(e) => setPaymentDetails({ ...paymentDetails, paymentProof: e.target.files[0] })}
                     />
                   </div>
-                  <button type="submit" className="btn btn-primary w-100">Submit</button>
+                  <button type="submit" className="btn btn-primary w-100" disabled={isSubmitting}>
+                    {isSubmitting ? (
+                      <>
+                        <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        Submitting...
+                      </>
+                    ) : (
+                      'Submit'
+                    )}
+                  </button>
                 </form>
               )}
             </div>

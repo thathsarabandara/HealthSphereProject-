@@ -7,6 +7,8 @@ const patientmanagement = require('../controllers/Admins/patientmanagementcontro
 const {adminAuthMiddleware} = require('../middleware/auth/authorizeAdmin');
 const staffManagement = require('../controllers/Admins/staffManagementController')
 const adminController = require('../controllers/Admins/adminController');
+const dashboardController = require('../controllers/Admins/dashboardController');
+
 // Admin Authentication Routes
 router.post('/login', adminLoginController.login);
 router.post('/logout', adminLoginController.logout);
@@ -36,4 +38,8 @@ router.put('/staff/:userId/status', [adminAuthMiddleware], staffManagement.updat
 router.post('/admins', [adminAuthMiddleware], adminController.createAdmin);
 router.get('/admins', [adminAuthMiddleware], adminController.getAdmins);
 router.put('/admins/:id/block', [adminAuthMiddleware], adminController.toggleAdminBlock);
+
+// Admin Dashboard Metrics
+router.get('/dashboard', [adminAuthMiddleware], dashboardController.getDashboardMetrics);
+router.get('/dashboard/schdules', [adminAuthMiddleware], dashboardController.getTopSchedules)
 module.exports = router;

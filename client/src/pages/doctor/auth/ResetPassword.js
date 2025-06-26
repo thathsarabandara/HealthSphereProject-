@@ -85,8 +85,18 @@ function ResetPassword() {
                                     <small className="form-text text-muted mt-4">We'll send you an email to reset your password.</small>
                                 </div>
                                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                    <button type="submit" className="btn btn-primary btn-block text-white mt-3" style={{ background: '#112D4E' }} disabled={loading}>
-                                        {loading ? 'Sending...' : 'Send Reset Link'}
+                                    <button 
+                                      type="submit" 
+                                      className="btn w-100 text-white" 
+                                      style={{ background: '#112D4E' }}
+                                      disabled={loading}
+                                    >
+                                      {loading ? (
+                                        <>
+                                          <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                          Resetting...
+                                        </>
+                                      ) : 'Reset Password'}
                                     </button>
                                 </div>
                                 

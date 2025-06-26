@@ -39,7 +39,7 @@ exports.saveReservation = async (req, res) => {
             phone_number: reservation_phonenumber,
             email: reservation_email,
         } = req.body;
-
+        console.log(req.body)
         const schedule_id = req.params.id;
 
         // Automatically set current date and time for reservation
@@ -143,9 +143,9 @@ const findReservationsByUserId = async (patientID) => {
 exports.loadReservations = async (req, res) => {
     try {
         const reservations = await findReservationsByUserId(req.patientID);
-
+        console.log(reservations)
         if (reservations.length === 0) {
-            return res.status(404).json({ message: 'No reservations found' });
+            return res.status(200).json({ message: 'No reservations found' });
         }
 
         const scheduleIds = reservations.map((reservation) => reservation.schedule_id);

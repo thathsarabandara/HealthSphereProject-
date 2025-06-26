@@ -19,6 +19,7 @@ function Login() {
   const [showSuccess, setShowSuccess] = useState(false);
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const loadingTimeout = setTimeout(() => setIsLoading(false), 3000);
@@ -45,31 +46,34 @@ function Login() {
   };
 
   const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            const response = await axios.post('http://localhost:5000/login', { email, password }, { withCredentials: true });
-            toast.success(response.data.message, 
-              {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "colored",
-              }
-            );
-            setEmail('');
-            setPassword('');
-            sessionStorage.setItem('isAuthenticated', 'true'); 
-            triggerLoginEvent()
-            navigate('/'); 
-        } catch (err) {
-            toast.error(err.response?.data?.error || 'Login failed. Please try again.');
-            setEmail('');
-            setPassword('');
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const response = await axios.post('http://localhost:5000/login', { email, password }, { withCredentials: true });
+      toast.success(response.data.message, 
+        {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
         }
+      );
+      setEmail('');
+      setPassword('');
+      sessionStorage.setItem('isAuthenticated', 'true'); 
+      triggerLoginEvent()
+      navigate('/'); 
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Login failed. Please try again.');
+      setEmail('');
+      setPassword('');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -142,10 +146,22 @@ function Login() {
             </div>
 
             <div className="text-center text-md-start mt-4 pt-2">
-              <button className="btn mt-1 w-100" style={{ background: '#112D4E', borderRadius: 10 }}>
-                <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
-                  Sign In
-                </span>
+              <button 
+                type="submit" 
+                className="btn mt-1 w-100 text-white" 
+                style={{ background: '#112D4E', borderRadius: 10 }}
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    Logging in...
+                  </>
+                ) : (
+                  <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
+                    Sign In
+                  </span>
+                )}
               </button>
 
               <div className="text-center my-3">

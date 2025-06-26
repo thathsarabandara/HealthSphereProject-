@@ -14,6 +14,7 @@ function ScheduleRequest() {
   const [fees, setFees] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [saveLoading, setSaveLoading] = useState(false);
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [schedulesPerPage] = useState(5);
@@ -48,14 +49,22 @@ function ScheduleRequest() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSaveLoading(true);
 
     if (!date || !time || !fees) {
       setError('Please fill in all fields.');
+      setSaveLoading(false);
       return;
     }
 
-    if (new Date(date) < new Date()) {
-      setError('Please select a future date');
+    // Check if the selected date is in the past (excluding today)
+    const todayStart = new Date();
+    todayStart.setHours(0,0,0,0);
+    const selectedDate = new Date(date);
+    
+    if (selectedDate < todayStart) {
+      setError('Please select today or a future date');
+      setSaveLoading(false);
       return;
     }
 
@@ -71,6 +80,8 @@ function ScheduleRequest() {
       setError('Error sending schedule request. Please try again.');
       console.error('Error sending schedule request:', error);
       toast.error('Failed to send schedule request');
+    } finally {
+      setSaveLoading(false);
     }
   };
 
@@ -144,8 +155,17 @@ function ScheduleRequest() {
             placeholder="Enter your comments here"
           />
         </div>
-        <button type="submit" className="btn btn-success">
-          Request
+        <button 
+          type="submit" 
+          className="btn btn-success"
+          disabled={saveLoading}
+        >
+          {saveLoading ? (
+            <>
+              <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+              Saving...
+            </>
+          ) : 'Request'}
         </button>
       </form>
 

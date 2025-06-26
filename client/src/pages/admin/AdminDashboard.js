@@ -1,9 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import axios from "axios";
-import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -18,8 +17,17 @@ function AdminDashboard() {
 
   const [newMessage, setNewMessage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [schdules, setSchedules] = useState([])
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+
+  const [metrics, setMetrics] = useState({
+    totalPatients: 0,
+    activeDoctors: 0,
+    todaysAppointments: 0,
+    bedOccupancy: '0%',
+    availableBeds: 0
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -35,10 +43,32 @@ function AdminDashboard() {
         setIsLoading(false);
       }
     };
-  
+
+    const fetchDashboardMetrics = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/admin/dashboard', {
+          withCredentials:true
+        });
+        setMetrics(response.data);
+      } catch (error) {
+        console.error('Error fetching dashboard metrics:', error);
+      }
+    };
+
+    const fetchSchdule = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/admin/dashboard/schdules', {
+          withCredentials:true
+        });
+        setSchedules(response.data)
+      } catch (error) {
+        console.error('Error fetching dashboard metrics:', error);
+      }
+    };
     fetchData();
+    fetchDashboardMetrics();
+    fetchSchdule();
   }, [navigate]);
-  
 
   const handleSendMessage = () => {
     if (newMessage.trim() !== "") {
@@ -69,371 +99,129 @@ function AdminDashboard() {
       );
     };
 
-  const events = [
-    {
-      title: "Dr. Shah Appointment",
-      start: new Date(2023, 8, 9, 11, 0),
-      end: new Date(2023, 8, 9, 12, 0),
-      type: "Appointment",
-    },
-    {
-      title: "Dr. Pande Surgery",
-      start: new Date(2023, 8, 9, 11, 0),
-      end: new Date(2023, 8, 9, 17, 0),
-      type: "Surgery",
-    },
-    {
-      title: "Dr. Sawant Appointment",
-      start: new Date(2023, 8, 9, 10, 0),
-      end: new Date(2023, 8, 9, 12, 0),
-      type: "Appointment",
-    },
-  ];
-
-  const localizer = momentLocalizer(moment);
-
-  const customStyles = {
-    calendarHeader: {
-      backgroundColor: "#007BFF",
-      color: "white",
-      padding: "10px",
-      borderRadius: "5px",
-      textAlign: "center",
-    },
-    dayLabels: {
-      backgroundColor: "#DFF3FF",
-      color: "#007BFF",
-      padding: "5px 0",
-    },
-    event: {
-      backgroundColor: "#FFD54F",
-      color: "#333",
-      borderRadius: "5px",
-      padding: "2px 5px",
-    },
-  };
-
   return (
     <div style={{ padding: "20px", backgroundColor: "#F4F6F8" }}>
       <h2 className="m-3">Dashboard</h2>
       <div className="container-fluid">
-        {/* Dashboard Cards */}
+        {/* Hospital Metrics Cards */}
+        
         <div className="row">
           {[
-            { title: "New Patients", value: "890", color: "#E3FCEF", percentage: "+40%" },
-            { title: "OPD Patients", value: "360", color: "#E3F2FD", percentage: "+30%" },
-            { title: "Lab Tests", value: "980", color: "#FFEBEE", percentage: "+60%" },
-            { title: "Total Earnings", value: "$98,000", color: "#FFF8E1", percentage: "+20%" },
+            { title: "Total Patients", value: metrics.totalPatients, color: "#E3FCEF", percentage: "Total" },
+            { title: "Total Doctors", value: metrics.activeDoctors, color: "#E3F2FD", percentage: "Total" },
+            { title: "Total Appointments", value: metrics.totalAppointments, color: "#FFEBEE", percentage: "Total" },
+            { title: "Total Schdules", value: metrics.totalSchedules, color: "#FFF8E1", percentage: 'Total' },
           ].map((card, index) => (
             <div key={index} className="col-md-3 col-sm-6 mb-4">
               <div
                 style={{
-                  backgroundColor: card.color,
-                  borderRadius: "15px",
+                  backgroundColor: "white",
+                  borderRadius: "10px",
                   padding: "20px",
                   textAlign: "center",
-                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.05)",
                 }}
               >
-                <h5>{card.title}</h5>
-                <h2>{card.value}</h2>
-                <p style={{ color: "green" }}>{card.percentage} this month</p>
+                <h5 style={{ color: "#555", fontWeight: 500 }}>{card.title}</h5>
+                <h2 style={{ margin: "10px 0", color: "#333", fontWeight: 600 }}>{card.value}</h2>
+                <p style={{ color: "#666", fontSize: "14px" }}>{card.percentage}</p>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Additional Stats */}
-        <div className="row mb-4" style={{ padding: "20px", backgroundColor: "#F4F6F8" }}>
-          {[
-            { label: "Appointments", value: 639, color: "#fbebff" },
-            { label: "Doctors", value: 83, color: "#fbebff" },
-            { label: "Staff", value: 296, color: "#fbebff" },
-            { label: "Operations", value: 49 , color: "#fbebff"},
-            ].map((metric, index) => (
-              <div key={index} className="col-md-3 col-sm-6 mb-3">
-                  <div
-                    style={{
-                      backgroundColor: metric.color,
-                      borderRadius: "10px",
-                      padding: "20px",
-                      textAlign: "center",
-                    }}
-                  >
-                    <h5>{metric.label}</h5>
-                    <h2>{metric.value}</h2>
-                  </div>
-              </div>
-          ))}
-        </div>
+      <div className="row">{/* Hospital Status Section */}
+        <div className="row mb-4">
+          <div className="col-md-6 mb-4">
+            <div style={{
+              backgroundColor: "white",
+              borderRadius: "10px",
+              padding: "20px",
+              boxShadow: "0 4px 6px rgba(0, 0, 0, 0.05)",
+            }}>
+              <h5>Today's Schedule</h5>
 
-
-{/*........................................................................*/}
-
-        <div style={{ padding: "20px", backgroundColor: "#f8f9fa" }}>
-          <div className="container-fluid">
-            {/* Dashboard Metrics */}
-            <div className="row mb-4">
-              {[
-                { label: "Rooms Occupied", value: 20 },
-                { label: "Rooms Free", value: 10 },
-                { label: "Beds Occupied (ICU)", value: 8 },
-                { label: "Beds Free (ICU)", value: 2 },
-              ].map((metric, index) => (
-                <div key={index} className="col-md-3 col-sm-6 mb-3">
-                  <div
-                    style={{
-                      backgroundColor: "#bacae7",
-                      borderRadius: "10px",
-                      padding: "20px",
-                      textAlign: "center",
-                    }}
-                  >
-                    <h5>{metric.label}</h5>
-                    <h2>{metric.value}</h2>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Upcoming Schedules */}
-            <div className="row mb-4">
-              <div className="col-md-6">
-                <div
-                  style={{
-                    backgroundColor: "#FFFFFF",
-                    borderRadius: "10px",
-                    padding: "20px",
-                    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-                  }}
-                >
-                  <h5>Upcoming Schedules</h5>
-                  <ul style={{ listStyleType: "none", padding: 0 }}>
-                    <li>8:00 AM - OPD (Dr. Ravimal)</li>
-                    <li>11:00 AM - Eye (Dr. Deepita)</li>
-                  </ul>
-                </div>
-              </div>
-              <div className="col-md-6">
-                <div
-                  style={{
-                    backgroundColor: "#FFFFFF",
-                    borderRadius: "10px",
-                    padding: "20px",
-                    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-                  }}
-                >
-                  <h5>Today's Staff</h5>
-                  <ul style={{ listStyleType: "none", padding: 0 }}>
-                    <li>Doctors: 15</li>
-                    <li>Nurses: 25</li>
-                    <li>Other Staff: 10</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            {/* Appointments and Feedback */}
-            <div className="row mb-4">
-              <div className="col-md-6">
-                <div
-                  style={{
-                    backgroundColor: "#FFFFFF",
-                    borderRadius: "10px",
-                    padding: "20px",
-                    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-                  }}
-                >
-                  <h5>Appointments</h5>
-                  <ul style={{ listStyleType: "none", padding: 0 }}>
-                    <li>Patients Checked In: 50</li>
-                    <li>Appointments Due: 10</li>
-                    <li>Appointments Canceled: 5</li>
-                  </ul>
-                </div>
-              </div>
-              <div className="col-md-6">
-                <div
-                  style={{
-                    backgroundColor: "#FFFFFF",
-                    borderRadius: "10px",
-                    padding: "20px",
-                    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-                  }}
-                >
-                  <h5>Feedback</h5>
-                  <ul style={{ listStyleType: "none", padding: 0 }}>
-                    <li>Doctors: Positive</li>
-                    <li>Patients: Mixed</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-
-{/*.........................................................................*/}
-
-
-
-        {/* Main Section */}
-        <div className="row">
-          {/* Calendar Section */}
-          <div className="col-lg-6 mb-4">
-            <div
-              style={{
-                backgroundColor: "white",
-                borderRadius: "15px",
-                padding: "20px",
-                boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-              }}
-            >
-              <div style={customStyles.calendarHeader}>December 2024</div>
-              <Calendar
-                localizer={localizer}
-                events={events}
-                startAccessor="start"
-                endAccessor="end"
-                style={{ height: 250 }}
-                views={{ month: true }}
-                components={{
-                  toolbar: () => null,
-                  month: {
-                    header: () => null,
-                    dateHeader: ({ label }) => (
-                      <div style={customStyles.dayLabels}>{label}</div>
-                    ),
-                  },
-                  event: ({ event }) => (
-                    <span style={customStyles.event}>{event.title}</span>
-                  ),
-                }}
-              />
-              <div style={{ marginTop: "20px" }}>
-                <h6>Activity Details</h6>
-                <ul style={{ listStyle: "none", padding: 0 }}>
-                  {events.map((event, index) => (
-                    <li key={index}>
-                      <strong>{event.title}</strong> - {moment(event.start).format("hh:mm A")} - {moment(event.end).format("hh:mm A")}
+              {schdules && schdules.length > 0 ? (
+                <ul style={{ listStyleType: "none", padding: 0, margin: 0 }}>
+                  {schdules.map((schedule, index) => (
+                    <li key={index} style={{ padding: "8px 0", borderBottom: "1px solid #eee" }}>
+                      <strong>{schedule.doctorName}</strong> - {schedule.schedule_date} - {schedule.schedule_time}
                     </li>
                   ))}
                 </ul>
-                <button
-                  style={{
-                    marginTop: "10px",
-                    padding: "10px 20px",
-                    backgroundColor: "#7B61FF",
-                    color: "white",
-                    border: "none", borderRadius: "5px",cursor: "pointer",
-                  }}
-                >
-                  Add New
-                </button>
-              </div>
+              ) : (
+                <p>No Data Found</p>
+              )}
+            </div>
+          </div>
+          <div className="col-md-6 mb-4">
+            <div style={{
+              backgroundColor: "white",
+              borderRadius: "10px",
+              padding: "20px",
+              boxShadow: "0 4px 6px rgba(0, 0, 0, 0.05)",
+            }}>
+              <h5>Hospital Status</h5>
+              <ul style={{ listStyleType: "none", padding: 0 }}>
+                <li style={{ padding: "8px 0", borderBottom: "1px solid #eee" }}>
+                  <strong>ICU Beds:</strong> 8 occupied, 2 available
+                </li>
+                <li style={{ padding: "8px 0", borderBottom: "1px solid #eee" }}>
+                  <strong>Emergency Room:</strong> 5 patients waiting
+                </li>
+                <li style={{ padding: "8px 0", borderBottom: "1px solid #eee" }}>
+                  <strong>Staff On Duty:</strong> 15 doctors, 25 nurses
+                </li>
+                <li style={{ padding: "8px 0" }}>
+                  <strong>Medication Stock:</strong> All normal
+                </li>
+              </ul>
             </div>
           </div>
 
-          {/* Chat Section */}
-          <div className="col-lg-6 mb-4">
-            <div
-              style={{
-                backgroundColor: "white",
-                borderRadius: "15px",
-                padding: "20px",
-                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                height: "450px",
-              }}
-            >
-              <h5>Chat</h5>
-              <div
-                style={{
-                  height: "300px",
-                  overflowY: "scroll",
-                  padding: "10px",
-                  border: "1px solid #ddd",
-                  borderRadius: "5px",
-                  backgroundColor: "#F9FAFB",
-                }}
-              >
-                {messages.map((message, index) => (
-                  <div key={index} style={{ marginBottom: "10px" }}>
-                    <strong>{message.sender}</strong>{" "}
-                    <span style={{ fontSize: "12px", color: "#888" }}>{message.time}</span>
-                    <p>{message.content}</p>
-                  </div>
-                ))}
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  marginTop: "10px",
-                }}
-              >
-                <input
-                  type="text"
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                  style={{
-                    flex: 1,
-                    padding: "10px",
-                    border: "1px solid #ddd",
-                    borderRadius: "5px",
-                  }}
-                  placeholder="Type a message..."
-                />
-                <button onClick={handleSendMessage} style={{backgroundColor: "#7B61FF",color: "white",padding: "10px 20px",border: "none",borderRadius: "5px",marginLeft: "10px",}}> Send</button>
-              </div>
-            </div>
-          </div>
         </div>
-
-        {/* Patients Table */}
-        <div
-          style={{
-            backgroundColor: "white",
-            borderRadius: "15px",
-            padding: "20px",
-            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-          }}
-        >
-          <h5>Patients Activities</h5>
+        </div>
+      </div>
+        {/* Recent Admissions */}
+        <div style={{
+          backgroundColor: "white",
+          borderRadius: "10px",
+          padding: "20px",
+          boxShadow: "0 4px 6px rgba(0, 0, 0, 0.05)",
+        }}>
+          <h5>Recent Patient Admissions</h5>
           <table className="table">
-            <thead style={{ backgroundColor: "#F1F3F4" }}>
+            <thead style={{ backgroundColor: "#F8F9FA" }}>
               <tr>
-                <th>Bed No.</th>
                 <th>Patient Name</th>
-                <th>Age</th>
-                <th>Admitted Date</th>
-                <th>Operations</th>
-                <th>Time</th>
+                <th>Admission Date</th>
+                <th>Department</th>
                 <th>Status</th>
-                <th>Action</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td>101</td>
-                <td>Sibi Mathew</td>
-                <td>35</td>
-                <td>10/01/2023</td>
-                <td>Hand Surgery</td>
-                <td>10:00 AM</td>
-                <td>
-                  <span className="badge bg-success">Successful</span>
-                </td>
-                <td>-</td>
+                <td>John Doe</td>
+                <td>2023-10-01</td>
+                <td>Cardiology</td>
+                <td><span className="badge bg-success">Stable</span></td>
               </tr>
-              {/* Add more rows as needed */}
+              <tr>
+                <td>Jane Smith</td>
+                <td>2023-10-02</td>
+                <td>Orthopedics</td>
+                <td><span className="badge bg-warning">Observation</span></td>
+              </tr>
+              <tr>
+                <td>Robert Brown</td>
+                <td>2023-10-02</td>
+                <td>ICU</td>
+                <td><span className="badge bg-danger">Critical</span></td>
+              </tr>
             </tbody>
           </table>
         </div>
-
-        
       </div>
-    </div>
   );
 }
 

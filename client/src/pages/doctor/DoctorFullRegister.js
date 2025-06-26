@@ -34,6 +34,7 @@ function DoctorFullRegister() {
   const [profilePicturePreview, setProfilePicturePreview] = useState(emptyImage);
   const [isLoading, setIsLoading] = useState(true);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const loadingTimeout = setTimeout(() => setIsLoading(false), 3000);
@@ -106,8 +107,9 @@ function DoctorFullRegister() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     
     const doctorData = new FormData();
     Object.keys(formData).forEach((key) => {
@@ -140,6 +142,7 @@ function DoctorFullRegister() {
       console.error('Error submitting registration request:', err);
       notifyError('There was an error while submitting your registration. Please try again later.');
     });
+    setLoading(false);
   };
 
   if (showSuccess) {
@@ -482,8 +485,18 @@ function DoctorFullRegister() {
 
       {/* Submit Button */}
       <div className="text-center">
-        <button type="submit" className="btn btn-success btn-lg">
-          Request for Registration
+        <button 
+          type="submit" 
+          className="btn w-100 text-white" 
+          style={{ background: '#112D4E' }}
+          disabled={loading}
+        >
+          {loading ? (
+            <>
+              <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+              Registering...
+            </>
+          ) : 'Register'}
         </button>
       </div>
     </form>

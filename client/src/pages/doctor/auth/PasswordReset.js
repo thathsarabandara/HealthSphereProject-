@@ -14,6 +14,7 @@ const PasswordReset = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
 
     // Extract token from query parameters
     const query = new URLSearchParams(location.search);
@@ -50,10 +51,12 @@ const PasswordReset = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
 
         // Check if passwords match
         if (password !== confirmPassword) {
             setError('Passwords do not match.');
+            setLoading(false);
             return;
         }
 
@@ -69,6 +72,7 @@ const PasswordReset = () => {
             setError('Failed to reset password. Please try again.');
             toast.error('Password reset failed.');
         }
+        setLoading(false);
     };
 
     if (isLoading) {
@@ -120,7 +124,19 @@ const PasswordReset = () => {
                                     className="form-control"
                                 />
                             </div>
-                            <button type="submit" className="btn btn-primary">Reset Password</button>
+                            <button 
+                                type="submit" 
+                                className="btn w-100 text-white" 
+                                style={{ background: '#112D4E' }}
+                                disabled={loading}
+                            >
+                                {loading ? (
+                                    <>
+                                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                        Resetting...
+                                    </>
+                                ) : 'Reset Password'}
+                            </button>
                         </form>
                     ) : (
                         <p>Validating token...</p>

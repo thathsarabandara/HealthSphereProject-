@@ -17,6 +17,7 @@ function Reservations() {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Fetch default data from the backend
   useEffect(() => {
@@ -57,23 +58,28 @@ function Reservations() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
     try {
-      const response = await axios.post(`http://localhost:5000/reservation/${scheduleid}`, formData, {withCredentials: true});
-      if (response.status === 200 || response.status === 201) {
-        toast.success('Reservation submitted successfully!');
-        setFormData({ name: '', address: '', phone_number: '', email: '' });
-        navigate('/'); // Navigate back to the home page after successful submission
-      } else {
-        toast.error('Failed to submit the reservation. Please try again.');
-      }
-    } catch (error) {
-      const status = error.response?.status || 500;
-      toast.error(`An error occurred: ${error.message}`);
-      if (status === 401) {
-        navigate('/login');
-      } else {
-        navigate(`/error/${status}`);
-      }
+      // Include the schedule_id from the route parameters
+      const dataToSend = {
+        ...formData,
+        schedule_id: scheduleid
+      };
+      const response = await axios.post(`http://localhost:5000/reservation/${scheduleid}`, dataToSend, {
+        withCredentials: true,
+      });
+      toast.success('Reservation submitted successfully!');
+        setFormData({
+          name: '',
+          address: '',
+          phone_number: '',
+          email: '',
+        });
+        navigate('/bookings');
+    } catch (err) {
+      toast.error('Failed to submit reservation');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -102,7 +108,7 @@ function Reservations() {
 
   return (
     <div>
-      <ToastContainer position="top-right" autoClose={3000} />
+      <ToastContainer position="bottom-right" autoClose={3000} />
       <div className="container mt-4" style={{ minHeight: '70vh' }}>
         <div className="d-flex justify-content-between align-items-center mb-3">
           <h2>Your Reservations</h2>
@@ -162,8 +168,17 @@ function Reservations() {
                 />
               </div>
 
-              <button type="submit" className="btn btn-primary">
-                Book
+              <button 
+                type="submit" 
+                className="btn btn-primary" 
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-2"></span>
+                    Submitting...
+                  </>
+                ) : 'Submit Reservation'}
               </button>
             </form>
           </div>

@@ -11,6 +11,7 @@ function DoctorDetails() {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5); // Items per page
+  const [bookLoading, setBookLoading] = useState({});
 
   useEffect(() => {
     if (category) {
@@ -148,8 +149,14 @@ function DoctorDetails() {
                       <button 
                         className="btn btn-primary btn-sm"
                         onClick={() => handleReservation(doctor.schedule_id)}
+                        disabled={bookLoading[doctor.schedule_id]}
                       >
-                        Book
+                        {bookLoading[doctor.schedule_id] ? (
+                          <>
+                            <span className="spinner-border spinner-border-sm me-2"></span>
+                            Booking...
+                          </>
+                        ) : 'Book'}
                       </button>
                     </td>
                   </tr>

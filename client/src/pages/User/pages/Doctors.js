@@ -122,7 +122,7 @@ function Doctors() {
       image: Ellipse1,
       title: 'Channel a Dermatologist',
       description: 'Specializes in the treatment of skin, hair, and nail conditions like acne, eczema, and psoriasis. Offers expert guidance on growth, nutrition, milestones for childre',
-      link: '"/finddoctors/Dermatologist'
+      link: '/finddoctors/Dermatologist'
 
     }
   ];

@@ -12,6 +12,7 @@ function OTPVerification() {
     const [verifysuccessVisible, setverifySuccessVisible] = useState(false);
     const [errorVisible, setErrorVisible] = useState(false);
     const [successVisible, setSuccessVisible] = useState(false);
+    const [loading, setLoading] = useState(false);
     const handleverifyErrorClose = () => setverifyErrorVisible(false);
     const handleverifySuccessClose = () => setverifySuccessVisible(false);  
     const handleErrorClose = () => setErrorVisible(false);
@@ -20,6 +21,7 @@ function OTPVerification() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
         try{
             const response = await axios.post('http://localhost:5000/verifyuser', { otp }, { withCredentials: true }); 
             setSuccess(response.data.message);
@@ -28,9 +30,11 @@ function OTPVerification() {
             setverifySuccessVisible(true);
             navigate('/login');
         }catch(err){
-            setError(error.response?.data?.error || 'OTP Verification failed');
+            setError(err.response?.data?.error || 'OTP Verification failed');
             setSuccess('');
             setverifyErrorVisible(true)
+        }finally{
+            setLoading(false);
         }
     };
     const handleResendOTP = async (e) => {
@@ -77,8 +81,17 @@ function OTPVerification() {
                 </div>
 
                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                    <button type="submit" className="btn btn-block text-white" style={{ background: '#112D4E' }}>
-                        Verify OTP
+                    <button 
+                        type="submit" 
+                        className="btn btn-primary" 
+                        disabled={loading}
+                    >
+                        {loading ? (
+                            <>
+                                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                Verifying...
+                            </>
+                        ) : 'Verify OTP'}
                     </button>
                 </div>
             </form>
