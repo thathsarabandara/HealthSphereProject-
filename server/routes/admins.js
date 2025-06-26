@@ -37,10 +37,12 @@ router.put(
 router.get("/patientmanagement/viewpatient", patientmanagement.patientDetails);
 router.get(
   "/patientmanagement/viewdoctor/:id",
+  adminAuthMiddleware,
   patientmanagement.loadDoctortProfile
 );
 router.get(
   "/patientmanagement/loadprescription/:reservationid",
+  adminAuthMiddleware,
   patientmanagement.loadPrescription
 );
 
