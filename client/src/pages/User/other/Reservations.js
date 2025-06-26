@@ -60,7 +60,12 @@ function Reservations() {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const response = await axios.post('http://localhost:5000/reservations', formData, {
+      // Include the schedule_id from the route parameters
+      const dataToSend = {
+        ...formData,
+        schedule_id: scheduleid
+      };
+      const response = await axios.post(`http://localhost:5000/reservation/${scheduleid}`, dataToSend, {
         withCredentials: true,
       });
       if (response.data.success) {
@@ -71,9 +76,9 @@ function Reservations() {
           phone_number: '',
           email: '',
         });
+        navigate('/bookings');
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'An error occurred');
       toast.error('Failed to submit reservation');
     } finally {
       setIsSubmitting(false);
@@ -105,7 +110,7 @@ function Reservations() {
 
   return (
     <div>
-      <ToastContainer position="top-right" autoClose={3000} />
+      <ToastContainer position="bottom-right" autoClose={3000} />
       <div className="container mt-4" style={{ minHeight: '70vh' }}>
         <div className="d-flex justify-content-between align-items-center mb-3">
           <h2>Your Reservations</h2>

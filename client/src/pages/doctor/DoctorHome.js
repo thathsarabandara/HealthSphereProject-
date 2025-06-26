@@ -39,12 +39,12 @@ const [profileData, setProfileData] = useState({});
 const [statsData, setStatsData] = useState({});
 const [patientList, setPatientList] = useState([]);
 const [appointments, setAppointments] = useState([]);
-const [upcomingAppointments, setUpcomingAppointments] = useState([]);
+const [upcomingSchedules, setUpcomingSchedules] = useState([]);
 const [genderStats, setGenderStats] = useState({});
 const [reviews, setReviews] = useState([]);
 const [currentDateTime, setCurrentDateTime] = useState(new Date());
 const [dashboardLoading, setDashboardLoading] = useState(true);
-const [profileLoading, setProfileLoading] = useState(true);
+const [currentAppointmentIndex, setCurrentAppointmentIndex] = useState(0);
 
   // Fetch user data (authentication)
   const fetchUserData = async () => {
@@ -76,9 +76,10 @@ const [profileLoading, setProfileLoading] = useState(true);
       const data = response.data;
       setStatsData(data.dashboardStats);
       setGenderStats(data.genderStats);
-      console.log(data.genderStats)
       setReviews(data.reviews);
-      setUpcomingAppointments(data.upcomingAppointments);
+      setAppointments(data.upcomingSchedules);
+      console.log(data.upcomingSchedules)
+      console.log(appointments[0])
       setPatientList(data.patientList);
       setDashboardLoading(false);
     } catch (error) {
@@ -314,7 +315,6 @@ if (dashboardLoading) {
                                       <tr className="bg-light">
                                         <th>ID</th>
                                         <th>Patient</th>
-                                        <th>Time</th>
                                         <th>Status</th>
                                       </tr>
                                     </thead>
@@ -323,7 +323,6 @@ if (dashboardLoading) {
                                         <tr key={index}>
                                           <td>{patient?.id || '--'}</td>
                                           <td>{(patient?.first_name || '') + " " + (patient?.last_name || '') || '----'}</td>
-                                          <td>--:--</td>
                                           <td>
                                             <span className="badge bg-success d-flex align-items-center gap-1">
                                               <FaCheckCircle /> Available
@@ -345,23 +344,41 @@ if (dashboardLoading) {
                             <div className="col-md-6 mb-4">
                               <div className="card shadow-sm border-0 h-100">
                                 <div className="card-body p-4">
-                                  <h5 className="fw-bold mb-4">Recent Review</h5>
-                                  {reviews ? (
-                                    <div className="d-flex align-items-start gap-3">
-                                      <div className="flex-shrink-0">
-                                        <img
-                                          src={currentReview?.img || emptyImage}
-                                          alt="Reviewer"
-                                          className="rounded-circle"
-                                          style={{ width: '50px', height: '50px', objectFit: 'cover' }}
-                                        />
-                                      </div>
-                                      <div>
-                                        <strong>{currentReview?.name || 'Anonymous'}</strong>
-                                        <div className="text-warning mb-2">
-                                          {"⭐".repeat(currentReview?.rating || 0)}
+                                  <h5 className="fw-bold mb-4">Recent Reviews</h5>
+                                  {reviews && reviews.length > 0 ? (
+                                    <div>
+                                      <div className="d-flex align-items-start gap-3">
+                                        <div className="flex-shrink-0">
+                                          <img
+                                            src={`http://localhost:5000/uploads/storage/patient/${reviews[currentReviewIndex].userid}/profilepictures/${reviews[currentReviewIndex].patientProfilePicture}`|| emptyImage}
+                                            alt="Reviewer"
+                                            className="rounded-circle"
+                                            style={{ width: '50px', height: '50px', objectFit: 'cover' }}
+                                          />
                                         </div>
-                                        <p className="mb-0">{currentReview?.comment || 'No comment'}</p>
+                                        <div>
+                                          <strong>{reviews[currentReviewIndex]?.patientName || 'Anonymous'}</strong>
+                                          <div className="text-warning mb-2">
+                                            {"⭐".repeat(reviews[currentReviewIndex]?.rating || 0)}
+                                          </div>
+                                          <p className="mb-0">{reviews[currentReviewIndex]?.comment || 'No comment'}</p>
+                                        </div>
+                                      </div>
+                                      <div className="d-flex justify-content-between mt-3">
+                                        <button 
+                                          className="btn btn-outline-primary" 
+                                          onClick={() => setCurrentReviewIndex(prev => (prev > 0 ? prev - 1 : reviews.length - 1))}
+                                          disabled={reviews.length <= 1}
+                                        >
+                                          Previous
+                                        </button>
+                                        <button 
+                                          className="btn btn-outline-primary" 
+                                          onClick={() => setCurrentReviewIndex(prev => (prev < reviews.length - 1 ? prev + 1 : 0))}
+                                          disabled={reviews.length <= 1}
+                                        >
+                                          Next
+                                        </button>
                                       </div>
                                     </div>
                                   ) : (
@@ -373,27 +390,49 @@ if (dashboardLoading) {
         
                             {/* Upcoming Clinic Date Card */}
                             <div className="col-md-6 mb-4">
-                            <div className="card shadow-sm border-primary border-2 h-100">
+                              <div className="card shadow-sm border-0 h-100">
                                 <div className="card-body p-4">
-                                  <h5 className="fw-bold mb-4">Upcoming Clinic</h5>
-                                  <div className="d-flex justify-content-between align-items-center">
+                                  <h5 className="fw-bold mb-4">Upcoming Appointments</h5>
+                                  {appointments && appointments.length > 0 ? (
                                     <div>
-                                      <p className="mb-1"><strong>Date:</strong>{upcomingAppointments[0]?.schedule_date || 'No Upcoming Appointments'}</p>
-                                      <p className="mb-1"><strong>Time:</strong>{upcomingAppointments[0]?.schedule_time || 'No Upcoming Appointments'}</p>
-                                      <p className="mb-1"><strong>Location:</strong>{upcomingAppointments[0]?.room_number || 'No Upcoming Appointments'}</p>
+                                      <div className="d-flex align-items-start gap-3">
+                                        <div>
+                                          <p className="mb-1"><strong>Date:</strong> {appointments[currentAppointmentIndex]?.schedule_date || '--'}</p>
+                                          <p className="mb-1"><strong>Time:</strong> {appointments[currentAppointmentIndex]?.schedule_time || '--'}</p>
+                                          <p className="mb-1"><strong>Status:</strong> {appointments[currentAppointmentIndex]?.status || 'Pending'}</p>
+                                          <p className="mb-1"><strong>Room:</strong> {appointments[currentAppointmentIndex]?.room_number || '--'}</p>
+                                        </div>
+                                      </div>
+
+                                      {/* Navigation buttons */}
+                                      <div className="d-flex justify-content-between mt-3">
+                                        <button 
+                                          className="btn btn-outline-primary"
+                                          onClick={() => setCurrentAppointmentIndex(prev => (prev > 0 ? prev - 1 : appointments.length - 1))}
+                                          disabled={appointments.length <= 1}
+                                        >
+                                          Previous
+                                        </button>
+                                        <button 
+                                          className="btn btn-outline-primary"
+                                          onClick={() => setCurrentAppointmentIndex(prev => (prev < appointments.length - 1 ? prev + 1 : 0))}
+                                          disabled={appointments.length <= 1}
+                                        >
+                                          Next
+                                        </button>
+                                      </div>
                                     </div>
-                                    <div>
-                                      <button className="btn btn-primary">View Details</button>
-                                    </div>
-                                  </div>
+                                  ) : (
+                                    <p className="text-muted">No Appointments Available</p>
+                                  )}
                                 </div>
                               </div>
                             </div>
+                          </div>
                         </div>
         
                     </div>
                 </div>
-              </div>
             ) : (
               <div className="container-fluid p-0 position-relative">
               {/* Background Image */}

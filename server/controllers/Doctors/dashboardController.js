@@ -57,10 +57,11 @@ exports.getDashboardData = asyncHandler(async (req, res) => {
     // Gender stats
     const completedReservations = reservations.filter(r => r.status === 'completed');
     const patientIds = completedReservations.map(r => r.patient_id);
+    console.log(patientIds)
     const patients = await Promise.all(
       patientIds.map(id => Patient.findOne({ where: { id } }))
     );
-    console.log(patients);
+    console.log(patients)
     const genderCounts = {
       male: 0,
       female: 0,
@@ -69,40 +70,73 @@ exports.getDashboardData = asyncHandler(async (req, res) => {
       if (patient.gender === 'Male') genderCounts.male++;
       else if (patient.gender === 'Female') genderCounts.female++;
     });
-    console.log(genderCounts)
+
     // Reviews
-    const reviews = await Review.findAll({
+    const reviewList = await Review.findAll({
       where: {
         doctor_id: doctorId
       },
       limit: 5 // Only get the latest 5 reviews
     });
-    
-    // Upcoming appointments (today's appointments)
-    const upcomingAppointments = reservations.slice(0, 4); // Only get the first 4
+
+    const reviews = await Promise.all(
+      reviewList.map(async (review) => {
+        const user = await Patient.findOne({
+          where: { id: review.patient_id },
+          attributes: ['id','first_name', 'last_name', 'profilePictureLocation'],
+        });
+
+        return {
+          id: review.id,
+          rating: review.rating,
+          comment: review.comment,
+          createdAt: review.created_at,
+          userid: user?.id || null,
+          patientName: user ? `${user.first_name} ${user.last_name}` : 'Unknown',
+          patientProfilePicture: user?.profilePictureLocation || null,
+        };
+      })
+    );
     
     // Today's appointment patient list with name, id and status
-    const today = new Date().toISOString().split('T')[0];
-    const todayAppointments = reservations
-      .filter(reservation => {
-        if (!reservation.date) return false;
-        
-        try {
-          const dateObj = new Date(reservation.date);
-          if (isNaN(dateObj)) return false;
-          
-          const reservationDate = dateObj.toISOString().split('T')[0];
-          return reservationDate === today;
-        } catch (error) {
-          console.error(`Invalid date format for reservation ${reservation.id}: ${reservation.date}`);
-          return false;
-        }
-      })
-    const patientList = await Patient.findAll({
+    const now = new Date();
+    const upcomingSchedules = await Schedule.findAll({
       where: {
-        id: { $in: todayAppointments.map(appointment => appointment.patient_id) }
-      }
+        doctor_id: doctorId,
+        status: 'available',
+        schedule_date: { $gte: now }
+      },
+      order: [['schedule_date', 'ASC']]
     });
+    
+    const reservationList = await Reservation.findAll({
+      where: {
+        schedule_id: upcomingSchedules[0].id
+      }
+    })
+
+    const patientsList = await Promise.all(
+      reservationList.map(async (reservation) => {
+        const patient = await Patient.findOne({
+          where: { id: reservation.patient_id },
+          attributes: ['id','first_name', 'last_name', 'profilePictureLocation'],
+        });
+        return {
+          id: patient.id,
+          first_name: patient.first_name,
+          last_name: patient.last_name,
+          profilePictureLocation: patient.profilePictureLocation,
+        };
+      })
+    )
+    // Map to only include required fields
+    const formattedUpcomingSchedules = upcomingSchedules.map(schedule => ({
+      schedule_date: schedule.schedule_date,
+      schedule_time: schedule.schedule_time,
+      room_number: schedule.room_number,
+      fees: schedule.fees
+    }));    
+    
     res.json({
       dashboardStats: {
         appointments,
@@ -112,8 +146,8 @@ exports.getDashboardData = asyncHandler(async (req, res) => {
       },
       genderStats: genderCounts,
       reviews,
-      upcomingAppointments,
-      patientList
+      upcomingSchedules: formattedUpcomingSchedules,
+      patientList: patientsList
     });
     
   } catch (error) {

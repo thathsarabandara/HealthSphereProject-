@@ -11,7 +11,7 @@ const patientProfileController =  require('../controllers/Doctors/patientProfile
 const clinicController =  require('../controllers/Doctors/clinicController');
 const dashboardController = require('../controllers/Doctors/dashboardController');
 
-router.get('/', homeController.authHome);
+router.get('/', doctorAuthMiddleware, homeController.authHome);
 router.get('/schedule',doctorAuthMiddleware, scheduleController.loadSchedules);
 router.post('/schedule',doctorAuthMiddleware ,scheduleController.saveSchedules);
 router.get('/patientprofile/:id',doctorAuthMiddleware ,patientProfileController.loadPatientProfile);

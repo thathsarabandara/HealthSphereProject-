@@ -286,6 +286,7 @@ function Profile() {
                   type="button" 
                   className="btn btn-primary" 
                   disabled={saveLoading}
+                  onClick={handleSubmit}
                 >
                   {saveLoading ? (
                     <>
