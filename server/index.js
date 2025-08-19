@@ -26,8 +26,8 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(passport.initialize());
 app.use(helmet()); // Security middleware
 app.use(cookieParser()); // Cookie parser middleware
-app.use(auditLogMiddleware);
-app.use(rateLimiterMiddleware);
+// app.use(auditLogMiddleware);
+// app.use(rateLimiterMiddleware);
 app.use(cors(corsOptions,ipapiCorsOptions)); // Use CORS middleware
 
 // Request logging

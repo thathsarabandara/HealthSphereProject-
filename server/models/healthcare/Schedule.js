@@ -24,6 +24,15 @@ const Schedule = sequelize.define('Schedule', {
         type: DataTypes.TIME,
         allowNull: false,
     },
+    seats: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 1,
+        validate: {
+            min: 1,
+            max: 50,
+        },
+    },
     status: {
         type: DataTypes.STRING,
         allowNull: false,

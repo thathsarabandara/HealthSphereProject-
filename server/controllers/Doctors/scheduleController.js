@@ -9,7 +9,7 @@ const { sendScheduleSubmissionEmail } = require('../../services/doctorEmailServi
 
 // Save a schedule
 exports.saveSchedules = async (req, res) => {
-  const { date, time, comment, fees } = req.body;
+  const { date, time, comment, seats, fees } = req.body;
 
   try {
     
@@ -31,6 +31,7 @@ exports.saveSchedules = async (req, res) => {
       schedule_time: time,
       status: 'pending',
       comment,
+      seats,
       fees,
     });
 
