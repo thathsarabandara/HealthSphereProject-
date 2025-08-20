@@ -12,6 +12,7 @@ function ScheduleRequest() {
   const [time, setTime] = useState('');
   const [comment, setComment] = useState('');
   const [fees, setFees] = useState('');
+  const [seats, setSeats] = useState(1);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [saveLoading, setSaveLoading] = useState(false);
@@ -51,8 +52,14 @@ function ScheduleRequest() {
     e.preventDefault();
     setSaveLoading(true);
 
-    if (!date || !time || !fees) {
-      setError('Please fill in all fields.');
+    if (!date || !time || !fees || !seats) {
+      setError('Please fill in all required fields.');
+      setSaveLoading(false);
+      return;
+    }
+
+    if (seats < 1 || seats > 50) {
+      setError('Number of seats must be between 1 and 50');
       setSaveLoading(false);
       return;
     }
@@ -69,12 +76,16 @@ function ScheduleRequest() {
     }
 
     try {
-      await axios.post('http://localhost:5000/doctor/schedule', { date, time, comment, fees }, { withCredentials: true });
+      await axios.post('http://localhost:5000/doctor/schedule', 
+        { date, time, comment, fees, seats }, 
+        { withCredentials: true }
+      );
       toast.success('Schedule requested successfully!');
       setDate('');
       setTime('');
       setComment('');
       setFees('');
+      setSeats(1);
       window.location.reload();
     } catch (error) {
       setError('Error sending schedule request. Please try again.');
@@ -139,9 +150,20 @@ function ScheduleRequest() {
               </span>
             </div>
           </div>
-          <div className="col-md-4">
-            <label className="form-label">Fees</label>
+          <div className="col-md-2">
+            <label className="form-label">Fees (LKR)</label>
             <input type="number" className="form-control" value={fees} onChange={(e) => setFees(e.target.value)} min="0" />
+          </div>
+          <div className="col-md-2">
+            <label className="form-label">Available Seats</label>
+            <input 
+              type="number" 
+              className="form-control" 
+              value={seats} 
+              onChange={(e) => setSeats(parseInt(e.target.value) || 1)} 
+              min="1" 
+              max="50" 
+            />
           </div>
         </div>
 

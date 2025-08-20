@@ -242,6 +242,8 @@ function Doctors() {
                     <th>Time</th>
                     <th>Doctor Profile</th>
                     <th>Consultation Fee</th>
+                    <th>Seats</th>
+                    <th>Booked Seats</th>
                     <th>Book</th>
                   </tr>
                 </thead>
@@ -262,13 +264,19 @@ function Doctors() {
                         </button>
                       </td>
                       <td>{schedule.consultationFee.toFixed(2)}</td>
+                      <td>{schedule.seats}</td>
+                      <td>{schedule.bookedSeats}</td>
                       <td>
-                        <button 
-                          className="btn btn-primary"
-                          onClick={() => navigate(`/finddoctors/${schedule.specialization}/reservation/${schedule.schedule_id}`)}
-                        >
-                          Book
-                        </button>
+                        {schedule.bookedSeats < schedule.seats ? (
+                          <button 
+                            className="btn btn-primary"
+                            onClick={() => navigate(`/finddoctors/${schedule.specialization}/reservation/${schedule.schedule_id}`)}
+                          >
+                            Book
+                          </button>
+                        ) : (
+                          <span className="text-danger fw-bold">Fully Booked</span>
+                        )}
                       </td>
                     </tr>
                   ))}

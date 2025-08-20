@@ -57,6 +57,8 @@ import AdminPanel from './components/admin/AdminPanel';
 import AdminLogin from './pages/admin/Login';
 import DoctorPasswordReset from './pages/doctor/auth/PasswordReset';
 import DoctorResetPassword from './pages/doctor/auth/ResetPassword';
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 const getNavbarAndFooter = (path) => {
   let NavbarComponent, FooterComponent, SidebarComponent;

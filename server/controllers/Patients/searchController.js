@@ -1,6 +1,7 @@
 const { Doctor } = require("../../models/healthcare/Doctor");
 const { Schedule } = require("../../models/healthcare/Schedule");
 const { Specialization } = require("../../models/healthcare/Specialization");
+const { Reservation } = require("../../models/healthcare/Reservation");
 const { Op } = require('sequelize');
 const moment = require('moment'); 
 
@@ -42,6 +43,12 @@ exports.loadDoctors = async (req, res) => {
         const response = doctors.map(doctor => {
             const doctorSchedules = schedules.filter(schedule => schedule.doctor_id === doctor.id);
             
+            doctorSchedules.forEach(schedule => {
+                const reservations = Reservation.findAll({ where: { schedule_id: schedule.id , status: 'available'}});
+                const bookedSeats = reservations.length;
+                schedule.bookedSeats = bookedSeats;
+            });
+            
             return doctorSchedules.map(schedule => ({
                 doctor_id: doctor.id,
                 schedule_id: schedule.id,
@@ -49,6 +56,8 @@ exports.loadDoctors = async (req, res) => {
                 specialization: specialization.name,
                 date: schedule.schedule_date,
                 time: schedule.schedule_time,
+                seats: schedule.seats,
+                bookedSeats: schedule.bookedSeats,
                 consultationFee: parseInt(schedule.fees) + 500.00
             }));
         }).flat();
@@ -115,22 +124,40 @@ exports.searchDoctors = async (req, res) => {
         });
 
         // Construct and send the response
-        const response = schedules.map(schedule => {
+        const response = await Promise.all(schedules.map(async (schedule) => {
             const doctor = doctors.find(doc => doc.id === schedule.doctor_id);
             if (!doctor) return null;
 
-            return {
-                schedule_id: schedule.id,
-                doctor_id: doctor.id,
-                doctorName: doctor.first_name + ' ' + doctor.last_name,
-                specialization: specializationMap[doctor.specialization_id],
-                date: schedule.schedule_date,
-                time: schedule.schedule_time,
-                consultationFee: parseFloat(schedule.fees) + 500.00
-            };
-        }).filter(Boolean);
+            try {
+                const reservations = await Reservation.findAll({ 
+                    where: { 
+                        schedule_id: schedule.id,
+                        status: 'available' 
+                    } 
+                });
+                const bookedSeats = reservations.length;
 
-        res.status(200).json(response);
+                return {
+                    schedule_id: schedule.id,
+                    doctor_id: doctor.id,
+                doctorName: doctor.first_name + ' ' + doctor.last_name,
+                    specialization: specializationMap[doctor.specialization_id],
+                    date: schedule.schedule_date,
+                    time: schedule.schedule_time,
+                    seats: schedule.seats,
+                    bookedSeats: bookedSeats,
+                    consultationFee: (parseFloat(schedule.fees) || 0) + 500.00
+                };
+            } catch (error) {
+                console.error('Error fetching reservations:', error);
+                return null;
+            }
+        }));
+
+        // Filter out any null entries
+        const filteredResponse = response.filter(Boolean);
+
+        res.status(200).json(filteredResponse);
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'An error occurred while searching for doctors' });

@@ -44,7 +44,7 @@ exports.patientDetails = async (req, res) => {
 
     // Fetch all reservations for the patient
     const reservationData = await Reservation.findAll({
-      where: { patient_id: patientData.User_id },
+      where: { patient_id: patientData.id },
       order: [["reservation_date", "DESC"]],
     });
     let reservationMessage = "Reservations retrieved successfully";

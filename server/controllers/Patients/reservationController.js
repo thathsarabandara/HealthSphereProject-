@@ -143,7 +143,7 @@ const findReservationsByUserId = async (patientID) => {
 exports.loadReservations = async (req, res) => {
     try {
         const reservations = await findReservationsByUserId(req.patientID);
-        console.log(reservations)
+        const patient = await Patient.findByPk(req.patientID);
         if (reservations.length === 0) {
             return res.status(200).json({ message: 'No reservations found' });
         }
@@ -173,6 +173,9 @@ exports.loadReservations = async (req, res) => {
             const doctor = doctors.find((doc) => doc.id === schedule?.doctor_id);
 
             return {
+                patient_id: req.patientID,
+                patient_name: patient.first_name + ' ' + patient.last_name,
+                patient_phone_number: patient.phone_number,
                 reservation_id: reservation.id,
                 reservation_status: reservation.status,
                 schedule_date: schedule?.schedule_date || 'N/A',

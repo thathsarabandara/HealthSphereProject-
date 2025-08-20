@@ -27,22 +27,65 @@ function MedicalConditions() {
     }
   };
 
+  // Format date to YYYY-MM-DD for date inputs
+  const formatDateForInput = (dateString) => {
+    if (!dateString) return '';
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return ''; // Check if date is valid
+      const offset = date.getTimezoneOffset();
+      const localDate = new Date(date.getTime() - (offset * 60 * 1000));
+      return localDate.toISOString().split('T')[0];
+    } catch (e) {
+      console.error('Error formatting date:', e);
+      return '';
+    }
+  };
+
+  // Format time to HH:MM for time inputs
+  const formatTimeForInput = (dateString) => {
+    if (!dateString) return '';
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return ''; // Check if date is valid
+      return date.toTimeString().slice(0, 5);
+    } catch (e) {
+      console.error('Error formatting time:', e);
+      return '';
+    }
+  };
+  
+  // Get current date in YYYY-MM-DD format
+  const getCurrentDate = () => {
+    const now = new Date();
+    return now.toISOString().split('T')[0];
+  };
+  
+  // Get current time in HH:MM format
+  const getCurrentTime = () => {
+    const now = new Date();
+    return now.toTimeString().slice(0, 5);
+  };
+
   // Generic fetch data function
   const fetchData = async (endpoint, setter) => {
     try {
       const response = await axios.get(endpoint, {withCredentials:true});
       const data = response.data.map((item) => {
-        // Convert dates only if they exist
-        if (item.measurement_date) {
-          item.measurement_date = new Date(item.measurement_date).toLocaleDateString();
+        // Create a new object to avoid mutating the original
+        const formattedItem = {...item};
+        
+        // Format dates and times for input fields
+        if (formattedItem.measurement_date) {
+          formattedItem.measurement_date = formatDateForInput(formattedItem.measurement_date);
         }
-        if (item.measurement_time) {
-          item.measurement_time = new Date(item.measurement_time).toLocaleString();
+        if (formattedItem.measurement_time) {
+          formattedItem.measurement_time = formatTimeForInput(formattedItem.measurement_time);
         }
-        if (item.diagnosis_date) {
-          item.diagnosis_date = new Date(item.diagnosis_date).toLocaleDateString();
+        if (formattedItem.diagnosis_date) {
+          formattedItem.diagnosis_date = formatDateForInput(formattedItem.diagnosis_date);
         }
-        return item;
+        return formattedItem;
       });
       setter(data);
       setLoading(false);
@@ -169,7 +212,7 @@ function MedicalConditions() {
                     <input
                       type={col.type || 'text'}
                       className="form-control form-control-sm"
-                      value={row[col.field] || ''}
+                      value={row[col.field] !== undefined ? row[col.field] : (col.defaultValue || '')}
                       onChange={(e) =>
                         handleRowChange(index, col.field, e.target.value, sectionSetter, data)
                       }
@@ -249,11 +292,28 @@ function MedicalConditions() {
             setBloodSugar,
             [
               { label: 'Blood Sugar Level (mg/dL)', field: 'blood_sugar_level', type: 'number' },
-              { label: 'Measurement Time', field: 'measurement_time', type: 'datetime-local' },
+              { 
+                label: 'Measurement Date', 
+                field: 'measurement_date', 
+                type: 'date',
+                defaultValue: getCurrentDate()
+              },
+              { 
+                label: 'Measurement Time', 
+                field: 'measurement_time', 
+                type: 'time',
+                defaultValue: getCurrentTime()
+              },
               { label: 'Notes', field: 'notes' },
             ],
             'http://localhost:5000/bloodSugar',
-            { blood_sugar_level: 0, measurement_time: '', notes: '', status: 'active' }
+            { 
+              blood_sugar_level: 0, 
+              measurement_date: getCurrentDate(), 
+              measurement_time: getCurrentTime(), 
+              notes: '', 
+              status: 'active' 
+            }
           )}
           {renderDynamicTable(
             'BMI',
@@ -267,7 +327,14 @@ function MedicalConditions() {
               { label: 'Notes', field: 'notes' },
             ],
             'http://localhost:5000/bmi',
-            { bmi_value: 0, height: 0, weight: 0, measurement_date: '', notes: '', status: 'active' }
+            { 
+              bmi_value: 0, 
+              height: 0, 
+              weight: 0, 
+              measurement_date: formatDateForInput(new Date()), 
+              notes: '', 
+              status: 'active' 
+            }
           )}
           {renderDynamicTable(
             'Conditions',
@@ -288,11 +355,18 @@ function MedicalConditions() {
             setHeartRates,
             [
               { label: 'Heart Rate (bpm)', field: 'heart_rate', type: 'number' },
-              { label: 'Measurement Time', field: 'measurement_time', type: 'datetime-local' },
+              { label: 'Measurement Date', field: 'measurement_date', type: 'date' },
+              { label: 'Measurement Time', field: 'measurement_time', type: 'time' },
               { label: 'Notes', field: 'notes' },
             ],
             'http://localhost:5000/heartRates',
-            { heart_rate: 0, measurement_time: '', notes: '', status: 'active' }
+            { 
+              heart_rate: 0, 
+              measurement_date: formatDateForInput(new Date()),
+              measurement_time: formatTimeForInput(new Date()), 
+              notes: '', 
+              status: 'active' 
+            }
           )}
         </div>
       </div>
