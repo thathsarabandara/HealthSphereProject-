@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { useNavigate, Link } from 'react-router-dom';
-import Loader from '../../components/common/Loader';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { useNavigate, Link } from "react-router-dom";
+import Loader from "../../components/common/Loader";
 
 function DoctorsAndStaffManagement() {
-
   const navigate = useNavigate();
 
   const [dateTime, setDateTime] = useState(new Date().toLocaleString());
@@ -19,19 +18,22 @@ function DoctorsAndStaffManagement() {
 
   const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/admin/loaddoctors', {withCredentials:true});
-        console.log(response.data)
+        const response = await axios.get(
+          "http://localhost:5000/admin/loaddoctors",
+          { withCredentials: true }
+        );
+        console.log(response.data);
         setDoctors(response.data);
         setLoading(false);
       } catch (err) {
-        console.log(err)
-        setLoading(false)
-        navigate('/admin/login')
+        console.log(err);
+        setLoading(false);
+        navigate("/admin/login");
       } finally {
         setLoading(false);
       }
@@ -42,79 +44,105 @@ function DoctorsAndStaffManagement() {
 
   if (loading) {
     return (
-      <div style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100vw',
-        height: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#f0f4f8',
-        zIndex: 9999
-      }}>
+      <div
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100vw",
+          height: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "#f0f4f8",
+          zIndex: 9999,
+        }}
+      >
         <Loader />
       </div>
     );
-  };
+  }
   if (!doctors) return <div>Doctors not found</div>;
 
   const containerStyle = {
-    marginTop: '20px',
-    padding: '20px',
-    backgroundColor: '#fff',
-    borderRadius: '8px',
-    boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+    marginTop: "20px",
+    padding: "20px",
+    backgroundColor: "#fff",
+    borderRadius: "8px",
+    boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
   };
 
   const headerStyle = {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '20px',
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "20px",
   };
 
   const tableStyle = {
-    width: '100%',
-    borderCollapse: 'collapse',
-    marginBottom: '20px',
+    width: "100%",
+    borderCollapse: "collapse",
+    marginBottom: "20px",
   };
 
   const tableHeaderStyle = {
-    backgroundColor: '#112d4e',
-    color: 'white',
-    padding: '10px',
-    textAlign: 'left',
+    backgroundColor: "#112d4e",
+    color: "white",
+    padding: "10px",
+    textAlign: "left",
   };
 
   const tableCellStyle = {
-    padding: '10px',
-    borderBottom: '1px solid #ddd',
+    padding: "10px",
+    borderBottom: "1px solid #ddd",
   };
 
   const buttonStyle = {
-    padding: '5px 10px',
-    backgroundColor: '#17a2b8',
-    color: 'white',
-    border: 'none',
-    borderRadius: '4px',
+    padding: "5px 10px",
+    backgroundColor: "#17a2b8",
+    color: "white",
+    border: "none",
+    borderRadius: "4px",
   };
 
   return (
     <div style={containerStyle}>
       <div style={headerStyle}>
         <h4>Doctors and Staff Management</h4>
-        <p style={{backgroundColor: "#bacae7", borderRadius: "10px", textAlign: "center", padding: "5px"}}> {dateTime}</p>
+        <p
+          style={{
+            backgroundColor: "#bacae7",
+            borderRadius: "10px",
+            textAlign: "center",
+            padding: "5px",
+          }}
+        >
+          {" "}
+          {dateTime}
+        </p>
       </div>
 
-      <div className='row mb-4'>
-        <div className='col-md-4'>
+      <div className="row mb-4">
+        <div className="col-md-4">
           <div style={{ padding: "20px", backgroundColor: "#F4F6F8" }}>
             <h5>Sign up request</h5>
             <div>
-              <div style={{width: '100%', height: '100%', color: 'black', fontSize: 20, fontFamily: 'Sansation', fontWeight: '700', wordWrap: 'break-word'}}>No. of requests -</div>
-              <div style={{width: '100%', height: '100%', background: '#786262'}} />
+              <div
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  color: "black",
+                  fontSize: 20,
+                  fontFamily: "Sansation",
+                  fontWeight: "700",
+                  wordWrap: "break-word",
+                }}
+              >
+                No. of requests -
+              </div>
+              <div
+                style={{ width: "100%", height: "100%", background: "#786262" }}
+              />
             </div>
             <button
               style={{
@@ -126,27 +154,69 @@ function DoctorsAndStaffManagement() {
                 borderRadius: "5px",
                 cursor: "pointer",
               }}
-              onClick={() => navigate('/admin/doctorrequests')}
+              onClick={() => navigate("/admin/doctorrequests")}
             >
               View
             </button>
           </div>
         </div>
 
-        <div className='col-md-4'>
+        <div className="col-md-4">
           <div style={{ padding: "20px", backgroundColor: "#F4F6F8" }}>
             <h5>Total Staff</h5>
             <div>
-              <div style={{width: '100%', height: '100%', color: 'black', fontSize: 20, fontFamily: 'Sansation', fontWeight: '700', wordWrap: 'break-word'}}>Doctors -</div>
-              <div style={{width: '100%', height: '100%', background: '#786262'}} />
+              <div
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  color: "black",
+                  fontSize: 20,
+                  fontFamily: "Sansation",
+                  fontWeight: "700",
+                  wordWrap: "break-word",
+                }}
+              >
+                Doctors -
+              </div>
+              <div
+                style={{ width: "100%", height: "100%", background: "#786262" }}
+              />
             </div>
             <div>
-              <div style={{width: '100%', height: '100%', color: 'black', fontSize: 20, fontFamily: 'Sansation', fontWeight: '700', wordWrap: 'break-word'}}>Nurse -</div>
-              <div style={{width: '100%', height: '100%', background: '#786262'}} />
+              <div
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  color: "black",
+                  fontSize: 20,
+                  fontFamily: "Sansation",
+                  fontWeight: "700",
+                  wordWrap: "break-word",
+                }}
+              >
+                Nurse -
+              </div>
+              <div
+                style={{ width: "100%", height: "100%", background: "#786262" }}
+              />
             </div>
             <div>
-              <div style={{width: '100%', height: '100%', color: 'black', fontSize: 20, fontFamily: 'Sansation', fontWeight: '700', wordWrap: 'break-word'}}>Others -</div>
-              <div style={{width: '100%', height: '100%', background: '#786262'}} />
+              <div
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  color: "black",
+                  fontSize: 20,
+                  fontFamily: "Sansation",
+                  fontWeight: "700",
+                  wordWrap: "break-word",
+                }}
+              >
+                Others -
+              </div>
+              <div
+                style={{ width: "100%", height: "100%", background: "#786262" }}
+              />
             </div>
           </div>
         </div>
@@ -164,18 +234,24 @@ function DoctorsAndStaffManagement() {
         <tbody>
           {loading ? (
             <tr>
-              <td colSpan={4} style={tableCellStyle}>Loading...</td>
+              <td colSpan={4} style={tableCellStyle}>
+                Loading...
+              </td>
             </tr>
           ) : error ? (
             <tr>
-              <td colSpan={4} style={tableCellStyle}>{error}</td>
+              <td colSpan={4} style={tableCellStyle}>
+                {error}
+              </td>
             </tr>
           ) : (
             doctors.map((row, index) => (
               <tr key={index}>
                 <td style={tableCellStyle}>{row.id}</td>
-                <td style={tableCellStyle}>{row.updated_at.split('T')[0]}</td>
-                <td style={tableCellStyle}>{row.first_name + " " + row.last_name}</td>
+                <td style={tableCellStyle}>{row.updated_at.split("T")[0]}</td>
+                <td style={tableCellStyle}>
+                  {row.first_name + " " + row.last_name}
+                </td>
                 <td style={tableCellStyle}>
                   <Link to={`/admin/doctor/${row.id}`} style={buttonStyle}>
                     View
