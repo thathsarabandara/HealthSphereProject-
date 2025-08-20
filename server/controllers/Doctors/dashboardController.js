@@ -52,7 +52,7 @@ exports.getDashboardData = asyncHandler(async (req, res) => {
       where: { id: { [Op.in]: completedScheduleIds } }
     });
 
-    const income = completedSchedules.reduce((sum, schedule) => sum + schedule.fees, 0);
+    const income = completedSchedules.reduce((sum, schedule) => sum + Number(schedule.fees), 0);
 
     // Gender Stats
     const patientIds = completedReservations.map(r => r.patient_id);
