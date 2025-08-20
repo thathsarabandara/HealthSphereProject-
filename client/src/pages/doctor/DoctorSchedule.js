@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { FaCalendarAlt, FaClock, FaLeaf } from 'react-icons/fa';
+import { FaCalendarAlt, FaClock } from 'react-icons/fa';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Loader from '../../components/common/Loader';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function ScheduleRequest() {
   const [schedules, setSchedules] = useState([]);
@@ -12,7 +14,10 @@ function ScheduleRequest() {
   const [fees, setFees] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [saveLoading, setSaveLoading] = useState(false);
   const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [schedulesPerPage] = useState(5);
 
   useEffect(() => {
     const fetchSchedules = async () => {
@@ -20,12 +25,14 @@ function ScheduleRequest() {
         const response = await axios.get('http://localhost:5000/doctor/schedule', { withCredentials: true });
         if (Array.isArray(response.data)) {
           setSchedules(response.data);
+          toast.success('Schedule data loaded successfully');
         } else {
           setError('Unexpected data format received');
         }
       } catch (error) {
         setError('Error fetching schedules. Please try again.');
         console.error('Error fetching schedules:', error);
+        toast.error('Failed to load schedule data');
       } finally {
         setIsLoading(false);
       }
@@ -42,29 +49,47 @@ function ScheduleRequest() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSaveLoading(true);
 
     if (!date || !time || !fees) {
       setError('Please fill in all fields.');
+      setSaveLoading(false);
       return;
     }
 
-    if (new Date(date) < new Date()) {
-      setError('Please select a future date');
+    // Check if the selected date is in the past (excluding today)
+    const todayStart = new Date();
+    todayStart.setHours(0,0,0,0);
+    const selectedDate = new Date(date);
+    
+    if (selectedDate < todayStart) {
+      setError('Please select today or a future date');
+      setSaveLoading(false);
       return;
     }
 
     try {
       await axios.post('http://localhost:5000/doctor/schedule', { date, time, comment, fees }, { withCredentials: true });
-      alert('Schedule requested successfully');
+      toast.success('Schedule requested successfully!');
       setDate('');
       setTime('');
       setComment('');
       setFees('');
+      window.location.reload();
     } catch (error) {
       setError('Error sending schedule request. Please try again.');
       console.error('Error sending schedule request:', error);
+      toast.error('Failed to send schedule request');
+    } finally {
+      setSaveLoading(false);
     }
   };
+
+  const indexOfLastSchedule = currentPage * schedulesPerPage;
+  const indexOfFirstSchedule = indexOfLastSchedule - schedulesPerPage;
+  const currentSchedules = schedules.slice(indexOfFirstSchedule, indexOfLastSchedule);
+
+  const paginate = pageNumber => setCurrentPage(pageNumber);
 
   if (isLoading) {
     return (
@@ -88,7 +113,8 @@ function ScheduleRequest() {
   }
 
   return (
-    <div className="container my-5">
+    <div className="container my-5" style={{ minHeight: '70vh' }}>
+      <ToastContainer />
       <h3 className="mb-4">Request for Schedule</h3>
 
       {error && <div className="alert alert-danger">{error}</div>}
@@ -129,15 +155,24 @@ function ScheduleRequest() {
             placeholder="Enter your comments here"
           />
         </div>
-        <button type="submit" className="btn btn-success">
-          Request
+        <button 
+          type="submit" 
+          className="btn btn-success"
+          disabled={saveLoading}
+        >
+          {saveLoading ? (
+            <>
+              <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+              Saving...
+            </>
+          ) : 'Request'}
         </button>
       </form>
 
       <h3 className="mt-5">Upcoming Schedules</h3>
 
-      {schedules.length > 0 ? (
-        schedules.map((schedule, index) => (
+      {currentSchedules.length > 0 ? (
+        currentSchedules.map((schedule, index) => (
           <div key={index} className="table-responsive mt-3" style={{ maxHeight: '400px', overflowY: 'auto' }}>
             <table className="table table-bordered">
               <thead className="text-white" style={{ backgroundColor: '#012A5C' }}>
@@ -205,6 +240,13 @@ function ScheduleRequest() {
       ) : (
         <p>No schedules available</p>
       )}
+      <div className="pagination">
+        {[...Array(Math.ceil(schedules.length / schedulesPerPage))].map((e, i) => (
+          <button key={i} onClick={() => paginate(i + 1)} className={currentPage === i + 1 ? 'active' : ''}>
+            {i + 1}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

@@ -1,134 +1,104 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useNavigate, Link } from 'react-router-dom';
+import Loader from '../../components/common/Loader';
 
 function DoctorsAndStaffManagement() {
-  const [searchValue, setSearchValue] = useState("");
-  const [doctorData, setDoctorData] = useState(null);
-  const [signupRequests, setSignupRequests] = useState([]);
-  const [error, setError] = useState(null);
-  const [showSignupRequests, setShowSignupRequests] = useState(false); // Toggle for signup requests
-  const [currentDateTime, setCurrentDateTime] = useState(new Date());
-  const [currentView, setCurrentView] = useState(""); // Tracks the active view: "searched" or "pending"
-  const [pendingDoctorData, setPendingDoctorData] = useState(""); // Pending doctor data
-  const fileInputRef = useRef(null);
+
   const navigate = useNavigate();
 
-  // Fetch new signup requests
-  useEffect(() => {
-    const fetchSignupRequests = async () => {
-      try {
-        const response = await axios.get(
-          "http://localhost:5000/admin/doctorAndStaffManagement/getSignupRequests",
-          { withCredentials: true }
-        );
-        setSignupRequests(response.data.requests);
-      } catch (err) {
-        console.error("Error fetching signup requests:", err);
-        setError("Failed to fetch signup requests.");
-      }
-    };
+  const [dateTime, setDateTime] = useState(new Date().toLocaleString());
 
-    fetchSignupRequests();
-  }, []);
-  //view pending doctor
-  const handleViewPendingDoctorProfile = async (doctorId) => {
-    setError(null); // Reset error message
-    try {
-      const response = await axios.get(
-        `http://localhost:5000/admin/doctorAndStaffManagement/viewdoctor?id=${doctorId}`,
-        { withCredentials: true }
-      );
-      setPendingDoctorData(response.data.doctorData); // Set pending doctor data
-      setCurrentView("pending"); // Set the current view to "pending"
-    } catch (err) {
-      console.error("Error fetching doctor profile:", err);
-      setError("Failed to fetch doctor profile.");
-    }
-  };
-
-  // Update current date and time every second
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentDateTime(new Date());
     }, 1000);
 
-    return () => clearInterval(interval); // Cleanup interval on component unmount
+    return () => clearInterval(interval); // Cleanup on component unmount
   }, []);
 
-  // Handle search for a doctor by ID
-  const handleSearch = async () => {
-    setDoctorData(null); // Reset doctor data on new search
-    setError(null); // Reset error message
-    setCurrentView(""); // Reset current view
+  const [doctors, setDoctors] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-    if (!searchValue.trim()) {
-      setError("Please enter a valid doctor ID.");
-      return;
-    }
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/admin/loaddoctors', {withCredentials:true});
+        console.log(response.data)
+        setDoctors(response.data);
+        setLoading(false);
+      } catch (err) {
+        console.log(err)
+        setLoading(false)
+        navigate('/admin/login')
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    try {
-      const response = await axios.get(
-        `http://localhost:5000/admin/doctorAndStaffManagement/viewdoctor?id=${searchValue}`,
-        { withCredentials: true }
-      );
-      setDoctorData(response.data.doctorData);
-      console.log("Doctor Data:", response.data.doctorData); // Debugging log
-      setError(null);
-      setCurrentView("searched"); // Set the current view to "searched"
-    } catch (err) {
-      console.error("Error fetching doctor data:", err);
-      setError("Failed to fetch doctor data.");
-    }
+    fetchDoctors();
+  }, []);
+
+  if (loading) {
+    return (
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#f0f4f8',
+        zIndex: 9999
+      }}>
+        <Loader />
+      </div>
+    );
+  };
+  if (!doctors) return <div>Doctors not found</div>;
+
+  const containerStyle = {
+    marginTop: '20px',
+    padding: '20px',
+    backgroundColor: '#fff',
+    borderRadius: '8px',
+    boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
   };
 
-  // Handle accepting a doctor
-  const handleAcceptDoctor = async (doctorId) => {
-    try {
-      await axios.put(
-        `http://localhost:5000/admin/doctorAndStaffManagement/acceptdoctor`,
-        { id: doctorId },
-        { withCredentials: true }
-      );
-      alert("Doctor accepted successfully!");
-      setSignupRequests(
-        (prev) => prev.filter((request) => request.id !== doctorId) // Remove from pending list
-      );
-    } catch (err) {
-      console.error("Error accepting doctor:", err);
-      setError("Failed to accept doctor.");
-    }
+  const headerStyle = {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: '20px',
   };
 
-  // handle ProfilePictureChange
-  const handleProfilePictureChange = async (event) => {
-    const file = event.target.files[0]; // Get the selected file
-    if (!file) return;
+  const tableStyle = {
+    width: '100%',
+    borderCollapse: 'collapse',
+    marginBottom: '20px',
+  };
 
-    // Create a FormData object to send the file
-    const formData = new FormData();
-    formData.append("profilePicture", file); // Append the file to the FormData object
+  const tableHeaderStyle = {
+    backgroundColor: '#112d4e',
+    color: 'white',
+    padding: '10px',
+    textAlign: 'left',
+  };
 
-    //send the profile picture to the server
-    try {
-      const response = await axios.put(
-        `http://localhost:5000/admin/doctorAndStaffManagement/upload-profile-picture/${doctorData.id}`,
-        formData,
-        {
-          withCredentials: true,
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
-      //update the profile picture in the frontend
-      setDoctorData((prev) => ({
-        ...prev,
-        profile_picture: response.data.profilePicture,
-      }));
-      console.log("Profile picture uploaded successfully:", response.data);
-    } catch (error) {
-      console.error("Error uploading profile picture:", error);
-      setError("Failed to upload profile picture.");
-    }
+  const tableCellStyle = {
+    padding: '10px',
+    borderBottom: '1px solid #ddd',
+  };
+
+  const buttonStyle = {
+    padding: '5px 10px',
+    backgroundColor: '#17a2b8',
+    color: 'white',
+    border: 'none',
+    borderRadius: '4px',
   };
 
   return (
@@ -235,67 +205,19 @@ function DoctorsAndStaffManagement() {
               }}
             ></div>
             <button
-              className="btn btn-outline-primary mb-3 w-50"
-              onClick={() => fileInputRef.current.click()} // Trigger file input
+              style={{
+                marginTop: "10px",
+                padding: "10px 20px",
+                backgroundColor: "#7B61FF",
+                color: "white",
+                border: "none",
+                borderRadius: "5px",
+                cursor: "pointer",
+              }}
+              onClick={() => navigate('/admin/doctorrequests')}
             >
-              Edit Profile Picture
+              View
             </button>
-
-            {/* Doctor Information */}
-            <div className="col-md-9" style={{ marginLeft: "30px" }}>
-              <div className="row">
-                <div className="col-md-6">
-                  <p>
-                    <strong>Doctor ID:</strong> {doctorData.id}
-                  </p>
-                  <p>
-                    <strong>First Name:</strong> {doctorData.firstName}
-                  </p>
-                  <p>
-                    <strong>Last Name:</strong> {doctorData.lastName}
-                  </p>
-                  <p>
-                    <strong>Phone Number:</strong> {doctorData.phoneNumber}
-                  </p>
-                  <p>
-                    <strong>Email:</strong> {doctorData.email}
-                  </p>
-                  <p>
-                    <strong>Gender:</strong> {doctorData.gender}
-                  </p>
-                  <p>
-                    <strong>Address:</strong> {doctorData.address}
-                  </p>
-                </div>
-                <div className="col-md-6">
-                  <p>
-                    <strong>Registration Date:</strong>{" "}
-                    {new Date(doctorData.registrationDate).toLocaleString()}
-                  </p>
-                  <p>
-                    <strong>Date of Birth:</strong>{" "}
-                    {new Date(doctorData.dateOfBirth).toLocaleDateString()}
-                  </p>
-                  <p>
-                    <strong>Specialization:</strong> {doctorData.specialization}
-                  </p>
-                  <p>
-                    <strong>Medical School:</strong> {doctorData.medicalSchool}
-                  </p>
-                  <p>
-                    <strong>Medical License Number:</strong>{" "}
-                    {doctorData.medicalLicenseNumber}
-                  </p>
-                  <p>
-                    <strong>Years of Experience:</strong>{" "}
-                    {doctorData.yearsOfExperience}
-                  </p>
-                  <p>
-                    <strong>Bio:</strong> {doctorData.bio}
-                  </p>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       )}
@@ -385,51 +307,42 @@ function DoctorsAndStaffManagement() {
             </div>
           </div>
         </div>
-      )}
+      </div>
 
-      {/* Signup Requests Table */}
-      {showSignupRequests && (
-        <div className="card p-3 mb-3">
-          <h5>New Signup Requests</h5>
-          <table className="table table-bordered">
-            <thead>
-              <tr>
-                <th>Doctor ID</th>
-                <th>Name</th>
-                <th>Date</th>
-                <th>Profile View</th>
+      <table style={tableStyle}>
+        <thead>
+          <tr>
+            <th style={tableHeaderStyle}>Doctor ID</th>
+            <th style={tableHeaderStyle}>Date</th>
+            <th style={tableHeaderStyle}>Doctor Name</th>
+            <th style={tableHeaderStyle}>Profile View</th>
+          </tr>
+        </thead>
+        <tbody>
+          {loading ? (
+            <tr>
+              <td colSpan={4} style={tableCellStyle}>Loading...</td>
+            </tr>
+          ) : error ? (
+            <tr>
+              <td colSpan={4} style={tableCellStyle}>{error}</td>
+            </tr>
+          ) : (
+            doctors.map((row, index) => (
+              <tr key={index}>
+                <td style={tableCellStyle}>{row.id}</td>
+                <td style={tableCellStyle}>{row.updated_at.split('T')[0]}</td>
+                <td style={tableCellStyle}>{row.first_name + " " + row.last_name}</td>
+                <td style={tableCellStyle}>
+                  <Link to={`/admin/doctor/${row.id}`} style={buttonStyle}>
+                    View
+                  </Link>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {signupRequests.length > 0 ? (
-                signupRequests.map((request) => (
-                  <tr key={request.id}>
-                    <td>{request.id}</td>
-                    <td>{request.name}</td>
-                    <td>{new Date(request.date).toLocaleDateString()}</td>
-                    <td>
-                      <button
-                        className="btn btn-outline-primary btn-sm"
-                        onClick={() =>
-                          handleViewPendingDoctorProfile(request.id)
-                        }
-                      >
-                        View
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="4" className="text-center">
-                    No signup requests found.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      )}
+            ))
+          )}
+        </tbody>
+      </table>
     </div>
   );
 }

@@ -52,7 +52,7 @@ const styles = {
     bottom: '20px',
     right: '20px',
     width: '400px', 
-    height: '840px',
+    height: '790px',
     backgroundColor: 'white',
     borderRadius: '10px', 
     overflow: 'hidden',

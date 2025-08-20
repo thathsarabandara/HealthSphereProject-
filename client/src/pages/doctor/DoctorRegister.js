@@ -1,8 +1,10 @@
 import React, { useState , useEffect } from 'react';
 import axios from 'axios';
-import signup from '../../assets/images/Rectangle 84.svg';
+import signup from '../../assets/images/patient/register.jpg';
 import { useNavigate } from 'react-router-dom';
 import Loader from '../../components/common/Loader';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   const [email, setEmail] = useState('');
@@ -11,8 +13,43 @@ function App() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+
+  const [usernameError, setUsernameError] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [confirmPasswordError, setConfirmPasswordError] = useState('');
+  const [termsError, setTermsError] = useState('');
+
+  // Toast notification configuration
+  const notifySuccess = (message) => {
+    toast.success(message, {
+      position: "bottom-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
+  };
+
+  const notifyError = (message) => {
+    toast.error(message, {
+      position: "bottom-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
+  };
 
   useEffect(() => {
     const loadingTimeout = setTimeout(() => setIsLoading(false), 3000);
@@ -38,11 +75,65 @@ function App() {
     );
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const validateUsername = (value) => {
+    if (value.length < 6 || value.length > 10) {
+      setUsernameError('Username must be between 6 and 10 characters');
+      return false;
+    }
+    setUsernameError('');
+    return true;
+  };
 
-    if (password !== confirmPassword) {
-      setError('Passwords do not match');
+  const validateEmail = (value) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(value)) {
+      setEmailError('Please enter a valid email address');
+      return false;
+    }
+    setEmailError('');
+    return true;
+  };
+
+  const validatePassword = (value) => {
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$&*])(?=.{8,})/;
+    if (!passwordRegex.test(value)) {
+      setPasswordError('Password must contain at least one capital letter, one symbol, and be at least 8 characters long');
+      return false;
+    }
+    setPasswordError('');
+    return true;
+  };
+
+  const validateConfirmPassword = (value) => {
+    if (value !== password) {
+      setConfirmPasswordError('Passwords do not match');
+      return false;
+    }
+    setConfirmPasswordError('');
+    return true;
+  };
+
+  const validateTerms = (value) => {
+    if (!value) {
+      setTermsError('Please accept the terms of use and privacy policy');
+      return false;
+    }
+    setTermsError('');
+    return true;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    const isValid = validateUsername(username) &&
+                    validateEmail(email) &&
+                    validatePassword(password) &&
+                    validateConfirmPassword(confirmPassword) &&
+                    validateTerms(termsAccepted);
+
+    if (!isValid) {
+      setLoading(false);
       return;
     }
 
@@ -53,29 +144,40 @@ function App() {
         password,
       }, { withCredentials: true });
 
-      setSuccess('Signup successful!');
-      setError('');
-      // Clear the form (optional)
+      notifySuccess('Signup successful! Please verify your email.');
+      // Clear the form
       setEmail('');
       setUsername('');
       setPassword('');
       setConfirmPassword('');
+      setTermsAccepted(false);
       navigate('/doctor/verifyuser');
     } catch (err) {
-      setError(err.response?.data?.message || 'Something went wrong');
+      notifyError(err.response?.data?.message || 'Registration failed. Please try again.');
+      setError('');
       setSuccess('');
     }
+    setLoading(false);
   };
 
   return (
     <div className="container p-3 my-5 h-custom">
-      <div className="row" style={{ background: '#C8D8F6', borderRadius: 12 }}>
-        <div className="col-md-1" />
-        <div className="col-md-5 mt-5">
-          <img src={signup} className="img-fluid" alt="Sample" />
+      <div className="row mt-3 mb-3" style={{background: '#C8D8F6', borderRadius: 12, overflow: 'hidden'}}>
+        <div className="col-md-6 p-0">
+          <img
+            src={signup}
+            className="img-fluid"
+            alt="Sample image"
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              borderRadius: '12px 0 0 12px'
+            }}
+          />
         </div>
 
-        <div className="col-md-5">
+        <div className="col-md-6 mx-auto px-5">
           <div className="d-flex flex-column align-items-center justify-content-center mb-4">
             <p className="lead fw-bold mb-0 me-3 mt-4">Sign Up</p>
             <p
@@ -101,13 +203,17 @@ function App() {
               <label htmlFor="username" className="form-label">
                 Username
               </label>
+              <p style={{ color: 'red', fontSize: '12px', marginBottom: '8px' }}>{usernameError}</p>
               <input
                 type="text"
                 id="username"
                 className="form-control"
                 placeholder="Enter your username"
                 value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                onChange={(e) => {
+                  setUsername(e.target.value);
+                  validateUsername(e.target.value);
+                }}
                 required
               />
             </div>
@@ -116,13 +222,17 @@ function App() {
               <label htmlFor="email" className="form-label">
                 Email address
               </label>
+              <p style={{ color: 'red', fontSize: '12px', marginBottom: '8px' }}>{emailError}</p>
               <input
                 type="email"
                 id="email"
                 className="form-control"
                 placeholder="Enter your email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  validateEmail(e.target.value);
+                }}
                 required
               />
             </div>
@@ -131,13 +241,17 @@ function App() {
               <label htmlFor="password" className="form-label">
                 Password
               </label>
+              <p style={{ color: 'red', fontSize: '12px', marginBottom: '8px' }}>{passwordError}</p>
               <input
                 type="password"
                 id="password"
                 className="form-control"
                 placeholder="Enter your password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  validatePassword(e.target.value);
+                }}
                 required
               />
             </div>
@@ -146,52 +260,83 @@ function App() {
               <label htmlFor="confirmPassword" className="form-label">
                 Confirm Password
               </label>
+              <p style={{ color: 'red', fontSize: '12px', marginBottom: '8px' }}>{confirmPasswordError}</p>
               <input
                 type="password"
                 id="confirmPassword"
                 className="form-control"
                 placeholder="Confirm your password"
                 value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
+                onChange={(e) => {
+                  setConfirmPassword(e.target.value);
+                  validateConfirmPassword(e.target.value);
+                }}
                 required
               />
             </div>
 
-            <div className="d-flex justify-content-between mb-4">
+            <div className="mb-4">
               <div className="form-check">
                 <input
                   className="form-check-input"
                   type="checkbox"
                   id="terms"
+                  checked={termsAccepted}
+                  onChange={(e) => {
+                    setTermsAccepted(e.target.checked);
+                    validateTerms(e.target.checked);
+                  }}
                   required
                 />
                 <label className="form-check-label" htmlFor="terms">
                   Agree to Our Terms of use and Privacy Policy
                 </label>
               </div>
+              {termsError && <p style={{ color: 'red', fontSize: '12px', marginTop: '8px' }}>{termsError}</p>}
             </div>
 
             <div className="text-center text-md-start mt-4 pt-2">
-              <button
-                type="submit"
-                className="btn mt-1 w-100 mb-4"
-                style={{ background: '#112D4E', borderRadius: 10 }}
+              <button 
+                type="submit" 
+                className="btn w-100 text-white" 
+                style={{ background: '#112D4E' }}
+                disabled={loading}
               >
-                <span
-                  className="text-white"
-                  style={{
-                    fontSize: 15,
-                    fontFamily: 'Sansation',
-                    fontWeight: 400,
-                  }}
-                >
-                  Sign Up
-                </span>
+                {loading ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    Registering...
+                  </>
+                ) : 'Register'}
               </button>
+              <ToastContainer
+                position="top-right"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+              />
             </div>
           </form>
+          <div className="text-center my-3">
+            <small>or register with</small>
+          </div>
+          <button className="btn btn-outline-secondary w-100" style={{ border: '1px solid #ddd', background: 'white', color: '#333' }}>
+            <i className="fab fa-google me-2"></i> Continue with Google
+          </button>
+
+          {/* Footer Links */}
+          <div className="footer-link">
+            <p>
+              <a href="/doctor/login">Already have an account? Log in here</a>
+            </p>
+          </div>
         </div>
-        <div className="col-md-1" />
       </div>
     </div>
   );

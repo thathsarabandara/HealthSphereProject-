@@ -6,15 +6,17 @@ const generateOTP = () => crypto.randomInt(100000, 999999).toString();
 
 exports.sendOTP = async (email) => {
     const otp = generateOTP();
-    console.log(otp);
-    await redisClient.setEx(email, 600, otp);
-    console.log('redis');
+    console.log('Generated OTP:', otp);
+
+    await redisClient.set(email, otp, 'EX', 600);
+
+    console.log('OTP saved in Redis');
     await emailService.sendOTPEmail(email, otp);
 };
 
 exports.verify = async (email, userOTP) => {
     const storedOTP = await redisClient.get(email);
-    if(storedOTP && storedOTP === userOTP){
+    if (storedOTP && storedOTP === userOTP) {
         await redisClient.del(email);
         return true;
     }

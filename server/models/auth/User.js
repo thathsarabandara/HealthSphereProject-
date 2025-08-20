@@ -15,7 +15,7 @@ const User = sequelize.define('User', {
     email: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true, // Enforce unique constraint
+        unique: true, 
         validate: {
             isEmail: true,
         },
@@ -28,6 +28,11 @@ const User = sequelize.define('User', {
 }, {
     tableName: 'users',
     timestamps: true,
+    indexes: [
+        {
+            fields: ['email'], 
+        },
+    ],
 });
 
 // Create user function

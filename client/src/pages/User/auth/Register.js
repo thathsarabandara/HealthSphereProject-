@@ -1,5 +1,5 @@
 import React, { useState ,useEffect } from 'react';
-import signup from '../../../assets/images/Rectangle 84.svg';
+import signup from '../../../assets/images/patient/register.jpg';
 import '../../../styles/temp.css';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -12,13 +12,58 @@ function Register() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [success, setSuccess] = useState('');
+  const [errors, setErrors] = useState({});
+  const [policyChecked, setPolicyChecked] = useState(false);
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const loadingTimeout = setTimeout(() => setIsLoading(false), 3000);
     return () => clearTimeout(loadingTimeout);
   }, []);
+
+  const usernameRegex = /^.{8,}$/;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/;
+
+  const handleUsernameChange = (e) => {
+      const value = e.target.value;
+      setUsername(value);
+      setErrors((prev) => ({
+        ...prev,
+        username: usernameRegex.test(value) ? '' : 'Username must be at least 8 characters.'
+      }));
+  };
+
+   const handleEmailChange = (e) => {
+    const value = e.target.value;
+    setEmail(value);
+    setErrors((prev) => ({
+      ...prev,
+      email: emailRegex.test(value) ? '' : 'Invalid email format.'
+    }));
+  };
+
+  const handlePasswordChange = (e) => {
+    const value = e.target.value;
+    setPassword(value);
+    setErrors((prev) => ({
+      ...prev,
+      password: passwordRegex.test(value)
+        ? ''
+        : 'Password must be at least 8 characters, with one uppercase letter and one symbol.'
+    }));
+  };
+
+  const handleConfirmPasswordChange = (e) => {
+    const value = e.target.value;
+    setConfirmPassword(value);
+    setErrors((prev) => ({
+      ...prev,
+      confirmPassword: value === password ? '' : 'Passwords do not match.'
+    }));
+  };
 
   if (isLoading) {
     return (
@@ -41,9 +86,32 @@ function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
-    if (password !== confirmPassword) {
-      setErrorMessage('Passwords do not match');
+    if (
+      errors.username ||
+      errors.email ||
+      errors.password ||
+      errors.confirmPassword ||
+      !username ||
+      !email ||
+      !password ||
+      !confirmPassword
+    ) {
+      setErrors((prev) => ({
+        ...prev,
+        form: 'Please fix the errors in the form before submitting.'
+      }));
+      setLoading(false);
+      return;
+    }
+
+    if (!policyChecked) {
+      setErrors((prev) => ({
+        ...prev,
+        policy: 'You must agree to the policy regulations.'
+      }));
+      setLoading(false);
       return;
     }
 
@@ -63,22 +131,24 @@ function Register() {
     } catch (error) {
       setErrorMessage(error.response?.data?.error || 'Registration failed');
       setSuccess('');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="container p-3 my-5 h-custom">
-      <div className="row mt-3 mb-3" style={{ background: '#C8D8F6', borderRadius: 12 }}>
-        <div className="col-md-1" />
-        <div className="col-md-5">
+      <div className="row mt-3 mb-3" style={{ background: '#C8D8F6', borderRadius: 12, overflow: 'hidden' }}>
+        <div className="col-md-6 p-0">
           <img 
-            src={signup} className="img-fluid" 
+            src={signup} 
+            className="img-fluid" 
             alt="Sample image"
-            style={{ marginTop: '150px' , borderRadius: '15px'}}
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
           />
         </div>
 
-        <div className="col-md-5">
+        <div className="col-md-6 mx-auto px-5">
           <div className="d-flex flex-column align-items-center justify-content-center mb-4">
             <p className="lead fw-bold mb-0 me-3 mt-4">Register</p>
             <p
@@ -101,7 +171,7 @@ function Register() {
           <form onSubmit={handleSubmit}>
             <div className="mb-2">
               <label htmlFor="name" className="form-label">
-                Full Name
+                UserName
               </label>
               <input
                 type="text"
@@ -109,9 +179,10 @@ function Register() {
                 className="form-control"
                 placeholder="Enter your full name"
                 value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                onChange={handleUsernameChange}
                 required
               />
+              {errors.username && <div style={{ color: 'red' }}>{errors.username}</div>}
             </div>
 
             <div className="mb-2">
@@ -124,9 +195,10 @@ function Register() {
                 className="form-control"
                 placeholder="Enter your email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={handleEmailChange}
                 required
               />
+              {errors.email && <div style={{ color: 'red' }}>{errors.email}</div>}
             </div>
 
             <div className="mb-2">
@@ -139,9 +211,10 @@ function Register() {
                 className="form-control"
                 placeholder="Enter your password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={handlePasswordChange}
                 required
               />
+              {errors.password && <div style={{ color: 'red' }}>{errors.password}</div>}
             </div>
 
             <div className="mb-2">
@@ -154,36 +227,34 @@ function Register() {
                 className="form-control"
                 placeholder="Confirm your password"
                 value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
+                onChange={handleConfirmPasswordChange}
               />
-              {errorMessage && <small className="text-danger">{errorMessage}</small>}
+              {errors.confirmPassword && <div style={{ color: 'red' }}>{errors.confirmPassword}</div>}
             </div>
 
             <div className="d-flex justify-content-between mb-2">
               <div className="form-check">
-                <input className="form-check-input" type="checkbox" id="rememberMe" />
+                <input className="form-check-input" type="checkbox" id="rememberMe" checked={policyChecked} onChange={(e) => setPolicyChecked(e.target.checked)}/>
                 <label className="form-check-label" htmlFor="rememberMe">
                   Agree to Our Terms of Use and Privacy Policy
                 </label>
               </div>
+              {errors.policy && <div style={{ color: 'red' }}>{errors.policy}</div>}
             </div>
 
             <div className="text-center text-md-start mt-2 pt-2">
-              <button
-                type="submit"
-                className="btn mt-1 w-100 mb-2"
+              <button 
+                type="submit" 
+                className="btn mt-1 w-100 mb-2 text-white" 
                 style={{ background: '#112D4E', borderRadius: 10 }}
+                disabled={loading}
               >
-                <span
-                  className="text-white"
-                  style={{
-                    fontSize: 15,
-                    fontFamily: 'Sansation',
-                    fontWeight: 400,
-                  }}
-                >
-                  Sign Up
-                </span>
+                {loading ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    Registering...
+                  </>
+                ) : 'Sign Up'}
               </button>
             </div>
           </form>
@@ -192,11 +263,8 @@ function Register() {
           <div className="text-center my-3">
             <small>or register with</small>
           </div>
-          <button className="btn btn-outline-primary btn-block social-btn ms-5">
-            <i className="fab fa-facebook-f"></i> Register with Facebook
-          </button>
-          <button className="btn btn-outline-danger btn-block social-btn ms-3">
-            <i className="fab fa-google"></i> Register with Google
+          <button className="btn btn-outline-secondary w-100" style={{ border: '1px solid #ddd', background: 'white', color: '#333' }}>
+            <i className="fab fa-google me-2"></i> Continue with Google
           </button>
 
           {/* Footer Links */}
@@ -206,11 +274,9 @@ function Register() {
             </p>
           </div>
         </div>
-        <div className="col-md-1" />
       </div>
     </div>
   );
 }
 
 export default Register;
-

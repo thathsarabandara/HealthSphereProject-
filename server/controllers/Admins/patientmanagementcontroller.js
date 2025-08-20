@@ -4,27 +4,31 @@ const { Reservation } = require("../../models/healthcare/Reservation");
 const { Doctor } = require("../../models/healthcare/Doctor");
 const { Schedule } = require("../../models/healthcare/Schedule");
 const { User } = require("../../models/auth/User");
+const { Op } = require("sequelize");
+
+async function getPatientByIdOrName(id, name) {
+  if (id) {
+    return await Patient.findOne({ where: { User_id: id } });
+  } else if (name) {
+    return await Patient.findOne({
+      where: {
+        [Op.or]: [
+          { first_name: { [Op.like]: `%${name}%` } },
+          { last_name: { [Op.like]: `%${name}%` } },
+        ],
+      },
+    });
+  }
+  return null;
+}
 
 exports.patientDetails = async (req, res) => {
   try {
-    const { id } = req.query; // this id means user_id
-    console.log("frontend request:", req.query); // Debugging
+    const { id, name } = req.query;
+    console.log("frontend request:", req.query);
 
-    // Validate the ID
-    if (!id) {
-      return res.status(400).json({ message: "Patient ID is required." });
-    }
-    const isValidId = /^\d+$/.test(id);
-    if (!isValidId) {
-      return res.status(400).json({
-        message: "Invalid patient ID. ID must be a positive integer.",
-      });
-    }
+    const patientData = await getPatientByIdOrName(id, name);
 
-    // Fetch patient data
-    const patientData = await Patient.findOne({
-      where: { User_id: id },
-    });
     if (!patientData) {
       return res.status(404).json({ message: "Patient data not found" });
     }
@@ -32,23 +36,19 @@ exports.patientDetails = async (req, res) => {
     // Fetch user data for the patient
     const userData = await User.findOne({
       where: { id: patientData.User_id },
-      attributes: ["email"], // Fetch only the email field
+      attributes: ["email"],
     });
-
-    //console.log(`userData: ${JSON.stringify(userData, null, 2)}`); // data comes until here
     if (!userData) {
       return res.status(404).json({ message: "related User data not found" });
     }
 
     // Fetch all reservations for the patient
     const reservationData = await Reservation.findAll({
-      where: { patient_id: id },
-      order: [["reservation_date", "DESC"]], // Order by last updated time
+      where: { patient_id: patientData.User_id },
+      order: [["reservation_date", "DESC"]],
     });
     let reservationMessage = "Reservations retrieved successfully";
-
     if (!reservationData || reservationData.length === 0) {
-      // If no reservations are found, set a message and return an empty array
       reservationMessage = "No reservations found for this patient";
     }
 
@@ -58,11 +58,9 @@ exports.patientDetails = async (req, res) => {
         const scheduleData = await Schedule.findOne({
           where: { id: reservation.schedule_id },
         });
-
         const doctorData = await Doctor.findOne({
           where: { id: scheduleData.doctor_id },
         });
-
         return {
           reservationId: reservation.id,
           reservationDate: reservation.reservation_date,
@@ -80,13 +78,13 @@ exports.patientDetails = async (req, res) => {
       message: "Patient and reservation data retrieved successfully",
       patient: {
         ...patientData.toJSON(),
-        email: userData.email, // Add the user's email
+        email: userData.email,
         profilePicture: patientData.profilePictureLocation
-          ? `http://localhost:5000${patientData.profilePictureLocation}` // Include the image URL
-          : null, // If no profile picture, return null
+          ? `http://localhost:5000/uploads/storage/patient/${patientData.User_id}/profilepictures/${patientData.profilePictureLocation}`
+          : null,
       },
-      reservations: reservationsWithDetails, // Return reservations with schedule and doctor details
-      reservationMessage, // Include the message if no reservations are found
+      reservations: reservationsWithDetails,
+      reservationMessage,
     });
   } catch (error) {
     console.error("Error fetching patient details:", error);
@@ -142,6 +140,7 @@ exports.loadDoctortProfile = async (req, res) => {
 exports.saveProfile = async (req, res) => {
   const {
     id,
+    name,
     first_name,
     last_name,
     date_of_birth,
@@ -152,6 +151,11 @@ exports.saveProfile = async (req, res) => {
   const profilePictureLocation = req.profile_picture;
 
   try {
+    const patientData = await getPatientByIdOrName(id, name);
+    if (!patientData) {
+      return res.status(404).json({ message: "Patient not found" });
+    }
+
     // Set the fields to be updated, with or without profile picture
     const updateFields = {
       first_name,
@@ -169,7 +173,7 @@ exports.saveProfile = async (req, res) => {
 
     // Update the patient's profile
     const [updatedRows] = await Patient.update(updateFields, {
-      where: { User_id: id },
+      where: { User_id: patientData.User_id },
     });
     console.log(`Update fields: ${JSON.stringify(updateFields, null, 2)}`); // Log the updated fields for debugging
 
@@ -190,17 +194,14 @@ exports.saveProfile = async (req, res) => {
 exports.loadPrescription = async (req, res) => {
   const { reservationid } = req.params;
 
-  console.log("reservationid:", reservationid); // Debugging
-
   try {
-    // Retrieve the prescription based on the reservation ID and patient ID
+    // Retrieve the prescription based on the reservation ID
     const prescription = await Prescription.findOne({
       where: {
         reservation_id: reservationid,
       },
     });
 
-    // If prescription doesn't exist, return an error
     if (!prescription) {
       return res.status(404).json({ message: "Prescription not found" });
     }
@@ -212,56 +213,57 @@ exports.loadPrescription = async (req, res) => {
       },
     });
 
-    // If patient doesn't exist, return an error
     if (!patient) {
       return res.status(404).json({ message: "Patient not found" });
     }
 
-    console.log(`prescription: ${JSON.stringify(prescription, null, 2)}`); // data comes until here
+    // Build the prescription file URL if it exists
+    let prescriptionPhotoUrl = null;
+    if (prescription.prescription_photo) {
+      prescriptionPhotoUrl = `http://localhost:5000/uploads/storage/patient/${patient.User_id}/prescription/${prescription.reservation_id}/${prescription.prescription_photo}`;
+    }
 
-    // Respond with the prescription details
     return res.status(200).json({
       patient_name: patient.first_name + " " + patient.last_name,
       date_issued: prescription.created_at,
       details: prescription.details,
       special_comments: prescription.special_comments,
-      prescription_photo: prescription.prescription_photo,
+      prescription_photo: prescriptionPhotoUrl,
     });
   } catch (error) {
-    // Return a server error if there's an issue
     console.error("Error loading prescription:", error);
     return res.status(500).json({ message: "Server error" });
   }
 };
 
-exports.uploadPatientProfilePicture = async (req, res) => {
+exports.uploadProfilePicture = async (req, res) => {
+  const patientId = req.params.id;
+  const patientName = req.body.name;
+  const filename = req.profile_picture; // set by the middleware
+  console.log("Uploaded file:", filename); // Debugging
+
+  if (!filename) {
+    return res.status(400).json({ message: "No file uploaded" });
+  }
+
   try {
-    const { id } = req.params; // Patient ID from the route parameter
-    console.log("Request params:", req.params); // Debugging
-
-    // Check if a file was uploaded
-    if (!req.profile_picture) {
-      return res.status(400).json({ message: "No file uploaded" });
+    const patientData = await getPatientByIdOrName(patientId, patientName);
+    if (!patientData) {
+      return res.status(404).json({ message: "Patient not found" });
     }
-    console.log("Uploaded file:", req.profile_picture); // Debugging
-
-    // Construct the profile picture URL
-    const profilePictureUrl = `/uploads/storage/patient/${id}/profilepictures/${req.profile_picture}`;
-    console.log(`Profile picture URL: ${profilePictureUrl}`); // Debugging
 
     // Update the patient's profile picture in the database
     await Patient.update(
-      { profilePictureLocation: profilePictureUrl },
-      { where: { User_id: id } }
+      { profilePictureLocation: filename },
+      { where: { User_id: patientData.User_id } }
     );
-
-    // Respond with the new profile picture URL
-    return res.status(200).json({
-      message: "Profile picture uploaded successfully",
-      profilePicture: `http://localhost:5000${patientData.profilePictureLocation}`,
-    });
+    return res
+      .status(200)
+      .json({ message: "Profile picture uploaded successfully", filename });
   } catch (error) {
-    console.error("Error uploading profile picture:", error);
-    return res.status(500).json({ message: "An internal error occurred" });
+    return res.status(500).json({
+      message: "Failed to update profile picture",
+      error: error.message,
+    });
   }
 };

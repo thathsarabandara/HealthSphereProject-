@@ -1,10 +1,12 @@
-import React, { useState , useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import emptyImage from '../../assets/images/emptyProfile.png';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate } from 'react-router-dom';
 import Loader from '../../components/common/Loader';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function DoctorFullRegister() {
   const { id } = useParams();
@@ -31,6 +33,8 @@ function DoctorFullRegister() {
 
   const [profilePicturePreview, setProfilePicturePreview] = useState(emptyImage);
   const [isLoading, setIsLoading] = useState(true);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const loadingTimeout = setTimeout(() => setIsLoading(false), 3000);
@@ -77,16 +81,43 @@ function DoctorFullRegister() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const notifySuccess = (message) => {
+    toast.success(message, {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
+  };
+
+  const notifyError = (message) => {
+    toast.error(message, {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-  
+    setLoading(true);
+    
     const doctorData = new FormData();
     Object.keys(formData).forEach((key) => {
       if (formData[key]) {  // Ensure you're not appending null/undefined values
         doctorData.append(key, formData[key]);
       }
     });
-  
+    
     // Axios POST request wrapped in a Promise
     axios.post(`http://localhost:5000/doctor/fullregister/${id}`, doctorData, {
       headers: {
@@ -96,52 +127,158 @@ function DoctorFullRegister() {
     })
     .then((response) => {
       console.log('Registration request submitted successfully:', response);
-      alert('Registration request submitted successfully!');
-      navigate('/doctor/login'); // Navigate to another page after submission
+      notifySuccess('Registration request submitted successfully!');
+      
+      // Show success screen
+      setShowSuccess(true);
+      
+      // Redirect after 6 seconds
+      setTimeout(() => {
+        navigate('/doctor/login');
+      }, 6000);
     })
     .catch((err) => {
       console.log(formData)
       console.error('Error submitting registration request:', err);
-      alert('There was an error while submitting your registration. Please try again later.');
+      notifyError('There was an error while submitting your registration. Please try again later.');
     });
+    setLoading(false);
   };
 
+  if (showSuccess) {
+    return (
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        backgroundColor: 'white',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 1000
+      }}>
+        <div style={{
+          textAlign: 'center',
+          maxWidth: '600px',
+          padding: '20px'
+        }}>
+          <i className="fas fa-check-circle" style={{
+            fontSize: '100px',
+            color: '#4CAF50',
+            marginBottom: '20px'
+          }}></i>
+          <h1 className="mb-4">Your Request is Under Review</h1>
+          <p className="lead mb-4">
+            Thank you for registering! Our team is reviewing your application.
+            We'll notify you via email once your account is approved.
+          </p>
+          <p className="text-muted">
+            You'll be redirected to the login page in 6 seconds...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="container p-4 mt-5 mb-5"
-      style={{ maxWidth: '800px', borderRadius: '8px', backgroundColor: '#f5f5f5' }}
-    >
+    <div>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+      
+      <form
+        onSubmit={handleSubmit}
+        className="container p-4 mt-5 mb-5"
+        style={{ maxWidth: '800px', borderRadius: '8px', backgroundColor: '#f5f5f5' }}
+      >
       <div className="row mb-4">
         {/* Profile Picture and Edit Button */}
         <div className="col-12 col-md-4 text-center">
-          <img
-            className="d-inline-block"
-            style={{ width: '180px', height: '180px', borderRadius: '50%' }}
-            src={profilePicturePreview}
-            alt="profile"
-          />
-          <div className="mt-2">
-            <input
-              type="file"
-              id="profile-picture-upload"
-              accept="image/*"
-              style={{ display: 'none' }}
-              name="profilePicture"
-              onChange={handleFileChange}
-            />
-            <label
-              htmlFor="profile-picture-upload"
-              className="btn w-100"
-              style={{
-                background: '#112D4E',
-                color: 'white',
-                cursor: 'pointer',
-                textAlign: 'center',
-              }}
-            >
-              Edit Profile Picture
-            </label>
+          <div style={{
+            width: '100%',
+            padding: '20px'
+          }}>
+            <div style={{
+              width: '200px',
+              height: '200px',
+              borderRadius: '50%',
+              overflow: 'hidden',
+              position: 'relative',
+              margin: '0 auto',
+              border: '3px solid #112D4E',
+              transition: 'all 0.3s ease',
+              cursor: 'pointer'
+            }}>
+              <img
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover'
+                }}
+                src={profilePicturePreview}
+                alt="profile"
+              />
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                background: 'rgba(0, 0, 0, 0.5)',
+                opacity: 0,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.3s ease',
+                cursor: 'pointer'
+              }}>
+                <input
+                  type="file"
+                  id="profile-picture-upload"
+                  accept="image/*"
+                  name="profilePicture"
+                  onChange={handleFileChange}
+                  style={{
+                    display: 'none'
+                  }}
+                />
+                <label htmlFor="profile-picture-upload" style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  backgroundColor: '#f0f0f0',
+                  borderRadius: '8px',
+                  padding: '12px',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                }}>
+                  <i className="fas fa-camera" style={{
+                    fontSize: '32px',
+                    color: '#007bff'
+                  }}></i>
+                  <span style={{
+                    fontWeight: 'bold',
+                    color: '#007bff',
+                    fontSize: '16px'
+                  }}>Change Photo</span>
+                </label>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -348,11 +485,22 @@ function DoctorFullRegister() {
 
       {/* Submit Button */}
       <div className="text-center">
-        <button type="submit" className="btn btn-success btn-lg">
-          Request for Registration
+        <button 
+          type="submit" 
+          className="btn w-100 text-white" 
+          style={{ background: '#112D4E' }}
+          disabled={loading}
+        >
+          {loading ? (
+            <>
+              <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+              Registering...
+            </>
+          ) : 'Register'}
         </button>
       </div>
     </form>
+  </div>
   );
 }
 

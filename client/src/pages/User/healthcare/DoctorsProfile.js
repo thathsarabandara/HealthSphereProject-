@@ -1,25 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Loader from '../../../components/common/Loader';
-import ErrorPopup from '../../../components/common/error popup/ErrorPopup';
-import SuccessPopup from '../../../components/common/success popup/SuccessPopup';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function DoctorsProfile() {
   const { id } = useParams(); // Get doctor ID from params
+  const navigate = useNavigate();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [newReview, setNewReview] = useState({
-    rating: 0,
-    comment: '',
-  });
-  const [reviewError, setReviewError] = useState(null);
-  const [reviewSuccess, setReviewSuccess] = useState(null);
-  const [errorVisible, setErrorVisible] = useState(false);
-  const [successVisible, setSuccessVisible] = useState(false);
-  const handleErrorClose = () => setErrorVisible(false);
-  const handleSuccessClose = () => setSuccessVisible(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -27,7 +18,11 @@ function DoctorsProfile() {
         const response = await axios.get(`http://localhost:5000/doctorprofile/${id}`, { withCredentials: true });
         setData(response.data);
       } catch (err) {
-        setError('Failed to fetch data. Please try again later.');
+        if (err.response && err.response.status === 401) {
+          navigate('/login');
+        } else {
+          navigate(`/error/${err.response?.status || 500}`);
+        }
       } finally {
         setLoading(false);
       }
@@ -36,26 +31,25 @@ function DoctorsProfile() {
     fetchData();
   }, [id]);
 
-  const handleAddReview = async () => {
-    if (!newReview.rating || !newReview.comment) {
-      setReviewError('Please provide both a rating and a comment.');
+  const handleAddReview = async (rating, comment) => {
+    if (!rating || !comment) {
+      toast.error('Please provide both a rating and a comment.');
       return;
     }
     try {
-      setReviewError(null);
       const response = await axios.post(
         `http://localhost:5000/doctorprofile/${id}/addreview`,
-        newReview,
+        { rating, comment },
         { withCredentials: true }
       );
-      setSuccessVisible(true)
-      setNewReview({ rating: 0, comment: '' }); // Reset the form
+      toast.success('Review added successfully!');
+      window.location.reload();
       setData((prevData) => ({
         ...prevData,
         reviews: [...prevData.reviews, response.data], // Update reviews dynamically
       }));
     } catch (err) {
-      setErrorVisible(true)
+      toast.error('Failed to add review.');
     }
   };
 
@@ -111,20 +105,26 @@ function DoctorsProfile() {
   const age = calculateAge(profile.dateOfBirth);
 
   return (
-    <div className='container mt-5 mb-5'>
-      <ErrorPopup show={errorVisible} onClose={handleErrorClose} title="Something Went Wrong!" message="Failed to add review. Please try again later." button='Okay' />
-      <SuccessPopup show={successVisible} onClose={handleSuccessClose} title="Updated Success Fully " message="Review added successfully!" button='Okay' />
+    <div className="container mt-5 mb-5">
+      <ToastContainer />
+      <button className="btn btn-outline-secondary mb-4" onClick={() => navigate(-1)}>
+        Back
+      </button>
       <div className="row">
       {/* Profile Section */}
       <div className="col-lg-3 col-md-12 mb-4">
         <div className="card h-100 shadow-sm">
           <div className="card-body text-center">
-            <img
-              src={`http://localhost:5000/uploads/storage/doctor/${profile?.userid}/profiledocuments/${profile?.profilePicture}` || '/default-profile.png'}
-              alt="profile"
-              className="rounded-circle mb-3"
-              style={{ width: '150px', height: '150px' }}
-            />
+          <img
+            src={
+              profile?.profilePicture
+                ? `http://localhost:5000/uploads/storage/doctor/${profile?.userid}/profiledocuments/${profile.profilePicture}`
+                : '../../../assets/images/emptyProfile.png'
+            }
+            alt="profile"
+            className="rounded-circle mb-3"
+            style={{ width: '150px', height: '150px', objectFit: 'cover' }}
+          />
             <h5 className="mb-1">{profile?.id} - {profile?.firstName} {profile?.lastName}</h5>
             <small className="text-muted">
               {profile?.gender} - Age {age.years} Years 
@@ -200,12 +200,12 @@ function DoctorsProfile() {
         <div className="card h-100 shadow-sm">
           <div className="card-body">
             <h5 className="card-title">Add a Review</h5>
-            {reviewError && <p className="text-danger">{reviewError}</p>}
-            {reviewSuccess && <p className="text-success">{reviewSuccess}</p>}
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                handleAddReview();
+                const rating = e.target.rating.value;
+                const comment = e.target.comment.value;
+                handleAddReview(rating, comment);
               }}
             >
               <div className="mb-3">
@@ -213,8 +213,6 @@ function DoctorsProfile() {
                 <select
                   id="rating"
                   className="form-control"
-                  value={newReview.rating}
-                  onChange={(e) => setNewReview({ ...newReview, rating: Number(e.target.value) })}
                 >
                   <option value={0}>Select Rating</option>
                   {[1, 2, 3, 4, 5].map((star) => (
@@ -228,8 +226,6 @@ function DoctorsProfile() {
                   id="comment"
                   className="form-control"
                   rows="3"
-                  value={newReview.comment}
-                  onChange={(e) => setNewReview({ ...newReview, comment: e.target.value })}
                 ></textarea>
               </div>
               <button type="submit" className="btn btn-primary">Submit Review</button>

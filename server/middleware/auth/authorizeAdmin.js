@@ -5,7 +5,6 @@ const { UserGroup } = require("../../models/auth/UserGroup");
 
 const adminAuthMiddleware = async (req, res, next) => {
   const token = req.cookies["adminToken"];
-
   // Check if token exists in the request
   if (!token) {
     return res
@@ -51,8 +50,9 @@ const adminAuthMiddleware = async (req, res, next) => {
         user_id: user.id,
       },
     });
-    if (userGroup.group_id != 3) {
-      return res.status(401).json({ message: "User is not verified Doctor" });
+
+    if (userGroup.group_id !== 3 && userGroup.group_id !== 4) {
+      return res.status(401).json({ message: "User is not an admin" });
     }
 
     req.userID = user.id;

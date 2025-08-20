@@ -4,6 +4,8 @@ import { FaArrowLeft } from 'react-icons/fa';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
 import Loader from '../../components/common/Loader';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function DiseaseForm() {
   const [isLoading, setIsLoading] = useState(true);
@@ -12,6 +14,7 @@ function DiseaseForm() {
   const [prescriptionFile, setPrescriptionFile] = useState(null);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
   const { reservationid, patientid }= useParams();
 
@@ -26,11 +29,13 @@ function DiseaseForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
     setError('');
     setSuccessMessage('');
 
     if (!diseaseDetails || !specialComments || !prescriptionFile) {
       setError('Please fill in all fields and upload a file.');
+      setIsSubmitting(false);
       return;
     }
 
@@ -47,14 +52,17 @@ function DiseaseForm() {
         withCredentials: true
       });
 
-      setSuccessMessage('Disease information submitted successfully!');
-      setDiseaseDetails('');
-      setSpecialComments('');
-      setPrescriptionFile(null);
-      navigate('/doctor/clinic')
+      toast.success('Prescription saved successfully!');
+      
+      // Redirect after 2 seconds
+      setTimeout(() => {
+        navigate('/doctor/clinic');
+      }, 2000);
     } catch (error) {
-      setError('Error submitting disease information. Please try again.');
+      toast.error('Failed to save prescription');
       console.error('Error:', error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -139,11 +147,21 @@ function DiseaseForm() {
 
         {/* Save Button */}
         <div className="text-end">
-          <button type="submit" className="btn" style={{ background: '#C8D8F6', color: 'black' }}>
-            Save
+          <button 
+            type="submit" 
+            className="btn btn-primary"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <>
+                <span className="spinner-border spinner-border-sm me-2"></span>
+                Saving...
+              </>
+            ) : 'Save Prescription'}
           </button>
         </div>
       </form>
+      <ToastContainer position="bottom-right" autoClose={3000} />
     </div>
   );
 }

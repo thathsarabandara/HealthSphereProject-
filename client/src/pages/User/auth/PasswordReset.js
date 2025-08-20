@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Loader from '../../../components/common/Loader';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const PasswordReset = () => {
     const [isValidToken, setIsValidToken] = useState(false);
@@ -28,11 +30,14 @@ const PasswordReset = () => {
                     const response = await axios.get(`http://localhost:5000/resetpassword/validate?token=${token}`);
                     if (response.status === 200) {
                         setIsValidToken(true);
+                        toast.success('Token is valid. You can reset your password.');
                     } else {
                         setError('Invalid or expired token. Please request a new password reset.');
+                        toast.error('Token is invalid or expired.');
                     }
                 } catch (err) {
                     setError('Invalid or expired token. Please request a new password reset.');
+                    toast.error('Token is invalid or expired.');
                 }
             };
             validateToken();
@@ -57,10 +62,12 @@ const PasswordReset = () => {
             const response = await axios.post('http://localhost:5000/resetpassword', { password }, { withCredentials: true });
             if (response.status === 200) {
                 setSuccessMessage('Password reset successfully! Redirecting to login...');
+                toast.success('Password reset successful!');
                 setTimeout(() => navigate('/login'), 3000); // Redirect after 3 seconds
             }
         } catch (err) {
             setError('Failed to reset password. Please try again.');
+            toast.error('Password reset failed.');
         }
     };
 
@@ -84,36 +91,42 @@ const PasswordReset = () => {
     }
 
     return (
-        <div className="reset-password-container">
-            <h2>Reset Password</h2>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
-            {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
-
-            {isValidToken ? (
-                <form onSubmit={handleSubmit}>
-                    <div>
-                        <label>New Password:</label>
-                        <input
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label>Confirm Password:</label>
-                        <input
-                            type="password"
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <button type="submit">Reset Password</button>
-                </form>
-            ) : (
-                <p>Validating token...</p>
-            )}
+        <div className="container mt-5" style={{ minHeight: '70vh' }}>
+            <ToastContainer />
+            <div className="row justify-content-center">
+                <div className="col-md-6">
+                    <h2 className="text-center mb-4">Reset Password</h2>
+                    {error && <p style={{ color: 'red' }}>{error}</p>}
+                    {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
+                    {isValidToken ? (
+                        <form onSubmit={handleSubmit}>
+                            <div className="form-group">
+                                <label>New Password:</label>
+                                <input
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                    className="form-control"
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Confirm Password:</label>
+                                <input
+                                    type="password"
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    required
+                                    className="form-control"
+                                />
+                            </div>
+                            <button type="submit" className="btn btn-primary">Reset Password</button>
+                        </form>
+                    ) : (
+                        <p>Validating token...</p>
+                    )}
+                </div>
+            </div>
         </div>
     );
 };

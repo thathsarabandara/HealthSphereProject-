@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Loader from '../../../components/common/Loader';
 
 function Reservations() {
@@ -15,6 +17,7 @@ function Reservations() {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Fetch default data from the backend
   useEffect(() => {
@@ -23,14 +26,25 @@ function Reservations() {
         const response = await axios.get('http://localhost:5000/reservation', { withCredentials: true });
         if (response.status === 200) {
           setFormData(response.data.data);
+          toast.success('Reservation data loaded successfully!');
         } else {
-          setError('Failed to fetch default data.');
+          toast.error('Failed to fetch reservation data');
+          if (response.status === 401) {
+            navigate('/login');
+          } else {
+            navigate(`/error/${response.status}`);
+          }
         }
       } catch (error) {
-        setError('An error occurred while fetching default data.');
-        console.error(error);
+        const status = error.response?.status || 500;
+        toast.error(`An error occurred: ${error.message}`);
+        if (status === 401) {
+          navigate('/login');
+        } else {
+          navigate(`/error/${status}`);
+        }
       } finally {
-        setLoading(false); // Stop loading in both success and error cases
+        setLoading(false);
       }
     };
 
@@ -44,18 +58,28 @@ function Reservations() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
     try {
-      const response = await axios.post(`http://localhost:5000/reservation/${scheduleid}`, formData, {withCredentials: true});
-      if (response.status === 200 || response.status === 201) {
-        alert('Reservation submitted successfully!');
-        setFormData({ name: '', address: '', phone_number: '', email: '' });
-        navigate('/'); // Navigate back to the home page after successful submission
-      } else {
-        alert('Failed to submit the reservation. Please try again.');
-      }
-    } catch (error) {
-      console.error('Error submitting reservation:', error);
-      alert('An error occurred while submitting the reservation.');
+      // Include the schedule_id from the route parameters
+      const dataToSend = {
+        ...formData,
+        schedule_id: scheduleid
+      };
+      const response = await axios.post(`http://localhost:5000/reservation/${scheduleid}`, dataToSend, {
+        withCredentials: true,
+      });
+      toast.success('Reservation submitted successfully!');
+        setFormData({
+          name: '',
+          address: '',
+          phone_number: '',
+          email: '',
+        });
+        navigate('/bookings');
+    } catch (err) {
+      toast.error('Failed to submit reservation');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -84,34 +108,19 @@ function Reservations() {
 
   return (
     <div>
-      {/* Background color for the header */}
-      <div className="container-fluid" style={{ padding: 0, margin: 0 }}>
-        <div style={{ width: '100%', height: '100px', background: '#756A6A' }} />
-      </div>
-
-      {/* Form container */}
-      <div
-        className="container mt-5 mb-5"
-        style={{
-          marginTop: '-50px',
-          padding: '20px',
-          background: '#F4F4F4',
-          borderRadius: '8px',
-          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-        }}
-      >
-        <div className="row">
-          <h4>
-            <input type="checkbox" style={{ marginRight: '10px' }} />
-            Reservations Details
-          </h4>
+      <ToastContainer position="bottom-right" autoClose={3000} />
+      <div className="container mt-4" style={{ minHeight: '70vh' }}>
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <h2>Your Reservations</h2>
+          <button className="btn btn-primary" onClick={() => navigate(-1)}>
+            Back to Doctors
+          </button>
         </div>
 
-        {/* Form fields */}
-        <form onSubmit={handleSubmit}>
-          <div className="row" style={{ marginTop: '20px' }}>
-            <div className="col-9">
-              <div style={{ marginBottom: '15px' }}>
+        <div className="card shadow-sm">
+          <div className="card-body">
+            <form onSubmit={handleSubmit}>
+              <div className="mb-3">
                 <label>Full Name</label>
                 <input
                   type="text"
@@ -119,18 +128,11 @@ function Reservations() {
                   placeholder="Enter your full name"
                   value={formData.name}
                   onChange={handleChange}
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    marginTop: '5px',
-                    borderRadius: '4px',
-                    border: '1px solid #ccc',
-                    background: '#ECECEC',
-                  }}
+                  className="form-control"
                 />
               </div>
 
-              <div style={{ marginBottom: '15px' }}>
+              <div className="mb-3">
                 <label>Address</label>
                 <input
                   type="text"
@@ -138,18 +140,11 @@ function Reservations() {
                   placeholder="Enter your address"
                   value={formData.address}
                   onChange={handleChange}
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    marginTop: '5px',
-                    borderRadius: '4px',
-                    border: '1px solid #ccc',
-                    background: '#ECECEC',
-                  }}
+                  className="form-control"
                 />
               </div>
 
-              <div style={{ marginBottom: '15px' }}>
+              <div className="mb-3">
                 <label>Phone Number</label>
                 <input
                   type="tel"
@@ -157,18 +152,11 @@ function Reservations() {
                   placeholder="Enter your phone number"
                   value={formData.phone_number}
                   onChange={handleChange}
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    marginTop: '5px',
-                    borderRadius: '4px',
-                    border: '1px solid #ccc',
-                    background: '#ECECEC',
-                  }}
+                  className="form-control"
                 />
               </div>
 
-              <div style={{ marginBottom: '15px' }}>
+              <div className="mb-3">
                 <label>Email Address</label>
                 <input
                   type="email"
@@ -176,36 +164,25 @@ function Reservations() {
                   placeholder="Enter your email address"
                   value={formData.email}
                   onChange={handleChange}
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    marginTop: '5px',
-                    borderRadius: '4px',
-                    border: '1px solid #ccc',
-                    background: '#ECECEC',
-                  }}
+                  className="form-control"
                 />
               </div>
-            </div>
 
-            {/* Button column */}
-            <div className="col-3" style={{ display: 'flex', alignItems: 'flex-end' }}>
-              <button
-                type="submit"
-                className="btn"
-                style={{
-                  width: '100%',
-                  background: '#007802',
-                  color: 'white',
-                  borderRadius: '6px',
-                  padding: '10px',
-                }}
+              <button 
+                type="submit" 
+                className="btn btn-primary" 
+                disabled={isSubmitting}
               >
-                Book
+                {isSubmitting ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-2"></span>
+                    Submitting...
+                  </>
+                ) : 'Submit Reservation'}
               </button>
-            </div>
+            </form>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );

@@ -1,38 +1,64 @@
 const { User } = require("../../models/auth/User");
 const { UserPassword } = require("../../models/auth/UserPassword");
+const {Token} = require("../../models/auth/Token");
 const { comparePassword } = require("../../utils/hashpassword");
 const { UserGroup } = require("../../models/auth/UserGroup");
 const { generateToken } = require("../../utils/tokenUtils");
 const { createToken } = require("../../models/auth/Token");
+const { isUserBlacklisted, recordFailedLogin, resetLoginAttempts } = require('../../utils/auth/attemptTracker');
 
-module.exports.login = async (req, res) => {
+exports.login = async (req, res) => {
     try {
         const { email, password } = req.body;
 
         const user = await User.findOne({ where: { email } });
 
         if (!user) {
-            return res.status(401).json({ message: "Incorrect Credentials" });
+            // Record failed attempt if user exists
+            const existingUser = await User.findOne({ where: { email } });
+            if (existingUser) {
+                await recordFailedLogin(existingUser.id, existingUser);
+            }
+            console.log("User not found");
+            return res.status(400).json({ message: "Incorrect Credentials" });
+        }
+        if(user.isVerified === false){
+            console.log("User not verified");
+            return res.status(400).json({ message: "User not verified" });
+        }
+        // Check if user is blacklisted
+        const blacklist = await isUserBlacklisted(user.id);
+        if (blacklist) {
+            return res.status(403).json({ 
+                message: "Account temporarily locked due to excessive failed login attempts",
+                expiresAt: blacklist.expiresAt
+            });
         }
 
         // Fetch user's hashed password
         const userPassword = await UserPassword.findOne({ where: { user_id: user.id } });
 
         if (!userPassword) {
-            return res.status(401).json({ message: "Incorrect Credentials" });
+            console.log("User password not found");
+            return res.status(400).json({ message: "Incorrect Credentials" });
         }
 
         const isValidPassword = await comparePassword(password, userPassword.password_hash);
 
         if (!isValidPassword) {
-            return res.status(401).json({ message: "Incorrect Credentials" });
+            await recordFailedLogin(user.id, user);
+            console.log("Incorrect password");
+            return res.status(400).json({ message: "Incorrect Credentials" });
         }
+
+        // Reset login attempts on successful login
+        await resetLoginAttempts(user.id);
 
         // Fetch user's group
         const userGroup = await UserGroup.findOne({ where: { user_id: user.id } });
 
-        if (userGroup && userGroup.group_id === 3) {
-            return res.status(401).json({ message: "Access Denied" });
+        if (!userGroup || (userGroup.group_id !== 3 && userGroup.group_id !== 4)) {
+            return res.status(400).json({ message: "Access Denied" });
         }
 
         // Generate authentication token
@@ -84,3 +110,15 @@ exports.logout = async (req, res) => {
         return res.status(500).json({ message: 'Internal server error.' });
     }
 };
+
+exports.home = (req, res) => {
+    try {
+        if(req.userID){
+            return res.status(200).json({ message: "Welcome to the admin dashboard" });
+        }
+        return res.status(401).json({ message: 'Unauthorized.' });
+    } catch (error) {
+        console.error('Error:', error);
+        return res.status(500).json({ message: 'Internal server error.' });
+    }
+}

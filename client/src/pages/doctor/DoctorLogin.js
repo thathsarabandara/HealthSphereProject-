@@ -2,8 +2,7 @@ import React, { useState , useEffect} from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import '../../styles/temp.css';
-import { Link } from 'react-router-dom';
-import signin from '../../assets/images/Rectangle 84 (1).svg'
+import signin from '../../assets/images/patient/login.webp'
 import Loader from '../../components/common/Loader';
 
 function Login() {
@@ -13,6 +12,7 @@ const [error, setError] = useState('');
 const [success, setSuccess] = useState('');
 const navigate = useNavigate();
 const [isLoading, setIsLoading] = useState(true);
+const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const loadingTimeout = setTimeout(() => setIsLoading(false), 3000);
@@ -40,6 +40,7 @@ const [isLoading, setIsLoading] = useState(true);
 
 const handleSubmit = async (e) => {
       e.preventDefault();
+      setLoading(true);
       try {
           const response = await axios.post('http://localhost:5000/doctor/login', { email, password }, { withCredentials: true });
 
@@ -47,27 +48,32 @@ const handleSubmit = async (e) => {
           setError('');
           setEmail('');
           setPassword('');
-
           // Navigate to the desired route after successful login
           navigate('/doctor/'); // Change this to your desired route
       } catch (err) {
           setError(err.response?.data?.error || 'Login failed. Please try again.');
           setSuccess('');
       }
+      setLoading(false);
 };
 return (
   <div className="container p-3 my-5 h-custom">
-    <div className="row g-0" style={{background: '#C8D8F6', borderRadius: 12}}>
-      <div className='col-md-1'/>
-      <div className="col-md-5 no-gap" >
+    <div className="row mt-3 mb-3" style={{background: '#C8D8F6', borderRadius: 12, overflow: 'hidden'}}>
+      <div className="col-md-6 p-0">
         <img
           src={signin}
-          className="img-fluid mt-5"
+          className="img-fluid"
           alt="Sample image"
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            borderRadius: '12px 0 0 12px'
+          }}
         />
       </div>
 
-      <div className="col-md-5 no-gap ">
+      <div className="col-md-6 mx-auto px-5">
         <div className="d-flex flex-row align-items-center justify-content-center mt-4">
           <p className="lead fw-normal mb-0 me-3">Sign in </p>
       </div>
@@ -117,35 +123,39 @@ return (
                 Remember me
               </label>
             </div>
-            <a href="!#">Forgot password?</a>
+            <a href="/doctor/resetpasswordRequest">Forgot password?</a>
           </div>
 
           <div className="text-center text-md-start mt-4 pt-2">
-            <button className="btn mt-1 w-100" style={{ background: '#112D4E', borderRadius: 10 }} type='submit'>
-              <span className="text-white" style={{ fontSize: 15, fontFamily: 'Sansation', fontWeight: '400' }}>
-                Sign In
-              </span>
+            <button 
+              type="submit" 
+              className="btn w-100 text-white" 
+              style={{ background: '#112D4E' }}
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                  Logging in...
+                </>
+              ) : 'Login'}
             </button>
-
-            {/* Social Login Section */}
-            <div className="text-center my-3">
-                <small>or login with</small>
-            </div>
-            <button className="btn btn-outline-primary btn-block social-btn ms-5">
-                <i className="fab fa-facebook-f"></i> Login with Facebook
-            </button>
-            <button className="btn btn-outline-danger btn-block social-btn ms-3">
-                <i className="fab fa-google"></i> Login with Google
-            </button>
-
-            
-            <p className="small fw-bold mt-2 pt-1 mb-2 mb-4">
-              Don't have an account? <Link to="/signup" className="link-danger">Register</Link>
-            </p>
           </div>
         </form>
+        <div className="text-center my-3">
+            <small>or Login with</small>
+          </div>
+          <button className="btn btn-outline-secondary w-100" style={{ border: '1px solid #ddd', background: 'white', color: '#333' }}>
+            <i className="fab fa-google me-2"></i> Continue with Google
+          </button>
+
+          {/* Footer Links */}
+          <div className="footer-link">
+            <p>
+              <a href="/doctor/register">Don't have an account? Register here</a>
+            </p>
+          </div>
       </div>
-      <div className='col-md-1'/>
     </div>
   </div>
 );

@@ -9,6 +9,9 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Loader from '../../../components/common/Loader';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from 'react-router-dom';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -31,16 +34,19 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-export default function CustomizedTable() {
-  const [data, setData] = useState([]); // State for table data
-  const [isLoading, setIsLoading] = useState(true); // Loading state
+const Refund = () => {
+  const navigate = useNavigate();
+  const [refundData, setRefundData] = useState([]); 
+  const [isLoading, setIsLoading] = useState(true); 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(5);
 
   // Fetch data from API
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/refund', {withCredentials: true}); // Replace with your API endpoint
-        setData(response.data);
+        const response = await axios.get('http://localhost:5000/refund', {withCredentials: true}); 
+        setRefundData(response.data);
         setIsLoading(false);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -49,6 +55,24 @@ export default function CustomizedTable() {
     };
     fetchData();
   }, []);
+
+  // Get current items
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = refundData.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(refundData.length / itemsPerPage);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  const handleRequestRefund = async (bookingId) => {
+    try {
+      const response = await axios.post(`http://localhost:5000/refund/${bookingId}`, {withCredentials: true});
+      toast.success('Refund requested successfully!');
+    } catch (error) {
+      toast.error('Failed to request refund.');
+      console.error('Error requesting refund:', error);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -72,7 +96,14 @@ export default function CustomizedTable() {
   }
 
   return (
-    <div className="container mt-5 mb-5">
+    <div className="container mt-4" style={{ minHeight: '70vh' }}>
+      <ToastContainer />
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <h2>Refund Requests</h2>
+        <button className="btn btn-outline-secondary" onClick={() => navigate('/')}>
+          Back to Home
+        </button>
+      </div>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 700 }} aria-label="customized table">
           <TableHead>
@@ -88,23 +119,54 @@ export default function CustomizedTable() {
               <StyledTableCell>Refund Status</StyledTableCell>
             </TableRow>
           </TableHead>
-          <TableBody>
-            {data.map((row, index) => (
-              <StyledTableRow key={index}>
-                <StyledTableCell>{row.paymentId}</StyledTableCell>
-                <StyledTableCell>{row.paymentDate}</StyledTableCell>
-                <StyledTableCell>{row.paymentTime}</StyledTableCell>
-                <StyledTableCell>{row.paymentAmount}</StyledTableCell>
-                <StyledTableCell>{row.refundId}</StyledTableCell>
-                <StyledTableCell>{row.refundRequestDate}</StyledTableCell>
-                <StyledTableCell>{row.refundRequestTime}</StyledTableCell>
-                <StyledTableCell>{row.refundReason}</StyledTableCell>
-                <StyledTableCell>{row.refundStatus}</StyledTableCell>
-              </StyledTableRow>
-            ))}
-          </TableBody>
+          {currentItems.length === 0 ? (
+            <div className="text-center p-5">No data found</div>
+          ) : (
+            <TableBody>
+              {currentItems.map((row, index) => (
+                <StyledTableRow key={index}>
+                  <StyledTableCell>{row.paymentId}</StyledTableCell>
+                  <StyledTableCell>{row.paymentDate}</StyledTableCell>
+                  <StyledTableCell>{row.paymentTime}</StyledTableCell>
+                  <StyledTableCell>{row.paymentAmount}</StyledTableCell>
+                  <StyledTableCell>{row.refundId}</StyledTableCell>
+                  <StyledTableCell>{row.refundRequestDate}</StyledTableCell>
+                  <StyledTableCell>{row.refundRequestTime}</StyledTableCell>
+                  <StyledTableCell>{row.refundReason}</StyledTableCell>
+                  <StyledTableCell>{row.refundStatus}</StyledTableCell>
+                  <StyledTableCell>
+                    <button onClick={() => handleRequestRefund(row.paymentId)}>Request Refund</button>
+                  </StyledTableCell>
+                </StyledTableRow>
+              ))}
+            </TableBody>
+          )}
         </Table>
       </TableContainer>
+      {/* Pagination */}
+      <nav>
+        <ul className="pagination">
+          <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+            <button className="page-link" onClick={() => paginate(currentPage - 1)}>
+              Previous
+            </button>
+          </li>
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map(number => (
+            <li key={number} className={`page-item ${currentPage === number ? 'active' : ''}`}>
+              <button className="page-link" onClick={() => paginate(number)}>
+                {number}
+              </button>
+            </li>
+          ))}
+          <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+            <button className="page-link" onClick={() => paginate(currentPage + 1)}>
+              Next
+            </button>
+          </li>
+        </ul>
+      </nav>
     </div>
   );
-}
+};
+
+export default Refund;

@@ -9,10 +9,9 @@ const homeController =  require('../controllers/Doctors/homeController');
 const scheduleController =  require('../controllers/Doctors/scheduleController');
 const patientProfileController =  require('../controllers/Doctors/patientProfileController');
 const clinicController =  require('../controllers/Doctors/clinicController');
+const dashboardController = require('../controllers/Doctors/dashboardController');
 
-
-
-router.get('/', homeController.authHome);
+router.get('/', doctorAuthMiddleware, homeController.authHome);
 router.get('/schedule',doctorAuthMiddleware, scheduleController.loadSchedules);
 router.post('/schedule',doctorAuthMiddleware ,scheduleController.saveSchedules);
 router.get('/patientprofile/:id',doctorAuthMiddleware ,patientProfileController.loadPatientProfile);
@@ -29,7 +28,7 @@ router.post('/login',loginController.login);
 router.post('/register',registerController.register);
 router.post('/verifyuser',registerController.verifyUser);
 router.get('/resendotp', registerController.resendOTP);
-router.post('/fullregister/:id',[ doctorFileHandleMiddleware, ],registerController.saveProfileDetails);
-
+router.post('/fullregister/:id',[doctorFileHandleMiddleware], registerController.saveProfileDetails);
+router.get('/dashboard', doctorAuthMiddleware, dashboardController.getDashboardData);
 
 module.exports = router;

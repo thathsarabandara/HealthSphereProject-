@@ -43,6 +43,14 @@ const Offer = sequelize.define('Offer', {
 }, {
   timestamps: true,
   tableName: 'offers',
+  indexes: [
+    {
+        fields: ['title'], 
+    },
+    {
+        fields: ['cupon_code'], 
+    },
+],
 });
 
 module.exports = { Offer };

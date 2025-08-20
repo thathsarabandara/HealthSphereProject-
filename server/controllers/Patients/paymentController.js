@@ -8,6 +8,24 @@ const { CardDetails } = require("../../models/transactions/CardDetails");
 const { CartPayments } = require("../../models/transactions/CartPayment");
 const { Payment } = require("../../models/transactions/Payment");
 const { ReservationPayment } = require("../../models/transactions/ReservationPayment");
+const { sendPaymentSuccessEmail } = require('../../services/emailServices');
+const { Patient } = require("../../models/healthcare/Patient");
+const { User } = require("../../models/auth/User");
+const { sendReservationPaymentSuccessEmail } = require('../../services/emailServices');
+
+// Helper function to mask card number
+function maskCardNumber(cardNumber) {
+    if (typeof cardNumber !== 'string' && typeof cardNumber !== 'number') {
+        return cardNumber;
+    }
+    const cardStr = cardNumber.toString();
+    const cleaned = cardStr.replace(/\D/g, ''); // Remove non-digits
+    if (cleaned.length < 7) {
+        return cardStr; // Not enough digits, return original
+    }
+    const last6 = cleaned.slice(-6);
+    return '*'.repeat(cleaned.length - 6) + last6;
+}
 
 exports.makePaymentId = async (req, res) => {
     try {
@@ -133,6 +151,10 @@ exports.makePayment = async (req, res) => {
     const { id } = req.params;
     const bankReceipt = req.bankrecipt;
     const { fullName, address, phoneNumber, email, paymentMethod, cardNumber, cardHolder, expiryDate, csv } = req.body;
+    
+    // Mask the card number
+    const maskedCardNumber = maskCardNumber(cardNumber);
+    
     let patient; 
     let payment; 
 
@@ -161,7 +183,7 @@ exports.makePayment = async (req, res) => {
         if (paymentMethod === 'Online Payment') {
             await CardDetails.create({
                 payment_id: payment.id,
-                cardNumber,
+                cardNumber: maskedCardNumber, // Use masked card number
                 cardHolderName: cardHolder,
                 validDate: expiryDate,
                 csv,
@@ -184,6 +206,35 @@ exports.makePayment = async (req, res) => {
             { status: 'completed' },
             { where: { patient_id: req.patientID, status: 'pending' } }
         );
+
+        const patient = await Patient.findByPk(req.patientID);
+
+        const user = await User.findByPk(patient.user_id);
+        
+        if (patient && user) {
+          // Fetch cart items with details
+          const cartItems = await Cart.findAll({
+            where: {
+              patient_id: req.patientID,
+              status: 'completed', // Now completed
+            },
+            include: [{
+              model: MedicalItem,
+              attributes: ['name', 'price']
+            }]
+          });
+          
+          const items = cartItems.map(item => ({
+            name: item.MedicalItem.name,
+            price: item.MedicalItem.price
+          }));
+          
+          // Send payment success email
+          await sendPaymentSuccessEmail(patient.User.email, {
+            id: payment.id,
+            amount: payment.amount
+          }, items);
+        }
 
         return res.status(200).json({ message: 'Payment successful', paymentId: payment.id });
     } catch (error) {
@@ -210,6 +261,10 @@ exports.makePayments = async (req, res) => {
     console.log(id)
     const bankReceipt = req.bankrecipt;
     const { fullName, address, phoneNumber, email, paymentMethod, cardNumber, cardHolder, expiryDate, csv } = req.body;
+    
+    // Mask the card number
+    const maskedCardNumber = maskCardNumber(cardNumber);
+    
     let reservation ; 
     let payment; 
 
@@ -221,21 +276,11 @@ exports.makePayments = async (req, res) => {
                 payment_status: 'pending',
             },
         });
+        console.log(payment)
 
         if (!payment) {
+            console.log('Payment not found or already completed')
             return res.status(404).json({ message: 'Payment not found or already completed' });
-        }
-
-        reservation = await ReservationPayment.findOne({
-            where:{
-                payment_id: payment.id,
-                status: 'pending'
-            }
-        });
-
-        if (!reservation) {
-            console.log('hi')
-            return res.status(404).json({ message: 'Reservation not found or already completed' });
         }
 
         const billing = await BillingDetails.create({
@@ -243,38 +288,70 @@ exports.makePayments = async (req, res) => {
             address: address,
             phoneNumber:phoneNumber,
             email: email,
-            payment: id,
+            payment_id: payment.id,
         });
-
+        console.log(billing)
         
         if (paymentMethod === 'Online Payment') {
-            await CardDetails.create({
+            const cardDetails = await CardDetails.create({
                 payment_id: payment.id,
-                cardNumber,
+                cardNumber: maskedCardNumber, // Use masked card number
                 cardHolderName: cardHolder,
                 validDate: expiryDate,
                 csv,
-            });
+            }); 
+            console.log(cardDetails)
         } else if (paymentMethod === 'Bank Deposit' && bankReceipt) {
-            await BankReceipt.create({
+            const bankReceipt = await BankReceipt.create({
                 payment_id: payment.id,
                 receiptLocation: bankReceipt,
             });
+            console.log(bankReceipt)
         } else {
             return res.status(400).json({ message: 'Invalid payment method or missing receipt' });
         }
 
-        await payment.update({ payment_status: 'completed', payment_method: paymentMethod });
+        // Update the payment status
+        const paymentUpdate = await payment.update({ payment_status: 'completed', payment_method: paymentMethod });
+        console.log(paymentUpdate);
 
-        const reservationPayment = await ReservationPayment.update(
-            { status: 'completed' },
-            { where: { payment_id: payment.id, status: 'pending' } }
-        );
+        // Find the reservation payment record
+        const reservationPaymentRecord = await ReservationPayment.findOne({
+          where: { payment_id: payment.id, status: 'pending' }
+        });
+        
+        if (!reservationPaymentRecord) {
+          console.log('Reservation payment record not found');
+          return res.status(404).json({ message: 'Reservation payment record not found' });
+        }
+        
+        // Update the reservation payment status
+        const reservationPaymentUpdate = await reservationPaymentRecord.update({ status: 'completed' });
+        console.log(reservationPaymentUpdate);
 
-        await Reservation.update(
-            { status: 'available' },
-            { where: { id: reservationPayment , status: 'pending' } }
+        // Update the reservation status using the reservation ID from the reservation payment record
+        const reservationUpdate = await Reservation.update(
+          { status: 'available' },
+          { where: { id: reservationPaymentRecord.reservation_id, status: 'pending' } }
         );
+        console.log(reservationUpdate)
+
+        const patient = await Patient.findByPk(req.patientID);
+        console.log(patient)
+        const user = await User.findByPk(patient.User_id);
+        console.log(user)
+        
+        if (patient && user) {
+          // Send reservation payment success email
+          await sendReservationPaymentSuccessEmail(user.email, {
+            id: reservationPaymentRecord.id,
+            date: reservationPaymentRecord.reservation_date,
+            time: reservationPaymentRecord.reservation_time
+          }, {
+            id: payment.id,
+            amount: payment.amount
+          });
+        }
 
         return res.status(200).json({ message: 'Payment successful', paymentId: payment.id });
     } catch (error) {
@@ -285,10 +362,10 @@ exports.makePayments = async (req, res) => {
             await payment.update({ payment_status: 'failed' }); // Update the payment status to 'failed'
         }
 
-        if (reservation) { // Ensure patient exists before trying to rollback CartPayments
+        if (reservationPaymentRecord) { // Ensure patient exists before trying to rollback CartPayments
             await ReservationPayment.update(
                 { status: 'failed' },
-                { where: { reservation_id: reservation ? reservation.id : null, status: 'pending' } } // Ensure we are targeting the correct payment_id
+                { where: { reservation_id: reservationPaymentRecord ? reservationPaymentRecord.id : null, status: 'pending' } } // Ensure we are targeting the correct payment_id
             );
         }
 
@@ -378,4 +455,3 @@ exports.loadPayment = async (req, res) => {
     }
   };
   
-

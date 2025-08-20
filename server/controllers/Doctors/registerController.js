@@ -8,6 +8,7 @@ const { createUserPassword, UserPassword } = require('../../models/auth/UserPass
 const { UserGroup } = require('../../models/auth/UserGroup');
 const { User } = require('../../models/auth/User');
 const { Doctor } = require('../../models/healthcare/Doctor');
+const { sendApplicationSubmissionEmail } = require('../../services/doctorEmailServices');
 
 exports.register = async (req, res) => {
     const { username, email, password } = req.body;
@@ -169,7 +170,13 @@ exports.saveProfileDetails = async (req, res) => {
         });
 
         if (!isValidToken) {
-            return res.status(400).json({ error: 'Invalid or expired token. Please log in again.' });
+            return res.status(400).json({ error: 'Invalid token. Please log in again.' });
+        }
+
+        const userid = isValidToken.user_id;
+        const user = await findUserById(userid);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
         }
 
         const id = req.params.id;
@@ -248,6 +255,9 @@ exports.saveProfileDetails = async (req, res) => {
             profile_picture: profile_picture, 
             status:'pending',
         });
+
+        // Send application submission email
+        await sendApplicationSubmissionEmail(user.email);
 
         // Return success response
         return res.status(201).json({

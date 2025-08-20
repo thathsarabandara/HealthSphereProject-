@@ -1,6 +1,8 @@
-import React, { useState , useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Loader from '../../../components/common/Loader';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function ResetPassword() {
     const [email, setEmail] = useState('');
@@ -44,8 +46,10 @@ function ResetPassword() {
             }, { withCredentials: true });
             
             setMessage(response.data.message);
+            toast.success('Password reset successful!');
         } catch (error) {
             setMessage(error.response?.data?.message || 'Something went wrong. Please try again.');
+            toast.error('Password reset failed.');
         } finally {
             setLoading(false);
             // Reset the form
@@ -54,7 +58,8 @@ function ResetPassword() {
     };
 
     return (
-        <div className="container mt-5 mb-5" >
+        <div className="container mt-5 mb-5" style={{ minHeight: '70vh' }}>
+            <ToastContainer />
             <div className="row justify-content-center">
                 <div className="col-md-6">
                     <div className="card shadow" style={{background: '#C8D8F6'}}>
@@ -80,8 +85,17 @@ function ResetPassword() {
                                     <small className="form-text text-muted mt-4">We'll send you an email to reset your password.</small>
                                 </div>
                                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                    <button type="submit" className="btn btn-primary btn-block text-white mt-3" style={{ background: '#112D4E' }} disabled={loading}>
-                                        {loading ? 'Sending...' : 'Send Reset Link'}
+                                    <button 
+                                      type="submit" 
+                                      className="btn btn-primary" 
+                                      disabled={loading}
+                                    >
+                                      {loading ? (
+                                        <>
+                                          <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                          Resetting...
+                                        </>
+                                      ) : 'Reset Password'}
                                     </button>
                                 </div>
                                 

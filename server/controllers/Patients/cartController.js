@@ -71,7 +71,6 @@ exports.loadCart = async (req, res) => {
 
 exports.deleteCartItem = async (req, res) => {
     try {
-        console.log('hi')
         const { id } = req.params;
 
         const cartItem = await Cart.findOne({

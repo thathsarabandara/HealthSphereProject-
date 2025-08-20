@@ -1,5 +1,7 @@
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 import PatientNavbar from './components/user/PatientNavbar';
 import DoctorNavbar from './components/doctor/DoctorNavbar';
@@ -49,12 +51,12 @@ import WebBot from './components/Web Assistant/WebBot';
 import MedicalConditions from './pages/User/healthcare/MedicalConditions';
 import Bookings from './pages/User/other/Bookings';
 import DoctorPatientProfile from './pages/doctor/DoctorPatientProfile';
-import PrescriptionView from './pages/doctor/PrescriptionView';
 import PatientPrescriptionView from './pages/User/healthcare/PrescriptionView';
 import Checkout from './pages/User/payment/Checkout';
-import DoctorDashboard from './pages/doctor/DoctorDashboard';
 import AdminPanel from './components/admin/AdminPanel';
 import AdminLogin from './pages/admin/Login';
+import DoctorPasswordReset from './pages/doctor/auth/PasswordReset';
+import DoctorResetPassword from './pages/doctor/auth/ResetPassword';
 
 const getNavbarAndFooter = (path) => {
   let NavbarComponent, FooterComponent, SidebarComponent;
@@ -63,11 +65,16 @@ const getNavbarAndFooter = (path) => {
     NavbarComponent = DoctorNavbar;
     FooterComponent = DoctorFooter; 
   } else if (path.startsWith('/admin')) {
-    //SidebarComponent = AdminPanel; 
     if (path === '/admin/') { 
       SidebarComponent = null
+    } else if (path === '/admin/login') {
+      SidebarComponent = null;
+      NavbarComponent = null;
+      FooterComponent = null;
     } else {
       SidebarComponent = AdminPanel; // Show Sidebar for other Admin Pages
+      NavbarComponent = null;
+      FooterComponent = null;
     }
   } else {
     NavbarComponent = PatientNavbar; 
@@ -90,6 +97,7 @@ function App() {
     <div>
       {SidebarComponent === null ? (
         <AdminLogin/>
+        
       ) : SidebarComponent ?(  
         <SidebarComponent/> 
       ) : (
@@ -137,17 +145,31 @@ function App() {
             <Route path="/doctor/register" element={<DoctorRegister/>} />
             <Route path="/doctor/patientProfile/:id" element={<DoctorPatientProfile/>} />
             <Route path="/doctor/verifyuser" element={<DoctorVerify/>} />
+            <Route path="/doctor/resetpassword" element={<DoctorPasswordReset />} />
+            <Route path="/doctor/resetpasswordRequest" element={<DoctorResetPassword />} />
             <Route path="/doctor/about" element={<DoctorAbout/>} />
             <Route path="/doctor/" element={<DoctorHome/>} />
-            <Route path="/doctor/dashboard" element={<DoctorDashboard/>} />
             <Route path="/doctor/schedule" element={<DoctorSchedule/>} />
             <Route path="/doctor/videoconsultation" element={<DoctorVideoConsultation/>} />
             <Route path="/doctor/clinic" element={<DoctorClinic/>} />
             <Route path="/doctor/prescription" element={<DoctorPrescription/>} />
+            <Route path="/doctor/clinic/:reservationid/prescription/:patientid" element={<DoctorPrescription/>} />
             <Route path="/doctor/fullregister/:id" element={<DoctorFullRegister/>} />
 
           </Routes>
-          <WebBot/>
+           <WebBot/>
+           <ToastContainer
+             position="bottom-right"
+             autoClose={3000}
+             hideProgressBar={false}
+             newestOnTop={false}
+             closeOnClick
+             rtl={false}
+             pauseOnFocusLoss
+             draggable
+             pauseOnHover
+             theme="colored"
+           />
           {FooterComponent && <FooterComponent />}
         </>
       )}

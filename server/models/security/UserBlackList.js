@@ -17,7 +17,7 @@ const UserBlackList = sequelize.define('UserBlackList', {
     },
   },
   reason: {
-    type: DataTypes.ENUM('fraud', 'abuse', 'policy violation', 'other'),
+    type: DataTypes.TEXT,
     allowNull: false,
   },
   status: {

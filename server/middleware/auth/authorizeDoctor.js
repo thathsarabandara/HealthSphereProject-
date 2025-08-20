@@ -20,7 +20,6 @@ const doctorAuthMiddleware = async (req, res, next) => {
             expires_at: { [Op.gt]: new Date() } // Check token validity
         }
     });
-
     if (isTokenValid === null) {
       return res.status(401).json({ message: 'Token Expired Please Login again' });
     }
