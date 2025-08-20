@@ -29,18 +29,26 @@ const getData = async (model, patientId, res) => {
   }
 };
 
-const updateStatus = async (model, id, res) => {
+const updateStatus = async (model, id) => {
   try {
-    await model.update(
+    const result = await model.update(
       { status: 'delete' },
       { 
         where: { id },
-        transaction: true
+        returning: true, // Return the updated record
+        plain: true
       }
     );
-    res.json({ message: 'Status updated to delete' });
+    
+    if (!result || result[0] === 0) {
+      throw new Error('No records were updated');
+    }
+    
+    console.log('Successfully updated status to delete for ID:', id);
+    return { success: true, message: 'Status updated to delete' };
   } catch (error) {
-    res.status(500).json({ message: `Error updating status`, error: error.message });
+    console.error('Error in updateStatus:', error);
+    throw error; // Re-throw to be handled by the calling function
   }
 };
 
@@ -112,6 +120,7 @@ exports.updateAllergy = async (req, res) => {
 
 exports.deleteAllergy = async (req, res) => {
   const { id } = req.body;
+  console.log(id)
   await updateStatus(PatientAllergy, id, res);
 };
 
@@ -119,7 +128,7 @@ exports.createAllergy = async (req, res) => {
     try {
       const token = req.cookies["token"];
       const patient = await getPatientByToken(token);
-  
+
       if (!Array.isArray(req.body) || req.body.length === 0) {
         return res.status(400).json({ message: "Invalid or missing data" });
       }
@@ -133,11 +142,12 @@ exports.createAllergy = async (req, res) => {
         status: "active", // Default status
         patient_id: patient.id, // Attach patient_id
       }));
-  
+      
       // Use Sequelize bulkCreate method to insert data
       const createdData = await PatientAllergy.bulkCreate(dataWithPatientId, {
         returning: true, // Optional: returns the inserted rows
-      });
+      })
+      console.log(createdData);
   
       res.status(201).json({
         message: "Allergies created successfully",
@@ -314,8 +324,59 @@ exports.getConditions = async (req, res) => {
 };
 
 exports.deleteCondition = async (req, res) => {
-  const { id } = req.body;
-  await updateStatus(PatientCondition, id, res);
+  try {
+    console.log('Delete condition request body:', req.body);
+    const { id } = req.body;
+    
+    if (!id) {
+      console.error('No ID provided in request body');
+      return res.status(400).json({ message: 'Condition ID is required' });
+    }
+    
+    // Verify the condition exists and belongs to the patient
+    const token = req.cookies['token'];
+    if (!token) {
+      console.error('No token found in cookies');
+      return res.status(401).json({ message: 'Authentication required' });
+    }
+    
+    const patient = await getPatientByToken(token);
+    
+    // Update the status directly in the database
+    const [updatedCount] = await PatientCondition.update(
+      { status: 'delete' },
+      { 
+        where: { 
+          id,
+          patient_id: patient.id,
+          status: 'active'
+        },
+        returning: true
+      }
+    );
+    
+    if (updatedCount === 0) {
+      console.error(`Condition not found or already deleted. ID: ${id}, Patient ID: ${patient.id}`);
+      return res.status(404).json({ 
+        success: false,
+        message: 'Condition not found or already deleted' 
+      });
+    }
+    
+    console.log(`Successfully deleted condition ID: ${id} for patient ID: ${patient.id}`);
+    res.json({ 
+      success: true,
+      message: 'Condition deleted successfully' 
+    });
+    
+  } catch (error) {
+    console.error('Error in deleteCondition:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Error deleting condition', 
+      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+    });
+  }
 };
 
 exports.createCondition = async (req, res) => {
