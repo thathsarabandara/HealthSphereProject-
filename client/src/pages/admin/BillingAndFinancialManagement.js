@@ -1,15 +1,12 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from "recharts";
 
-const refundRequests = [
-  { id: "D001", name: "Nathasha", receipt: "RC001", amount: "Rs. 2000.00", date: "2024/10/04", time: "11:00 P.M." },
-  { id: "D002", name: "Alex", receipt: "RC002", amount: "Rs. 1500.00", date: "2024/10/05", time: "02:30 P.M." },
-  { id: "D003", name: "Sophia", receipt: "RC003", amount: "Rs. 2500.00", date: "2024/10/06", time: "09:15 A.M." },
-  { id: "D004", name: "John", receipt: "RC004", amount: "Rs. 1800.00", date: "2024/10/07", time: "05:45 P.M." },
-];
-
-const revenueData = [
+// Default revenue data (will be replaced with actual data from backend)
+const defaultRevenueData = [
   { month: "Jan", revenue: 500 },
   { month: "Feb", revenue: 400 },
   { month: "Mar", revenue: 600 },
@@ -23,27 +20,103 @@ function BillingAndFinancialManagement() {
   const [showModal, setShowModal] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
   const [selectedRequest, setSelectedRequest] = useState(null);
+  const [refundRequests, setRefundRequests] = useState([]);
+  const [revenueData, setRevenueData] = useState(defaultRevenueData);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isProcessing, setIsProcessing] = useState(false);
 
+  // Fetch refund requests and revenue data
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        // Fetch refund requests
+        const refundsResponse = await axios.get("http://localhost:5000/api/admins/refunds", {
+          withCredentials: true
+        });
+        
+        if (refundsResponse.data.success) {
+          setRefundRequests(refundsResponse.data.data);
+        }
+
+        // TODO: Uncomment and implement when revenue endpoint is available
+        // const revenueResponse = await axios.get("http://localhost:5000/api/admins/revenue");
+        // if (revenueResponse.data.success) {
+        //   setRevenueData(revenueResponse.data.data);
+        // }
+
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        toast.error("Failed to load data. Please try again later.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+
+    // Update time every second
     const interval = setInterval(() => {
       setDateTime(new Date().toLocaleString());
     }, 1000);
+
     return () => clearInterval(interval);
   }, []);
+
+  const handleApproveRefund = async (requestId) => {
+    try {
+      setIsProcessing(true);
+      const response = await axios.put(
+        `http://localhost:5000/api/admins/refunds/${requestId}/approve`,
+        {},
+        { withCredentials: true }
+      );
+
+      if (response.data.success) {
+        toast.success("Refund approved successfully!");
+        // Update local state to remove the approved request
+        setRefundRequests(prev => prev.filter(req => req.id !== requestId));
+      }
+    } catch (error) {
+      console.error("Error approving refund:", error);
+      toast.error(error.response?.data?.message || "Failed to approve refund");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   const handleRejectClick = (request) => {
     setSelectedRequest(request);
     setShowModal(true);
   };
 
-  const handleSendReason = () => {
+  const handleSendReason = async () => {
     if (!rejectReason.trim()) {
-      alert("Please enter a reason!");
+      toast.warning("Please enter a reason for rejection");
       return;
     }
-    alert(`Rejection reason sent for ${selectedRequest.name}: ${rejectReason}`);
-    setShowModal(false);
-    setRejectReason("");
+
+    try {
+      setIsProcessing(true);
+      const response = await axios.put(
+        `http://localhost:5000/api/admins/refunds/${selectedRequest.id}/reject`,
+        { reason: rejectReason },
+        { withCredentials: true }
+      );
+
+      if (response.data.success) {
+        toast.success("Refund request rejected successfully!");
+        // Update local state to remove the rejected request
+        setRefundRequests(prev => prev.filter(req => req.id !== selectedRequest.id));
+        setShowModal(false);
+        setRejectReason("");
+      }
+    } catch (error) {
+      console.error("Error rejecting refund:", error);
+      toast.error(error.response?.data?.message || "Failed to reject refund");
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   return (
@@ -75,38 +148,73 @@ function BillingAndFinancialManagement() {
       {/* Refund Requests Table */}
       <div className="row">
         <div className="col-12">
-          <h5 className="text-secondary">Refund Requests</h5>
-          <div className="table-responsive">
-            <table className="table table-striped table-bordered text-center shadow">
-              <thead className="bg-primary text-white">
-                <tr>
-                  <th>Patient ID</th>
-                  <th>Name</th>
-                  <th>Receipt No</th>
-                  <th>Amount</th>
-                  <th>Date</th>
-                  <th>Time</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {refundRequests.map((req, index) => (
-                  <tr key={index}>
-                    <td>{req.id}</td>
-                    <td>{req.name}</td>
-                    <td>{req.receipt}</td>
-                    <td>{req.amount}</td>
-                    <td>{req.date}</td>
-                    <td>{req.time}</td>
-                    <td>
-                      <button className="btn btn-success me-2">Accept</button>
-                      <button className="btn btn-danger" onClick={() => handleRejectClick(req)}>Reject</button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <h5 className="text-secondary mb-0">Refund Requests</h5>
+            <button 
+              className="btn btn-outline-primary btn-sm" 
+              onClick={() => window.location.reload()}
+              disabled={isLoading || isProcessing}
+            >
+              <i className="bi bi-arrow-clockwise"></i> Refresh
+            </button>
           </div>
+          
+          {isLoading ? (
+            <div className="text-center py-5">
+              <div className="spinner-border text-primary" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </div>
+              <p className="mt-2">Loading refund requests...</p>
+            </div>
+          ) : refundRequests.length === 0 ? (
+            <div className="alert alert-info">No pending refund requests found.</div>
+          ) : (
+            <div className="table-responsive">
+              <table className="table table-striped table-bordered text-center shadow">
+                <thead className="bg-primary text-white">
+                  <tr>
+                    <th>Patient ID</th>
+                    <th>Name</th>
+                    <th>Receipt No</th>
+                    <th>Amount</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {refundRequests.map((req) => (
+                    <tr key={req.id}>
+                      <td>{req.patientId || 'N/A'}</td>
+                      <td>{req.name || 'N/A'}</td>
+                      <td>{req.receipt || 'N/A'}</td>
+                      <td>Rs. {req.amount || '0.00'}</td>
+                      <td>{req.date || 'N/A'}</td>
+                      <td>{req.time || 'N/A'}</td>
+                      <td>
+                        <button 
+                          className="btn btn-success btn-sm me-2"
+                          onClick={() => handleApproveRefund(req.id)}
+                          disabled={isProcessing}
+                        >
+                          {isProcessing ? (
+                            <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                          ) : 'Approve'}
+                        </button>
+                        <button 
+                          className="btn btn-danger btn-sm" 
+                          onClick={() => handleRejectClick(req)}
+                          disabled={isProcessing}
+                        >
+                          Reject
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
 
@@ -130,8 +238,27 @@ function BillingAndFinancialManagement() {
                 />
               </div>
               <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
-                <button type="button" className="btn btn-danger" onClick={handleSendReason}>Send</button>
+                <button 
+                  type="button" 
+                  className="btn btn-secondary" 
+                  onClick={() => setShowModal(false)}
+                  disabled={isProcessing}
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="button" 
+                  className="btn btn-danger" 
+                  onClick={handleSendReason}
+                  disabled={!rejectReason.trim() || isProcessing}
+                >
+                  {isProcessing ? (
+                    <>
+                      <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                      Sending...
+                    </>
+                  ) : 'Send'}
+                </button>
               </div>
             </div>
           </div>
