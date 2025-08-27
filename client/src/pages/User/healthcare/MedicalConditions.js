@@ -130,39 +130,47 @@ function MedicalConditions() {
       // Create new rows
       if (newRows.length > 0) {
         const response = await axios.post(endpoint, newRows, {withCredentials: true});
-        const createdData = response.data;
+        
+        // Log the response for debugging
+        console.log('Create response:', response.data);
+        
+        // Handle the server response format: { message, createdData }
+        const createdData = response.data.createdData || [];
+        if (!Array.isArray(createdData)) {
+          throw new Error('Invalid response format from server');
+        }
         
         // Update local state with new data
         const updatedData = [...existingRows, ...createdData];
         setter(updatedData);
         
-        showToast('success', `${newRows.length} record(s) created successfully!`);
+        showToast('success', `${createdData.length} record(s) created successfully!`);
       }
 
       // Update existing rows
-      if (existingRows.length > 0) {
-        const updates = existingRows.map(row => ({
-          id: row.id,
-          ...Object.fromEntries(
-            Object.entries(row).filter(([key]) => 
-              key !== 'id' && key !== 'patient_id' && key !== 'status' && key !== 'createdAt' && key !== 'updatedAt'
-            )
-          )
-        }));
+      // if (existingRows.length > 0) {
+      //   const updates = existingRows.map(row => ({
+      //     id: row.id,
+      //     ...Object.fromEntries(
+      //       Object.entries(row).filter(([key]) => 
+      //         key !== 'id' && key !== 'patient_id' && key !== 'status' && key !== 'createdAt' && key !== 'updatedAt'
+      //       )
+      //     )
+      //   }));
         
-        const response = await axios.put(endpoint, updates, {withCredentials: true});
-        const updatedData = response.data;
+      //   const response = await axios.put(endpoint, updates, {withCredentials: true});
+      //   const updatedData = Array.isArray(response.data) ? response.data : [response.data];
         
-        // Update local state with updated data
-        const finalData = data.map(row => 
-          row.id ? 
-            updatedData.find(updated => updated.id === row.id) || row : 
-            row
-        );
-        setter(finalData);
+      //   // Update local state with updated data
+      //   const finalData = data.map(row => 
+      //     row.id ? 
+      //       updatedData.find(updated => updated.id === row.id) || row : 
+      //       row
+      //   );
+      //   setter(finalData);
         
-        showToast('success', `${existingRows.length} record(s) updated successfully!`);
-      }
+      //   showToast('success', `${existingRows.length} record(s) updated successfully!`);
+      // }
     } catch (error) {
       console.error(`Error saving data to ${endpoint}:`, error);
       showToast('error', error.response?.data?.message || 'Failed to save data.');
@@ -174,22 +182,26 @@ function MedicalConditions() {
   const handleDeleteRow = async (index, setter, data, endpoint) => {
     const rowToDelete = data[index];
     try {
-      // Optimistically update local state first
+      // Optimistically update the UI
       const updatedData = data.filter((_, i) => i !== index);
       setter(updatedData);
       
-      // Then send delete request to backend
-      await axios.put(endpoint, { id: rowToDelete.id, status: 'delete' }, {withCredentials: true});
+      // Send just the ID in the request body
+      await axios.put(
+        endpoint, 
+        { id: rowToDelete.id }, 
+        { withCredentials: true, headers: { 'Content-Type': 'application/json' } }
+      );
       
       showToast('success', 'Record deleted successfully!');
     } catch (error) {
-      // If delete fails, restore the deleted row
+      // Revert on error
       setter(data);
-      console.error('Error deleting row:', error);
+      console.error('Delete error:', error);
       showToast('error', error.response?.data?.message || 'Failed to delete record');
     }
   };
-  
+
   // Render dynamic table
   const renderDynamicTable = (sectionName, data, sectionSetter, columns, endpoint, defaultRow) => (
     <div className="mb-4">

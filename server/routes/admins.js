@@ -8,10 +8,9 @@ const { adminAuthMiddleware } = require("../middleware/auth/authorizeAdmin");
 const staffManagement = require("../controllers/Admins/staffManagementController");
 const adminController = require("../controllers/Admins/adminController");
 const dashboardController = require("../controllers/Admins/dashboardController");
-const {
-  profilePictureUpload,
-} = require("../middleware/upload/profilePictureUpload");
+const { profilePictureUpload } = require("../middleware/upload/profilePictureUpload");
 
+const refundController = require("../controllers/Admins/RefundManagement");
 // Admin Authentication Routes
 router.post("/login", adminLoginController.login);
 router.post("/logout", adminLoginController.logout);
@@ -123,5 +122,24 @@ router.get(
   "/dashboard/schdules",
   [adminAuthMiddleware],
   dashboardController.getTopSchedules
+);
+
+// Refund Management Routes
+router.get(
+  "/refunds",
+  [adminAuthMiddleware],
+  refundController.getRefundRequests
+);
+
+router.put(
+  "/refunds/:id/approve",
+  [adminAuthMiddleware],
+  refundController.approveRefund
+);
+
+router.put(
+  "/refunds/:id/reject",
+  [adminAuthMiddleware],
+  refundController.rejectRefund
 );
 module.exports = router;

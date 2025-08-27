@@ -123,7 +123,16 @@ function PatientHome() {
     fetchData();
   }, []);
 
-    // Sample data for Blood Sugar (Bar Chart)
+    // Check if essential profile data is missing
+  const isProfileIncomplete = !patientFirstName || 
+                            !patientLastName || 
+                            !patientDateOfBirth || 
+                            !patientGender || 
+                            !patientAddress || 
+                            !patientPhoneNumber ||
+                            !useremail;
+
+  // Sample data for Blood Sugar (Bar Chart)
     const bloodSugarData = {
       labels: bloodSugar.length > 0 ? bloodSugar.map(record => new Date(record.measurement_time).toLocaleDateString()) : ['No Data'],
       datasets: [
@@ -240,67 +249,93 @@ function PatientHome() {
         <div className="col-lg-3 col-md-12 mb-4">
           <div className="card h-100 shadow-sm">
             <div className="card-body d-flex flex-column justify-content-start align-items-center text-center">
-               {/* Profile Picture */}
-               <div className="rounded-circle overflow-hidden border" style={{ 
-                 width: '150px', 
-                 height: '150px', 
-                 border: '2px solid #e0e0e0',
-                 display: 'flex',
-                 alignItems: 'center',
-                 justifyContent: 'center',
-                 backgroundColor: '#f8f9fa'
-               }}>
-                 <img
-                   src={profilePicture || emptyImage}
-                   alt="Profile"
-                   style={{ 
-                     width: '100%', 
-                     height: '100%', 
-                     objectFit: 'cover',
-                     borderRadius: '50%',
-                     border: profilePicture ? '2px solid #fff' : 'none'
-                   }}
-                 />
-               </div>
+              {isProfileIncomplete ? (
+                <div className="text-center p-4">
+                  <div className="rounded-circle overflow-hidden border mx-auto mb-3" style={{
+                    width: '100px',
+                    height: '100px',
+                    border: '2px solid #e0e0e0',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    backgroundColor: '#f8f9fa'
+                  }}>
+                    <i className="fas fa-user-edit fa-3x text-muted"></i>
+                  </div>
+                  <h5 className="mb-3">Profile Incomplete</h5>
+                  <p className="text-muted mb-4">Please complete your profile to access all features</p>
+                  <button 
+                    className="btn btn-primary"
+                    onClick={() => navigate('/userprofile')}
+                  >
+                    Complete Profile
+                  </button>
+                </div>
+              ) : (
+                <>
+                  {/* Profile Picture */}
+                  <div className="rounded-circle overflow-hidden border" style={{ 
+                    width: '150px', 
+                    height: '150px', 
+                    border: '2px solid #e0e0e0',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    backgroundColor: '#f8f9fa'
+                  }}>
+                    <img
+                      src={profilePicture || emptyImage}
+                      alt="Profile"
+                      style={{ 
+                        width: '100%', 
+                        height: '100%', 
+                        objectFit: 'cover',
+                        borderRadius: '50%',
+                        border: profilePicture ? '2px solid #fff' : 'none'
+                      }}
+                    />
+                  </div>
 
-              {/* Name */}
-              <h5 className="mb-1 mt-3">
-                {patientId || 'N/A'} - {patientFirstName || 'User'} {patientLastName || ''}
-              </h5>
+                  {/* Name */}
+                  <h5 className="mb-1 mt-3">
+                    {patientId || 'N/A'} - {patientFirstName || 'User'} {patientLastName || ''}
+                  </h5>
 
-              {/* Gender & Age */}
-              <small className="text-muted">
-                {patientGender || 'Not specified'} - Age {age?.years || '-'} Years {age?.months || '0'} Months {age?.days || '0'} Days
-              </small>
+                  {/* Gender & Age */}
+                  <small className="text-muted">
+                    {patientGender || 'Not specified'} - Age {age?.years || '-'} Years {age?.months || '0'} Months {age?.days || '0'} Days
+                  </small>
 
-              {/* Details */}
-              <div className="text-start mt-3" style={{ maxWidth: '100%' }}>
-                <p>
-                  <strong>DOB:</strong>{' '}
-                  {patientDateOfBirth
-                    ? new Date(patientDateOfBirth).toLocaleDateString()
-                    : 'No data found'}
-                </p>
-                <p>
-                  <strong>Address:</strong> {patientAddress || 'No data found'}
-                </p>
-                <p>
-                  <strong>Contacts:</strong> {useremail || 'No data found'}<br />
-                  {patientPhoneNumber || 'No data found'}
-                </p>
-                <p>
-                  <strong>Active Conditions:</strong>{' '}
-                  {conditions && conditions.length > 0
-                    ? conditions.map((c) => c.condition_name).join(', ')
-                    : 'No data found'}
-                </p>
-                <p>
-                  <strong>Allergies:</strong>{' '}
-                  {allergies && allergies.length > 0
-                    ? allergies.map((a) => a.allergy_name).join(', ')
-                    : 'No data found'}
-                </p>
-              </div>
+                  {/* Details */}
+                  <div className="text-start mt-3" style={{ maxWidth: '100%' }}>
+                    <p>
+                      <strong>DOB:</strong>{' '}
+                      {patientDateOfBirth
+                        ? new Date(patientDateOfBirth).toLocaleDateString()
+                        : 'No data found'}
+                    </p>
+                    <p>
+                      <strong>Address:</strong> {patientAddress || 'No data found'}
+                    </p>
+                    <p>
+                      <strong>Contacts:</strong> {useremail || 'No data found'}<br />
+                      {patientPhoneNumber || 'No data found'}
+                    </p>
+                    <p>
+                      <strong>Active Conditions:</strong>{' '}
+                      {conditions && conditions.length > 0
+                        ? conditions.map((c) => c.condition_name).join(', ')
+                        : 'No data found'}
+                    </p>
+                    <p>
+                      <strong>Allergies:</strong>{' '}
+                      {allergies && allergies.length > 0
+                        ? allergies.map((a) => a.allergy_name).join(', ')
+                        : 'No data found'}
+                    </p>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -313,20 +348,37 @@ function PatientHome() {
               <div className="card h-100 shadow-sm">
                 <div className="card-body">
                   <h5 className="card-title font-weight-bold"><FaHeartbeat /> Blood Sugar</h5>
-                  <div className="d-flex justify-content-between align-items-center mt-3">
-                    <div>
-                      <h2 className="mb-0">50.0</h2>
-                      <small className="text-muted">Recent Reading</small>
+                  {bloodSugar.length === 0 ? (
+                    <div className="text-center py-4">
+                      <div className="mb-3">
+                        <i className="fas fa-chart-line fa-3x text-muted"></i>
+                      </div>
+                      <p className="text-muted">No blood sugar data available</p>
+                      <button 
+                        className="btn btn-outline-primary btn-sm"
+                        onClick={() => navigate('/medicalcondions')}
+                      >
+                        Add Blood Sugar Reading
+                      </button>
                     </div>
-                    <div>
-                      <h2 className="mb-0">89.1</h2>
-                      <small className="text-muted">7 Day Average</small>
-                    </div>
-                    <button className="btn btn-outline-primary btn-sm">MG/DL</button>
-                  </div>
-                  <div className="mt-4" style={{ height: '150px' }}>
-                    <Bar data={bloodSugarData} options={{ responsive: true, maintainAspectRatio: false }} />
-                  </div>
+                  ) : (
+                    <>
+                      <div className="d-flex justify-content-between align-items-center mt-3">
+                        <div>
+                          <h2 className="mb-0">50.0</h2>
+                          <small className="text-muted">Recent Reading</small>
+                        </div>
+                        <div>
+                          <h2 className="mb-0">89.1</h2>
+                          <small className="text-muted">7 Day Average</small>
+                        </div>
+                        <button className="btn btn-outline-primary btn-sm">MG/DL</button>
+                      </div>
+                      <div className="mt-4" style={{ height: '150px' }}>
+                        <Bar data={bloodSugarData} options={{ responsive: true, maintainAspectRatio: false }} />
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -336,14 +388,31 @@ function PatientHome() {
               <div className="card h-100 shadow-sm">
                 <div className="card-body">
                   <h5 className="card-title font-weight-bold"><FaHeartbeat /> Heart Rate</h5>
-                  <div className="d-flex justify-content-between align-items-center mt-3">
-                    <p className="mb-0">54-123 BPM</p>
-                    <p className="text-muted mb-0">Heart Range</p>
-                    <button className="btn btn-outline-primary btn-sm">Past Month</button>
-                  </div>
-                  <div className="mt-4" style={{ height: '150px' }}>
-                    <Line data={heartRateData} options={{ responsive: true, maintainAspectRatio: false }} />
-                  </div>
+                  {heartRate.length === 0 ? (
+                    <div className="text-center py-4">
+                      <div className="mb-3">
+                        <i className="fas fa-heartbeat fa-3x text-muted"></i>
+                      </div>
+                      <p className="text-muted">No heart rate data available</p>
+                      <button 
+                        className="btn btn-outline-primary btn-sm"
+                        onClick={() => navigate('/patient/health-metrics')}
+                      >
+                        Add Heart Rate Reading
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="d-flex justify-content-between align-items-center mt-3">
+                        <p className="mb-0">54-123 BPM</p>
+                        <p className="text-muted mb-0">Heart Range</p>
+                        <button className="btn btn-outline-primary btn-sm">Past Month</button>
+                      </div>
+                      <div className="mt-4" style={{ height: '150px' }}>
+                        <Line data={heartRateData} options={{ responsive: true, maintainAspectRatio: false }} />
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -356,10 +425,28 @@ function PatientHome() {
               <div className="card h-100 shadow-sm">
                 <div className="card-body">
                   <h5 className="card-title font-weight-bold"><FaClinicMedical /> Upcoming Clinic Notifications</h5>
-                  <p className="mt-3"><strong>Next Visit:</strong>{upcommingSchedule?.date || 'No User data found'}</p>
-                  <p><strong>Time:</strong>{upcommingSchedule?.time || 'No User data found'}</p>
-                  <p><strong>Specialist:</strong>{upcommingSchedule?.doctorname || 'No User data found'}</p>
-                  <button className="btn btn-block" style={{background: '#2A5D9C', color: 'white'}}>View Details</button>
+                  {!upcommingSchedule ? (
+                    <div className="text-center py-4">
+                      <div className="mb-3">
+                        <i className="fas fa-calendar-times fa-3x text-muted"></i>
+                      </div>
+                      <p className="text-muted">No upcoming appointments scheduled</p>
+                      <button 
+                        className="btn btn-primary btn-sm"
+                        onClick={() => navigate('/patient/appointments')}
+                        style={{background: '#2A5D9C', color: 'white'}}
+                      >
+                        Book an Appointment
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <p className="mt-3"><strong>Next Visit:</strong> {upcommingSchedule?.date || 'Not scheduled'}</p>
+                      <p><strong>Time:</strong> {upcommingSchedule?.time || 'Not specified'}</p>
+                      <p><strong>Specialist:</strong> {upcommingSchedule?.doctorname || 'Not specified'}</p>
+                      <button className="btn btn-block" style={{background: '#2A5D9C', color: 'white'}}>View Details</button>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -369,10 +456,27 @@ function PatientHome() {
               <div className="card h-100 shadow-sm text-center">
                 <div className="card-body">
                   <h5 className="card-title font-weight-bold"><FaBalanceScale /> BMI Rate</h5>
-                  <div style={{ height: '150px', marginBottom: '1rem' }}>
-                    <Bar data={bmiData} options={{ responsive: true, maintainAspectRatio: false }} />
-                  </div>
-                  <button className="btn btn-outline-secondary btn-sm">Learn More</button>
+                  {bmi.length === 0 ? (
+                    <div className="text-center py-4">
+                      <div className="mb-3">
+                        <i className="fas fa-weight fa-3x text-muted"></i>
+                      </div>
+                      <p className="text-muted">No BMI data available</p>
+                      <button 
+                        className="btn btn-outline-secondary btn-sm"
+                        onClick={() => navigate('/patient/health-metrics')}
+                      >
+                        Add BMI Reading
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <div style={{ height: '150px', marginBottom: '1rem' }}>
+                        <Bar data={bmiData} options={{ responsive: true, maintainAspectRatio: false }} />
+                      </div>
+                      <button className="btn btn-outline-secondary btn-sm">Learn More</button>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
