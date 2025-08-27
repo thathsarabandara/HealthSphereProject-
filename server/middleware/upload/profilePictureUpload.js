@@ -28,12 +28,17 @@ const storage = multer.diskStorage({
 // Multer Setup (File Size, Type Validation)
 const upload = multer({
   storage,
-  limits: { fileSize: 2 * 1024 * 1024 },  // Max file size 2MB
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB file size limit
+    fieldSize: 10 * 1024 * 1024, // 10MB field size limit
+  },
   fileFilter: (req, file, cb) => {
-    if (!file.mimetype.startsWith('image/')) {
-      return cb(new Error('Only image files are allowed!'), false);
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only .jpg, .jpeg, and .png files are allowed'));
     }
-    cb(null, true);  // Accept file
   },
 });
 
@@ -42,6 +47,7 @@ const profilePictureUpload = (req, res, next) => {
 
   uploadSingle(req, res, (err) => {
     if (err) {
+      console.log(err)
       return res.status(400).json({ error: err.message });
     }
     if (!req.file) {
