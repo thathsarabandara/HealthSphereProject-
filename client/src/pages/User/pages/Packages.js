@@ -13,6 +13,7 @@ import image8 from '../../../assets/images/packages/8.png';
 import image9 from '../../../assets/images/packages/9.png';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify';
 
 function Packages() {
   const [isLoading, setIsLoading] = useState(true);
@@ -92,6 +93,7 @@ function Packages() {
 
   return (
     <div>
+      <ToastContainer/>
       <section className='section1'>
         <div className="img-container">
           <img src={Rectangle57} className="img-fluid w-100" alt="Home" style={{ objectFit: 'cover', height: 'auto', maxHeight: '100vh' }} />
