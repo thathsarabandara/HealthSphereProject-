@@ -29,23 +29,39 @@ function Profile() {
     const fetchProfileData = async () => {
       try {
         const response = await axios.get(`http://localhost:5000/userprofile`, { withCredentials: true });
-        if (response.status === 200) {
+        if (response.data && response.data.data) {
           const data = response.data.data;
+          
+          // Initialize with default values to prevent undefined errors
+          const safeData = {
+            id: data.id || '',
+            registrationDate: data.registrationDate || '',
+            first_name: data.first_name || '',
+            last_name: data.last_name || '',
+            phone_number:data.phone_number || '',
+            date_of_birth:data.date_of_birth || '',
+            gender: data.gender || '',
+            email: data.email || '',
+            address: data.address || '',
+            profilePicture: data.profilePicture || ''
+          };
 
           // Update profile picture preview
-          if (data?.profilePicture) {
-            setPp(`http://localhost:5000/uploads/storage/patient/${data.id}/profilepictures/${data.profilePicture}`);
+          if (safeData.profilePicture && safeData.id) {
+            setPp(`http://localhost:5000/uploads/storage/patient/${safeData.id}/profilepictures/${safeData.profilePicture}`);
           } else {
             setPp(emptyImage);
           }
 
-          setProfileData(data);
-          setOriginalData(data);
+          setProfileData(safeData);
+          setOriginalData(safeData);
           toast.success('Profile data loaded successfully!', {
             position: "bottom-right",
             autoClose: 3000,
             theme: "colored"
-          } );
+          });
+        } else {
+          throw new Error('Invalid response format');
         }
       } catch (error) {
         console.error('Error fetching profile data:', error);
