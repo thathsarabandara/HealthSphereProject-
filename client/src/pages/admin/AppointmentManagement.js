@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function AppointmentManagement() {
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
   const [selectedRequest, setSelectedRequest] = useState(null);
@@ -23,6 +26,20 @@ function AppointmentManagement() {
   const [itemsPerPageCancelled] = useState(5);
 
   useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/admin/home', { withCredentials: true });
+        if (response.status === 200) {
+          fetchRequests();
+        }
+      } catch (error) {
+        console.log(error);
+        navigate('/admin/login');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     const fetchRequests = async () => {
       try {
         const response = await axios.get("http://localhost:5000/admin/schedules", {
@@ -47,8 +64,8 @@ function AppointmentManagement() {
       }
     };
     
-    fetchRequests();
-  }, []);
+    checkAuth();
+  }, [navigate]);
 
   const handleRejectClick = (request) => {
     setSelectedRequest(request);
@@ -155,6 +172,16 @@ function AppointmentManagement() {
 
   // Change page for cancelled
   const paginateCancelled = (pageNumber) => setCurrentPageCancelled(pageNumber);
+
+  if (isLoading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mt-4">

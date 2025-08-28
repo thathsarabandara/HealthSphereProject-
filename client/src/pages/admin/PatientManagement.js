@@ -19,6 +19,7 @@ function PatientManagement() {
   const [showPrescriptionModal, setShowPrescriptionModal] = useState(false);
   const [nameSuggestions, setNameSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -29,8 +30,22 @@ function PatientManagement() {
       setSearchValue(searchValueParam);
       handleSearch(searchByParam, searchValueParam);
     }
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/admin/home', { withCredentials: true });
+        if (response.status === 200) {
+          setIsLoading(false);
+        }
+      } catch (error) {
+        console.log(error)
+        navigate('/admin/login')
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
     // eslint-disable-next-line
-  }, []);
+  }, [navigate]);
 
   const handleSearch = async (customSearchBy, customSearchValue) => {
     setLoading(true);

@@ -3,9 +3,11 @@ import axios from 'axios';
 import { Table, Form, Button } from 'react-bootstrap';
 import { toast , ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from 'react-router-dom';
 import { FaExclamationTriangle } from 'react-icons/fa';
 
 const AdminManagement = () => {
+  const navigate = useNavigate();
   const [admins, setAdmins] = useState([]);
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -17,6 +19,20 @@ const AdminManagement = () => {
   });
 
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/admin/home', { withCredentials: true });
+        if (response.status === 200) {
+          setIsLoading(false);
+        }
+      } catch (error) {
+        console.log(error)
+        navigate('/admin/login')
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
     const fetchAdmins = async () => {
       try {
         const response = await axios.get('http://localhost:5000/admin/admins', {withCredentials: true});
@@ -34,7 +50,7 @@ const AdminManagement = () => {
       }
     };
     fetchAdmins();
-  }, []);
+  }, [navigate]);
 
   if (isLoading) {
     return <div>Loading...</div>;
