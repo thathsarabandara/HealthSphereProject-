@@ -143,6 +143,7 @@ exports.createAllergy = async (req, res) => {
         patient_id: patient.id, // Attach patient_id
       }));
       
+      console.log(dataWithPatientId)
       // Use Sequelize bulkCreate method to insert data
       const createdData = await PatientAllergy.bulkCreate(dataWithPatientId, {
         returning: true, // Optional: returns the inserted rows

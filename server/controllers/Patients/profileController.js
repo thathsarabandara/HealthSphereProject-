@@ -36,22 +36,27 @@ exports.profileLoad = async (req, res) => {
 exports.saveProfile = async (req, res) => {
     const {id} = req.params;
     const { first_name, last_name, date_of_birth, gender, phone_number, address } = req.body;
-    const profilePictureLocation = req.profile_picture;
-
+    
     try {
-        // Set the fields to be updated, with or without profile picture
-        const updateFields = {
-            first_name,
-            last_name,
-            date_of_birth,
-            gender,
-            phone_number,
-            address,
-        };
+        // Initialize updateFields object
+        const updateFields = {};
+        
+        // Only include fields that are provided and not empty
+        if (first_name && first_name.trim()) updateFields.first_name = first_name.trim();
+        if (last_name && last_name.trim()) updateFields.last_name = last_name.trim();
+        if (date_of_birth) updateFields.date_of_birth = date_of_birth;
+        if (gender) updateFields.gender = gender;
+        if (phone_number && phone_number.trim()) updateFields.phone_number = phone_number.trim();
+        if (address && address.trim()) updateFields.address = address.trim();
+        
+        // Check if at least one field is being updated
+        if (Object.keys(updateFields).length === 0 && !req.file) {
+            return res.status(400).json({ message: 'No valid fields provided for update' });
+        }
 
-        // Add the profile picture field if available
-        if (profilePictureLocation) {
-            updateFields.profilePictureLocation = profilePictureLocation;
+        // Only update profile picture if a new one was uploaded
+        if (req.file) {
+            updateFields.profilePictureLocation = req.file.filename;
         }
 
         // Update the patient's profile
@@ -61,6 +66,7 @@ exports.saveProfile = async (req, res) => {
 
         // Check if any rows were updated
         if (updatedRows === 0) {
+            console.log("here")          
             return res.status(404).json({ message: 'Patient not found or no changes made' });
         }
 
