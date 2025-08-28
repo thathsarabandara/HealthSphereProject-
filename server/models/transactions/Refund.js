@@ -1,41 +1,23 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/db');
-const {Payment} = require('./Payment');
+const { Payment } = require('./Payment');
 
 const Refund = sequelize.define('Refund', {
-    id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
-        primaryKey: true,
-    },
-    payment_id: {
-        type: DataTypes.INTEGER,
-        references: {
-            model: Payment,
-            key: 'id',
-        },
-    },
-    refund_reason: {
-        type: DataTypes.TEXT,
-        allowNull: true
-    },
-    refund_status: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    created_at: {
-        type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW,
-    },
-    updated_at: {
-        type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW,
-    },
+  id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+  payment_id: {
+    type: DataTypes.INTEGER,
+    references: { model: Payment, key: 'id' },
+    allowNull: false,
+  },
+  refund_status: { type: DataTypes.STRING, allowNull: false },
+  created_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
 }, {
-    tableName: 'refunds',
-    timestamps: false,
+  tableName: 'refunds',
+  timestamps: false,
 });
 
-module.exports = {
-    Refund,
-};
+// Associations
+Refund.belongsTo(Payment, { foreignKey: 'payment_id' });
+Payment.hasMany(Refund, { foreignKey: 'payment_id' });
+
+module.exports = { Refund };
