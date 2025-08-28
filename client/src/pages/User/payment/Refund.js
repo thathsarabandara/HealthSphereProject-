@@ -13,6 +13,31 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
 
+// Function to format date and time from ISO string
+const formatDateTime = (isoString) => {
+  if (!isoString) return { date: 'N/A', time: 'N/A' };
+  
+  try {
+    const date = new Date(isoString);
+    const formattedDate = date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+    
+    const formattedTime = date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
+    
+    return { date: formattedDate, time: formattedTime };
+  } catch (error) {
+    console.error('Error formatting date:', error);
+    return { date: 'Invalid Date', time: 'Invalid Time' };
+  }
+};
+
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: '#112D4E',
@@ -126,17 +151,14 @@ const Refund = () => {
               {currentItems.map((row, index) => (
                 <StyledTableRow key={index}>
                   <StyledTableCell>{row.paymentId}</StyledTableCell>
-                  <StyledTableCell>{row.paymentDate}</StyledTableCell>
-                  <StyledTableCell>{row.paymentTime}</StyledTableCell>
-                  <StyledTableCell>{row.paymentAmount}</StyledTableCell>
-                  <StyledTableCell>{row.refundId}</StyledTableCell>
-                  <StyledTableCell>{row.refundRequestDate}</StyledTableCell>
-                  <StyledTableCell>{row.refundRequestTime}</StyledTableCell>
+                  <StyledTableCell>{formatDateTime(row.paymentDate).date}</StyledTableCell>
+                  <StyledTableCell>{formatDateTime(row.paymentDate).time}</StyledTableCell>
+                  <StyledTableCell>LKR {parseFloat(row.paymentAmount).toFixed(2)}</StyledTableCell>
+                  <StyledTableCell>{row.refundId || 'N/A'}</StyledTableCell>
+                  <StyledTableCell>{row.refundRequestDate ? formatDateTime(row.refundRequestDate).date : 'N/A'}</StyledTableCell>
+                  <StyledTableCell>{row.refundRequestTime ? formatDateTime(row.refundRequestTime).time : 'N/A'}</StyledTableCell>
                   <StyledTableCell>{row.refundReason}</StyledTableCell>
                   <StyledTableCell>{row.refundStatus}</StyledTableCell>
-                  <StyledTableCell>
-                    <button onClick={() => handleRequestRefund(row.paymentId)}>Request Refund</button>
-                  </StyledTableCell>
                 </StyledTableRow>
               ))}
             </TableBody>
