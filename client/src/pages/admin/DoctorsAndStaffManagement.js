@@ -165,66 +165,6 @@ function DoctorsAndStaffManagement() {
             </button>
           </div>
         </div>
-
-        <div className="col-md-4">
-          <div style={{ padding: "20px", backgroundColor: "#F4F6F8" }}>
-            <h5>Total Staff</h5>
-            <div>
-              <div
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  color: "black",
-                  fontSize: 20,
-                  fontFamily: "Sansation",
-                  fontWeight: "700",
-                  wordWrap: "break-word",
-                }}
-              >
-                Doctors -
-              </div>
-              <div
-                style={{ width: "100%", height: "100%", background: "#786262" }}
-              />
-            </div>
-            <div>
-              <div
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  color: "black",
-                  fontSize: 20,
-                  fontFamily: "Sansation",
-                  fontWeight: "700",
-                  wordWrap: "break-word",
-                }}
-              >
-                Nurse -
-              </div>
-              <div
-                style={{ width: "100%", height: "100%", background: "#786262" }}
-              />
-            </div>
-            <div>
-              <div
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  color: "black",
-                  fontSize: 20,
-                  fontFamily: "Sansation",
-                  fontWeight: "700",
-                  wordWrap: "break-word",
-                }}
-              >
-                Others -
-              </div>
-              <div
-                style={{ width: "100%", height: "100%", background: "#786262" }}
-              />
-            </div>
-          </div>
-        </div>
       </div>
 
       <table style={tableStyle}>
