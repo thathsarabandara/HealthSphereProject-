@@ -84,6 +84,7 @@ function PatientManagement() {
         { withCredentials: true }
       );
       setPatientData(response.data.patient);
+      console.log(patientData)
       setReservations(response.data.reservations);
 
       // Update URL with search params only after search
@@ -215,15 +216,19 @@ function PatientManagement() {
             <option value="Patient ID">Patient ID</option>
             <option value="Name">Name</option>
           </select>
-          <input
-            type="text"
-            className="form-control me-2"
-            style={{ width: "300px" }}
-            placeholder={`Enter ${searchBy}`}
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-            autoComplete="off"
-          />
+          <div className="input-group" style={{ width: "300px" }}>
+            <span className="input-group-text">
+              {searchBy === 'Patient ID' ? 'HHP' : 'Name'}
+            </span>
+            <input
+              type="text"
+              className="form-control"
+              placeholder={`Enter ${searchBy}`}
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+              autoComplete="off"
+            />
+          </div>
 
           <button
             className="btn btn-primary"
@@ -250,9 +255,8 @@ function PatientManagement() {
                 width: "150px",
                 height: "150px",
                 margin: "auto",
-                backgroundImage:
-                  `http://localhost:5000${patientData.profilePicture}`
-                    ? `url(${patientData.profilePicture})`
+                backgroundImage: patientData.profilePicture
+                    ? `url(http://localhost:5000/uploads/storage/patient/${patientData.id}/profilepictures/${patientData.profilePictureLocation})`
                     : "",
 
                 backgroundSize: "cover",
