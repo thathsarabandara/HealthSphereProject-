@@ -114,13 +114,13 @@ function AdminPanel() {
           {[
             { to: '/admin', label: 'Dashboard', icon: <FaTachometerAlt /> },
             { to: '/admin/doctorsandstaffManagement', label: 'Doctors and Staff Management', icon: <FaUserMd /> },
-            { to: '/admin/appointmentmanagement', label: 'Appointment Management', icon: <FaClipboardList /> },
+            { to: '/admin/appointmentmanagement', label: 'Schedule Management', icon: <FaClipboardList /> },
             { to: '/admin/patientmanagement', label: 'Patient Management', icon: <FaUsers /> },
+            { to: '/admin/reportgeneration', label: 'Report Generation', icon: <FaFileInvoiceDollar /> },
             { to: '/admin/billingandfinancial', label: 'Billing & Financial Management', icon: <FaFileInvoiceDollar /> },
             { to: '/admin/inventoryandresource', label: 'Inventory & Resources Management', icon: <FaWarehouse /> },
             { to: '/admin/icu', label: 'Intensive Care Unit', icon: <FaProcedures /> },
             { to: '/admin/management', label: 'Admin Management', icon: <FaUserMd /> },
-            { to: '/admin/reportgeneration', label: 'Report Generation', icon: <FaFileInvoiceDollar /> },
           ].map((item, index) => (
             <li key={index}>
               <Link

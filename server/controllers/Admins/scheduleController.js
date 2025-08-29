@@ -143,25 +143,30 @@ exports.makeAcceptScheduleRequest = async (req, res) => {
 
 exports.makeRejectScheduleRequest = async (req, res) => {
   try {
+    console.log(req.params);
     const { id } = req.params; 
     const { rejectReason } = req.body; 
 
     const schedule = await Schedule.findOne({ 
       where: { id },
-      include: [
-        {
-          model: Doctor,
-          include: [User]
-        }
-      ]
+    });
+
+    const doctor = await Doctor.findOne({
+      where: { id: schedule.doctor_id }
+    });
+
+    const user = await User.findOne({
+      where: { id: doctor.user_id }
     });
 
     if (!schedule) {
+      console.log("Schedule not found");
       return res.status(404).json({ error: "Schedule not found" });
     }
 
     schedule.status = "rejected";
     await schedule.save();
+    console.log(schedule);
 
     await ScheduleCancel.create({
       schedule_id: schedule.id,
@@ -171,8 +176,8 @@ exports.makeRejectScheduleRequest = async (req, res) => {
     });
 
     // Send rejection email
-    if (schedule.Doctor && schedule.Doctor.User) {
-      await sendScheduleRejectionEmail(schedule.Doctor.User.email, {
+    if (user) {
+      await sendScheduleRejectionEmail(user.email, {
         id: schedule.id,
         date: schedule.schedule_date,
         time: schedule.schedule_time
