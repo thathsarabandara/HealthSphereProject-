@@ -13,7 +13,21 @@ function DoctorRequestPage() {
   const [itemsPerPage] = useState(5); // Number of items per page
   const [acceptLoading, setAcceptLoading] = useState({});
   const [rejectLoading, setRejectLoading] = useState({});
+  const [searchName, setSearchName] = useState('');
+  const [searchDate, setSearchDate] = useState('');
   const navigate = useNavigate();
+  
+  // Filter doctors based on search criteria
+  const filteredDoctors = pendingDoctors.filter(doctor => {
+    const fullName = `${doctor.first_name} ${doctor.last_name}`.toLowerCase();
+    const searchNameLower = searchName.toLowerCase();
+    const doctorDate = new Date(doctor.updated_at).toISOString().split('T')[0];
+    
+    return (
+      (searchName === '' || fullName.includes(searchNameLower)) &&
+      (searchDate === '' || doctorDate === searchDate)
+    );
+  });
 
   useEffect(() => {
     // Fetch doctor requests from backend
@@ -80,7 +94,7 @@ function DoctorRequestPage() {
   // Get current items
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = pendingDoctors.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = filteredDoctors.slice(indexOfFirstItem, indexOfLastItem);
 
   // Change page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
@@ -180,7 +194,86 @@ function DoctorRequestPage() {
       </button>
       <h2>Doctor Registration Requests</h2>
       
-      {currentItems.length > 0 ? (
+      {/* Search Section */}
+      <div style={{ 
+        backgroundColor: 'white', 
+        padding: '20px', 
+        borderRadius: '8px', 
+        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+        marginBottom: '20px'
+      }}>
+        <h5>Search Requests</h5>
+        <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
+          <div style={{ flex: '1', minWidth: '250px' }}>
+            <label style={{ display: 'block', marginBottom: '5px', fontWeight: '500' }}>Search by Name</label>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Enter doctor name..."
+              value={searchName}
+              onChange={(e) => {
+                setSearchName(e.target.value);
+                setCurrentPage(1); // Reset to first page when searching
+              }}
+              style={{
+                padding: '8px 12px',
+                borderRadius: '4px',
+                border: '1px solid #ddd',
+                width: '100%',
+                maxWidth: '300px'
+              }}
+            />
+          </div>
+          <div style={{ flex: '1', minWidth: '250px' }}>
+            <label style={{ display: 'block', marginBottom: '5px', fontWeight: '500' }}>Filter by Date</label>
+            <input
+              type="date"
+              className="form-control"
+              value={searchDate}
+              onChange={(e) => {
+                setSearchDate(e.target.value);
+                setCurrentPage(1); // Reset to first page when filtering
+              }}
+              style={{
+                padding: '8px 12px',
+                borderRadius: '4px',
+                border: '1px solid #ddd',
+                width: '100%',
+                maxWidth: '300px'
+              }}
+            />
+            {searchDate && (
+              <button 
+                onClick={() => setSearchDate('')}
+                style={{
+                  marginLeft: '10px',
+                  padding: '4px 8px',
+                  backgroundColor: '#f0f0f0',
+                  border: '1px solid #ddd',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontSize: '12px',
+                  marginTop: '5px'
+                }}
+              >
+                Clear Date
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+      
+      {filteredDoctors.length === 0 ? (
+        <div style={{ 
+          backgroundColor: 'white', 
+          padding: '20px', 
+          borderRadius: '8px', 
+          textAlign: 'center',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+        }}>
+          No matching doctor requests found.
+        </div>
+      ) : currentItems.length > 0 ? (
         <>
           <table style={tableStyle}>
             <thead>
@@ -242,7 +335,7 @@ function DoctorRequestPage() {
             <p style={{ margin: '0 10px', lineHeight: '35px' }}>Page {currentPage}</p>
             <button 
               onClick={() => paginate(currentPage + 1)} 
-              disabled={indexOfLastItem >= pendingDoctors.length}
+              disabled={indexOfLastItem >= filteredDoctors.length}
               style={paginationButtonStyle}
             >
               Next
@@ -250,7 +343,15 @@ function DoctorRequestPage() {
           </div>
         </>
       ) : (
-        <p>No pending doctor requests.</p>
+        <div style={{ 
+          backgroundColor: 'white', 
+          padding: '20px', 
+          borderRadius: '8px', 
+          textAlign: 'center',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+        }}>
+          No pending doctor requests.
+        </div>
       )}
     </div>
   );
