@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Loader from "../../components/common/Loader";
 
 function DoctorsAndStaffManagement() {
@@ -17,48 +19,51 @@ function DoctorsAndStaffManagement() {
   }, []);
 
   const [doctors, setDoctors] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
+    const checkAuthAndFetchData = async () => {
+      try {
+        const authResponse = await axios.get('http://localhost:5000/admin/home', { withCredentials: true });
+        if (authResponse.status === 200) {
+          await fetchDoctors();
+        }
+      } catch (error) {
+        console.error('Authentication error:', error);
+        navigate('/admin/login');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     const fetchDoctors = async () => {
       try {
         const response = await axios.get(
           "http://localhost:5000/admin/loaddoctors",
           { withCredentials: true }
         );
-        console.log(response.data);
-        setDoctors(response.data);
-        setLoading(false);
+        setDoctors(response.data || []);
       } catch (err) {
-        console.log(err);
-        setLoading(false);
-        navigate("/admin/login");
-      } finally {
-        setLoading(false);
+        console.error('Error fetching doctors:', err);
+        setError('Failed to load doctors data');
+        toast.error('Failed to load doctors data', {
+          position: "bottom-right",
+          autoClose: 3000,
+          theme: "colored"
+        });
       }
     };
 
-    fetchDoctors();
-  }, []);
+    checkAuthAndFetchData();
+  }, [navigate]);
 
-  if (loading) {
+  if (isLoading) {
     return (
-      <div
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          width: "100vw",
-          height: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "#f0f4f8",
-          zIndex: 9999,
-        }}
-      >
-        <Loader />
+      <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
       </div>
     );
   }
@@ -232,7 +237,7 @@ function DoctorsAndStaffManagement() {
           </tr>
         </thead>
         <tbody>
-          {loading ? (
+          {isLoading ? (
             <tr>
               <td colSpan={4} style={tableCellStyle}>
                 Loading...

@@ -8,6 +8,7 @@ const { adminAuthMiddleware } = require("../middleware/auth/authorizeAdmin");
 const staffManagement = require("../controllers/Admins/staffManagementController");
 const adminController = require("../controllers/Admins/adminController");
 const dashboardController = require("../controllers/Admins/dashboardController");
+const reportController = require("../controllers/Admins/ReportGenerator");
 const { profilePictureUpload } = require("../middleware/upload/profilePictureUpload");
 
 const refundController = require("../controllers/Admins/RefundManagement");
@@ -119,9 +120,16 @@ router.get(
   dashboardController.getDashboardMetrics
 );
 router.get(
-  "/dashboard/schdules",
+  "/dashboard/schedules",
   [adminAuthMiddleware],
   dashboardController.getTopSchedules
+);
+
+// Report Generation Routes
+router.get(
+  "/reports/doctor-schedules",
+  [adminAuthMiddleware],
+  reportController.generateDoctorScheduleReport
 );
 
 // Refund Management Routes

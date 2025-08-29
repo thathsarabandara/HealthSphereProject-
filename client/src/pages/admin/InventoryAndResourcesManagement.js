@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const inStockData = [
   { drug: "Nathasha", quantity: "00", expDate: "2024/10/04" },
@@ -24,15 +26,41 @@ const equipment = [
 ];
 
 function InventoryAndResourcesManagement() {
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
   const [dateTime, setDateTime] = useState(new Date().toLocaleString());
 
   useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/admin/home', { withCredentials: true });
+        if (response.status === 200) {
+          setIsLoading(false);
+        }
+      } catch (error) {
+        console.error('Authentication error:', error);
+        navigate('/admin/login');
+      }
+    };
+
+    checkAuth();
+
     const interval = setInterval(() => {
       setDateTime(new Date().toLocaleString());
     }, 1000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [navigate]);
+
+  if (isLoading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container-fluid p-3">

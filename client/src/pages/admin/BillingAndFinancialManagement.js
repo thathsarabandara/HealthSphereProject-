@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -16,6 +17,8 @@ const defaultRevenueData = [
 ];
 
 function BillingAndFinancialManagement() {
+  const navigate = useNavigate();
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
   const [dateTime, setDateTime] = useState(new Date().toLocaleString());
   const [showModal, setShowModal] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
@@ -25,8 +28,22 @@ function BillingAndFinancialManagement() {
   const [isLoading, setIsLoading] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // Fetch refund requests and revenue data
+  // Check authentication and fetch data
   useEffect(() => {
+    const checkAuthAndFetchData = async () => {
+      try {
+        const authResponse = await axios.get('http://localhost:5000/admin/home', { withCredentials: true });
+        if (authResponse.status === 200) {
+          await fetchData();
+        }
+      } catch (error) {
+        console.error('Authentication error:', error);
+        navigate('/admin/login');
+      } finally {
+        setIsAuthLoading(false);
+      }
+    };
+
     const fetchData = async () => {
       try {
         setIsLoading(true);
@@ -53,7 +70,7 @@ function BillingAndFinancialManagement() {
       }
     };
 
-    fetchData();
+    checkAuthAndFetchData();
 
     // Update time every second
     const interval = setInterval(() => {
@@ -118,6 +135,16 @@ function BillingAndFinancialManagement() {
       setIsProcessing(false);
     }
   };
+
+  if (isAuthLoading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container-fluid p-3" style={{ backgroundColor: "#f8f9fa", minHeight: "100vh" }}>

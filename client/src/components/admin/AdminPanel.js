@@ -14,6 +14,7 @@ import AdminDoctorProfilePage from '../../pages/admin/AdminDoctorProfilePage';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import AdminManagement from '../../pages/admin/AdminManagement';
+import ReportGeneration from '../../pages/admin/ReportGeneration';
 
 function AdminPanel() {
   const navigate = useNavigate();
@@ -119,6 +120,7 @@ function AdminPanel() {
             { to: '/admin/inventoryandresource', label: 'Inventory & Resources Management', icon: <FaWarehouse /> },
             { to: '/admin/icu', label: 'Intensive Care Unit', icon: <FaProcedures /> },
             { to: '/admin/management', label: 'Admin Management', icon: <FaUserMd /> },
+            { to: '/admin/reportgeneration', label: 'Report Generation', icon: <FaFileInvoiceDollar /> },
           ].map((item, index) => (
             <li key={index}>
               <Link
@@ -160,6 +162,7 @@ function AdminPanel() {
           <Route path="/admin/doctorrequests" element={<DoctorRequestPage />} />
           <Route path="/admin/doctor/:doctorId" element={<AdminDoctorProfilePage />} />
           <Route path="/admin/management" element={<AdminManagement />} />
+          <Route path="/admin/reportgeneration" element={<ReportGeneration />} />
           {/* Add other routes as needed */}
         </Routes>
       </div>

@@ -127,41 +127,63 @@ function Profile() {
     setSaveLoading(true);
   
     const formData = new FormData();
+    let hasChanges = false;
   
     Object.keys(profileData).forEach((key) => {
-      if (profileData[key] !== originalData[key] && key !== 'fileObject') {
+      if (key !== 'fileObject' && profileData[key] !== originalData[key]) {
         formData.append(key, profileData[key]);
+        hasChanges = true;
       }
     });
   
     if (profileData.fileObject) {
       formData.append('profilePicture', profileData.fileObject);
+      hasChanges = true;
     }
   
-    if ([...formData.keys()].length === 0) {
-      console.log('No changes made.');
+    if (!hasChanges) {
+      toast.info('No changes to save.');
+      setSaveLoading(false);
       return;
     }
   
     try {
-      const response = await axios.put(`http://localhost:5000/userprofile/${profileData.id}`, formData);
-      if (response.status === 200) {
-        const data = response.data.data;
+      const response = await axios.put(
+        `http://localhost:5000/userprofile/${profileData.id}`, 
+        formData,
+        { withCredentials: true, headers: { 'Content-Type': 'multipart/form-data' } }
+      );
+      
+      if (response.data && response.data.success) {
+        const updatedData = response.data.data || profileData;
         
         // Update profile picture preview
-        if (data?.profilePicture) {
-          setPp(`http://localhost:5000/uploads/storage/patient/${data.id}/profilepictures/${data.profilePicture}`);
+        if (updatedData.profilePicture) {
+          setPp(`http://localhost:5000/uploads/storage/patient/${updatedData.id}/profilepictures/${updatedData.profilePicture}`);
         } else {
           setPp(emptyImage);
         }
         
-        setProfileData(data);
-        setOriginalData(data);
-        toast.success('Profile updated successfully!');
+        // Remove fileObject before setting state
+        const { fileObject, ...cleanData } = updatedData;
+        setProfileData(cleanData);
+        setOriginalData(cleanData);
+        
+        toast.success('Profile updated successfully!', {
+          position: "bottom-right",
+          autoClose: 3000,
+          theme: "colored"
+        });
+      } else {
+        throw new Error('Invalid response format');
       }
     } catch (error) {
-      console.error(error);
-      toast.error('Failed to update profile!');
+      console.error('Update error:', error);
+      toast.error(error.response?.data?.message || 'Failed to update profile!', {
+        position: "bottom-right",
+        autoClose: 3000,
+        theme: "colored"
+      });
     } finally {
       setSaveLoading(false);
     }
