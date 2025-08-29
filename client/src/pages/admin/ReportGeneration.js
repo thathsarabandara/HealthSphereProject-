@@ -7,7 +7,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 
 const ReportGeneration = () => {
   const navigate = useNavigate();
@@ -19,6 +19,7 @@ const ReportGeneration = () => {
   const [reportData, setReportData] = useState([]);
   const [expandedDoctors, setExpandedDoctors] = useState({});
   const [doctorSummary, setDoctorSummary] = useState([]);
+  const [groupedSchedules, setGroupedSchedules] = useState({});
   const tableRef = useRef(null);
 
   const calculateDoctorSummary = (data) => {
@@ -41,6 +42,18 @@ const ReportGeneration = () => {
       return acc;
     }, {});
     return Object.values(summary);
+  };
+
+  // Group schedules by doctor name
+  const groupSchedulesByDoctor = (data) => {
+    return data.reduce((acc, item) => {
+      const doctorName = item.doctorName;
+      if (!acc[doctorName]) {
+        acc[doctorName] = [];
+      }
+      acc[doctorName].push(item);
+      return acc;
+    }, {});
   };
 
   const toggleDoctorDetails = (doctorId) => {
@@ -88,8 +101,11 @@ const ReportGeneration = () => {
         const sortedDoctorSummary = calculateDoctorSummary(data).sort((a, b) =>
           a.name.localeCompare(b.name)
         );
+        const groupedData = groupSchedulesByDoctor(data);
+        
         setReportData(data);
         setDoctorSummary(sortedDoctorSummary);
+        setGroupedSchedules(groupedData);
         setExpandedDoctors({}); // Reset expanded doctors when new report is generated
         toast.success('Report generated successfully');
       }
@@ -101,53 +117,109 @@ const ReportGeneration = () => {
   };
 
   const exportToPDF = () => {
-    if (!reportData.length) {
+    if (Object.keys(groupedSchedules).length === 0) {
       toast.warning('No data to export');
       return;
     }
+    
     const doc = new jsPDF();
+    let yPos = 20;
+    
+    // Add title
     doc.setFontSize(18);
-    doc.text('Doctor Schedules Report', 14, 22);
+    doc.text('Doctor Schedules Report', 14, yPos);
+    yPos += 10;
+    
+    // Add date range
     doc.setFontSize(11);
     doc.setTextColor(100);
-    doc.text(`Date Range: ${startDate.toLocaleDateString()} to ${endDate.toLocaleDateString()}`, 14, 30);
+    doc.text(`Date Range: ${startDate.toLocaleDateString()} to ${endDate.toLocaleDateString()}`, 14, yPos);
+    yPos += 15;
 
-    doctorSummary.forEach((doctor) => {
-      const headers = [['Date', 'Time', 'Room', 'Reservations', 'Fees', 'Revenue']];
-      const body = doctor.schedules.map(s => {
-        const revenue = parseFloat(s.fees || 0) * parseInt(s.totalReservations || 0);
+    // Process each doctor's data
+    Object.entries(groupedSchedules).forEach(([doctorName, schedules]) => {
+      // Add doctor header
+      doc.setFontSize(14);
+      doc.setTextColor(0, 0, 0);
+      doc.text(`Doctor: ${doctorName}`, 14, yPos);
+      yPos += 10;
+
+      // Prepare table data
+      const headers = [['Date', 'Time', 'Room', 'Reservations', 'Fees (Rs.)', 'Revenue (Rs.)']];
+      const body = schedules.map(schedule => {
+        const revenue = parseFloat(schedule.fees || 0) * parseInt(schedule.totalReservations || 0);
         return [
-          new Date(s.scheduleDate).toLocaleDateString(),
-          s.scheduleTime,
-          s.roomNumber || 'N/A',
-          s.totalReservations,
-          `$${parseFloat(s.fees || 0).toFixed(2)}`,
-          `$${revenue.toFixed(2)}`
+          new Date(schedule.scheduleDate).toLocaleDateString(),
+          schedule.scheduleTime,
+          schedule.roomNumber || 'N/A',
+          schedule.totalReservations.toString(),
+          parseFloat(schedule.fees || 0).toFixed(2),
+          revenue.toFixed(2)
         ];
       });
 
-      doc.autoTable({
+      // Calculate totals
+      const totalReservations = schedules.reduce((sum, s) => sum + parseInt(s.totalReservations || 0), 0);
+      const totalRevenue = schedules.reduce((sum, s) => 
+        sum + (parseFloat(s.fees || 0) * parseInt(s.totalReservations || 0)), 0);
+
+      // Add the table with adjusted column widths
+      autoTable(doc, {
         head: headers,
-        body,
-        startY: doc.lastAutoTable ? doc.lastAutoTable.finalY + 15 : 40,
-        theme: 'grid',
-        headStyles: { fillColor: [41, 128, 185], textColor: 255, fontStyle: 'bold' },
-        alternateRowStyles: { fillColor: [245, 245, 245] },
-        didDrawPage: (data) => {
-          doc.setFontSize(14);
-          doc.setTextColor(0, 0, 0);
-          doc.text(`Doctor: ${doctor.name}`, 14, data.settings.startY - 5);
+        body: body,
+        startY: yPos,
+        margin: { 
+          top: 20,
+          left: 10,
+          right: 10
+        },
+        tableWidth: 'wrap',
+        styles: {
+          fontSize: 8,  // Smaller font size to fit more content
+          cellPadding: 2,
+          overflow: 'linebreak',
+          lineWidth: 0.1
+        },
+        headStyles: { 
+          fillColor: [41, 128, 185],
+          textColor: 255,
+          fontStyle: 'bold',
+          halign: 'center',
+          fontSize: 9
+        },
+        columnStyles: {
+          0: { cellWidth: 25 }, // Date
+          1: { cellWidth: 25 }, // Time
+          2: { cellWidth: 20 }, // Room
+          3: { cellWidth: 25, halign: 'center' }, // Reservations
+          4: { cellWidth: 25, halign: 'right' },  // Fees
+          5: { cellWidth: 30, halign: 'right' }   // Revenue
+        },
+        didDrawPage: function(data) {
+          // Add total row after the table
+          const finalY = data.cursor.y + 5;
+          doc.setFontSize(9);
+          doc.setFont(undefined, 'bold');
+          doc.text(`Total for ${doctorName}:`, 14, finalY);
+          doc.text(totalReservations.toString(), 120, finalY);
+          doc.text('-', 165, finalY);
+          doc.text(totalRevenue.toFixed(2), 200, finalY, { align: 'right' });
+          
+          // Update yPos for next doctor
+          yPos = finalY + 15;
+          
+          // Add new page if needed
+          if (yPos > 250) {
+            doc.addPage();
+            yPos = 20;
+          }
         }
       });
-
-      const finalY = doc.lastAutoTable.finalY || 50;
-      doc.setFontSize(12);
-      doc.text(`Total Clinics: ${doctor.totalClinics}`, 14, finalY + 10);
-      doc.text(`Total Reservations: ${doctor.totalReservations}`, 70, finalY + 10);
-      doc.text(`Total Revenue: $${doctor.totalRevenue.toFixed(2)}`, 150, finalY + 10);
     });
 
-    doc.save(`doctor-schedules-report-${new Date().toISOString().split('T')[0]}.pdf`);
+    // Save the PDF
+    doc.save(`doctor-schedules-${new Date().toISOString().split('T')[0]}.pdf`);
+    toast.success('PDF exported successfully');
   };
 
   if (isLoading) return (
@@ -166,13 +238,23 @@ const ReportGeneration = () => {
             &larr; Back
           </Button>
         </Col>
-        <Col><h2 className="mb-0">Reports</h2></Col>
+        <Col><h2 className="mb-0 text-black">Reports</h2></Col>
       </Row>
 
       <Card>
         <Card.Body>
-          <Tabs activeKey={activeTab} onSelect={(k) => setActiveTab(k)} className="mb-4">
-            <Tab eventKey="doctorSchedules" title="Doctor Schedules" className="p-3">
+          <Tabs 
+            activeKey={activeTab} 
+            onSelect={(k) => setActiveTab(k)} 
+            className="mb-4"
+          >
+            <Tab 
+              eventKey="doctorSchedules" 
+              title={
+                <p className="text-black">Doctor Schedules</p>
+              } 
+              className="p-3"
+            >
               <Row className="mb-4">
                 <Col md={3}>
                   <Form.Label>Start Date</Form.Label>
@@ -214,107 +296,78 @@ const ReportGeneration = () => {
                   </Button>
                 </Col>
               </Row>
+              
 
-              {doctorSummary.length > 0 && (
+              {/* Second table showing schedules grouped by doctor */}
+              {Object.keys(groupedSchedules).length > 0 && (
                 <Card>
                   <Card.Header className="bg-light">
-                    <h5 className="mb-0">Doctor Schedule Summary</h5>
+                    <h5 className="mb-0">Schedules by Doctor</h5>
                     <small className="text-muted">
-                      Showing data from {startDate.toLocaleDateString()} to {endDate.toLocaleDateString()}
+                      Showing all schedules organized by doctor
                     </small>
                   </Card.Header>
                   <Table responsive striped bordered hover className="mb-0">
                     <thead className="table-dark">
                       <tr>
-                        <th style={{ width: '30%' }}>Doctor</th>
-                        <th className="text-center">Total Clinics</th>
-                        <th className="text-center">Total Reservations</th>
-                        <th className="text-center">Total Revenue</th>
-                        <th className="text-center">Actions</th>
+                        <th>Doctor</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Room</th>
+                        <th className="text-center">Reservations</th>
+                        <th className="text-center">Fees</th>
+                        <th className="text-center">Revenue</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {doctorSummary.map((doctor) => (
-                        <React.Fragment key={doctor.id}>
-                          <tr className={expandedDoctors[doctor.id] ? 'table-active' : ''}>
-                            <td>
-                              <div className="d-flex align-items-center">
-                                <Button 
-                                  variant="link" 
-                                  className="p-0 me-2" 
-                                  onClick={() => toggleDoctorDetails(doctor.id)}
-                                >
-                                  {expandedDoctors[doctor.id] ? <FaChevronDown /> : <FaChevronRight />}
-                                </Button>
-                                <span className="fw-medium">{doctor.name}</span>
-                              </div>
-                            </td>
-                            <td className="text-center">
-                              <Badge bg="primary" pill>{doctor.totalClinics}</Badge>
-                            </td>
-                            <td className="text-center">
-                              <Badge bg="info" pill>{doctor.totalReservations}</Badge>
-                            </td>
-                            <td className="text-center fw-bold text-success">
-                              ${doctor.totalRevenue.toFixed(2)}
-                            </td>
-                            <td className="text-center">
-                              <Button 
-                                variant="outline-primary" 
-                                size="sm"
-                                onClick={() => toggleDoctorDetails(doctor.id)}
-                              >
-                                {expandedDoctors[doctor.id] ? 'Hide Details' : 'View Details'}
-                              </Button>
-                            </td>
-                          </tr>
-                          {expandedDoctors[doctor.id] && (
-                            <tr>
-                              <td colSpan="5" className="p-0">
-                                <Card className="m-2 border-primary">
-                                  <Card.Header className="bg-primary text-white py-2">
-                                    <h6 className="mb-0">Schedule Details for Dr. {doctor.name}</h6>
-                                  </Card.Header>
-                                  <Table striped bordered hover size="sm" className="mb-0">
-                                    <thead>
-                                      <tr>
-                                        <th>Date</th>
-                                        <th>Time</th>
-                                        <th>Room</th>
-                                        <th className="text-center">Reservations</th>
-                                        <th className="text-center">Fees per Clinic</th>
-                                        <th className="text-center">Total Revenue</th>
-                                      </tr>
-                                    </thead>
-                                    <tbody>
-                                      {doctor.schedules.map((s, idx) => {
-                                        const revenue = parseFloat(s.fees || 0) * parseInt(s.totalReservations || 0);
-                                        return (
-                                          <tr key={idx}>
-                                            <td>{new Date(s.scheduleDate).toLocaleDateString()}</td>
-                                            <td>{s.scheduleTime}</td>
-                                            <td>{s.roomNumber || 'N/A'}</td>
-                                            <td className="text-center">{s.totalReservations}</td>
-                                            <td className="text-center">${parseFloat(s.fees || 0).toFixed(2)}</td>
-                                            <td className="text-center fw-bold">${revenue.toFixed(2)}</td>
-                                          </tr>
-                                        );
-                                      })}
-                                    </tbody>
-                                  </Table>
-                                </Card>
+                      {Object.entries(groupedSchedules).map(([doctorName, schedules]) => {
+                        const doctorTotalRevenue = schedules.reduce((sum, schedule) => 
+                          sum + (parseFloat(schedule.fees || 0) * parseInt(schedule.totalReservations || 0)), 0);
+                        
+                        return (
+                          <React.Fragment key={doctorName}>
+                            {schedules.map((schedule, index) => {
+                              const revenue = parseFloat(schedule.fees || 0) * parseInt(schedule.totalReservations || 0);
+                              return (
+                                <tr key={`${doctorName}-${index}`}>
+                                  {index === 0 ? (
+                                    <td rowSpan={schedules.length + 1} className="fw-bold bg-light">
+                                      {doctorName}
+                                    </td>
+                                  ) : null}
+                                  <td>{new Date(schedule.scheduleDate).toLocaleDateString()}</td>
+                                  <td>{schedule.scheduleTime}</td>
+                                  <td>{schedule.roomNumber || 'N/A'}</td>
+                                  <td className="text-center">{schedule.totalReservations}</td>
+                                  <td className="text-center">${parseFloat(schedule.fees || 0).toFixed(2)}</td>
+                                  <td className="text-center fw-bold text-success">Rs.{revenue.toFixed(2)}</td>
+                                </tr>
+                              );
+                            })}
+                            <tr className="table-warning">
+                              <td colSpan="3" className="text-end fw-bold">Total for {doctorName}:</td>
+                              <td className="text-center fw-bold">
+                                {schedules.reduce((sum, s) => sum + parseInt(s.totalReservations || 0), 0)}
                               </td>
+                              <td className="text-center fw-bold">-</td>
+                              <td className="text-center fw-bold">Rs.{doctorTotalRevenue.toFixed(2)}</td>
                             </tr>
-                          )}
-                        </React.Fragment>
-                      ))}
+                          </React.Fragment>
+                        );
+                      })}
                     </tbody>
                   </Table>
                 </Card>
               )}
             </Tab>
 
-            <Tab eventKey="futureReport" title="Future Report" className="p-3">
+            <Tab 
+              eventKey="futureReport" 
+              title={
+                <p className="text-black">Future Report</p>
+              } 
+              className="p-3"
+            >
               <div className="mt-4 p-4 text-center text-muted">
                 <p>This report will be available in a future update.</p>
               </div>
