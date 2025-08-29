@@ -9,3 +9,5 @@ server/uploads
 # Ignore backend dependencies (server)
 server/node_modules/
 server/.env
+config.bat
+node_modules
