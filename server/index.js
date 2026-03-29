@@ -16,6 +16,8 @@ const { rateLimiterMiddleware } = require('./middleware/rateLimit/rateLimiter');
 const passport = require('passport')
 require('./config/passport')
 const { errorLogger, requestLogger } = require('./middleware/logging/logger');
+const { adminAuthMiddleware } = require("./middleware/auth/authorizeAdmin");
+const report = require('./routes/report');
 
 // portNumber for the server
 const PORT = process.env.PORT || 5000;
@@ -43,6 +45,7 @@ app.use('/', patientRoutes);
 app.use('/doctor', doctorRoutes);
 app.use('/admin', adminRoutes);
 app.use('/auth', auth)
+app.use('/report', report);
 
 // Error logging (must be after all other middleware and routes)
 app.use(errorLogger);
